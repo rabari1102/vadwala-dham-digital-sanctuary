@@ -11,17 +11,35 @@ import j7 from '@/assets/gallery/janmashtami-7.jpg';
 import d1 from '@/assets/gallery/diwali-1.jpg';
 import d2 from '@/assets/gallery/diwali-2.jpg';
 import d3 from '@/assets/gallery/diwali-3.jpg';
+import da from '@/assets/gallery/diwali-acharya.jpg';
 import tn from '@/assets/gallery/temple-night.jpg';
+import td from '@/assets/gallery/temple-day.webp';
+import g1 from '@/assets/gallery/gaushala-1.jpg';
+import g2 from '@/assets/gallery/gaushala-2.jpg';
+import g3 from '@/assets/gallery/gaushala-3.jpg';
+import gb from '@/assets/gallery/gaushala-banner.jpg';
+import eg from '@/assets/gallery/education-girls.jpg';
+import es from '@/assets/gallery/education-school.jpg';
+import gp from '@/assets/gallery/guru-purnima.jpg';
 
 const photos = [
   { src: j1, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
-  { src: tn, cat: 'મંદિર — Temple', tag: 'temple' },
+  { src: td, cat: 'મંદિર — Temple Architecture', tag: 'temple' },
   { src: d2, cat: 'દીપાવલી મહોત્સવ', tag: 'diwali' },
+  { src: g1, cat: 'ગૌશાળા — Gaushala', tag: 'gaushala' },
   { src: j6, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
+  { src: da, cat: 'દીપાવલી — આચાર્યશ્રી', tag: 'diwali' },
+  { src: g2, cat: 'ગૌશાળા — જય ગૌમાતા', tag: 'gaushala' },
+  { src: eg, cat: 'શૈક્ષણિક — કન્યા છાત્રાલય', tag: 'education' },
   { src: d1, cat: 'દીપાવલી મહોત્સવ', tag: 'diwali' },
   { src: j5, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
+  { src: gp, cat: 'ગુરુ પૂર્ણિમા', tag: 'gurupurnima' },
+  { src: es, cat: 'શૈક્ષણિક — વિધાલય', tag: 'education' },
+  { src: tn, cat: 'મંદિર — Night View', tag: 'temple' },
   { src: j7, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
+  { src: g3, cat: 'ગૌશાળા — Gaushala', tag: 'gaushala' },
   { src: d3, cat: 'દીપાવલી મહોત્સવ', tag: 'diwali' },
+  { src: gb, cat: 'શ્રી વટેશ્વર ગૌશાળા', tag: 'gaushala' },
   { src: j4, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
   { src: j3, cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami' },
 ];
@@ -30,6 +48,9 @@ const filters = [
   { label: 'All', tag: 'all' },
   { label: 'જન્માષ્ટમી', tag: 'janmashtami' },
   { label: 'દીપાવલી', tag: 'diwali' },
+  { label: 'ગુરુ પૂર્ણિમા', tag: 'gurupurnima' },
+  { label: 'ગૌશાળા', tag: 'gaushala' },
+  { label: 'શૈક્ષણિક', tag: 'education' },
   { label: 'મંદિર', tag: 'temple' },
 ];
 
@@ -55,7 +76,7 @@ const Gallery = () => {
             <button
               key={f.tag}
               onClick={() => setActiveTag(f.tag)}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-all duration-300 border ${
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300 border ${
                 activeTag === f.tag
                   ? 'bg-temple-saffron text-white border-temple-saffron shadow-md'
                   : 'bg-card border-temple-gold/20 text-foreground hover:border-temple-gold/50'
@@ -69,7 +90,7 @@ const Gallery = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
           {filtered.map((photo, i) => (
             <div
-              key={i}
+              key={`${activeTag}-${i}`}
               onClick={() => setLightbox(i)}
               className="fade-in-section group relative aspect-square rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300"
               style={{ transitionDelay: `${i * 60}ms` }}
@@ -105,6 +126,18 @@ const Gallery = () => {
             className="absolute top-4 right-4 text-white text-3xl hover:text-temple-gold transition-colors z-10"
           >
             ✕
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! > 0 ? prev! - 1 : filtered.length - 1)); }}
+            className="absolute left-4 text-white text-3xl hover:text-temple-gold transition-colors z-10"
+          >
+            ‹
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! < filtered.length - 1 ? prev! + 1 : 0)); }}
+            className="absolute right-4 text-white text-3xl hover:text-temple-gold transition-colors z-10 mr-8"
+          >
+            ›
           </button>
           <img
             src={filtered[lightbox]?.src}
