@@ -15,11 +15,18 @@ const Contact = () => {
 
         <div className="fade-in-section grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           <div className="rounded-xl border border-temple-gold/20 bg-card p-6 md:p-8 shadow-sm">
-            <h3 className="font-heading font-bold text-xl text-foreground mb-6">Contact Information</h3>
+            <h3 className="font-heading font-bold text-xl text-foreground mb-6">
+              શ્રી વડવાળા મંદિર દુધરેજધામ
+            </h3>
             <div className="space-y-5">
               <div className="flex items-start gap-3">
                 <span className="text-xl mt-0.5">📍</span>
-                <p className="text-sm text-foreground/90 leading-relaxed">Shri Vadwala Mandir Dudhrejdham, Dudhrej, Wadhwan Taluka, Surendranagar, Gujarat — 363040</p>
+                <div>
+                  <p className="text-sm text-foreground/90 leading-relaxed font-medium">Address:</p>
+                  <p className="text-sm text-foreground/80">શ્રી વડવાળા મંદિર દુધરેજધામ</p>
+                  <p className="text-sm text-foreground/80">દુધરેજ, સુરેન્દ્રનગર (ગુજરાત) — 363040</p>
+                  <p className="text-xs text-muted-foreground mt-1 italic">5 km north of Surendranagar on Dhrangadhra Road</p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-xl">📞</span>
@@ -33,6 +40,10 @@ const Contact = () => {
                 <span className="text-xl">📧</span>
                 <a href="mailto:dudhrejvadwala@gmail.com" className="text-sm text-temple-saffron hover:underline font-medium">dudhrejvadwala@gmail.com</a>
               </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🌐</span>
+                <a href="https://dudhrejvadwala.com" target="_blank" rel="noopener noreferrer" className="text-sm text-temple-saffron hover:underline font-medium">dudhrejvadwala.com</a>
+              </div>
               <div className="flex items-start gap-3">
                 <span className="text-xl">🕐</span>
                 <div>
@@ -45,13 +56,13 @@ const Contact = () => {
 
             <div className="mt-8 pt-6 border-t border-temple-gold/20">
               <p className="text-sm font-semibold text-foreground mb-3">Follow Us</p>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 {[
-                  { icon: '▶️', label: 'YouTube' },
-                  { icon: '📷', label: 'Instagram' },
-                  { icon: '👤', label: 'Facebook' },
+                  { icon: '▶️', label: 'YouTube', href: '#' },
+                  { icon: '📷', label: 'Instagram', href: '#' },
+                  { icon: '👤', label: 'Facebook', href: '#' },
                 ].map((s) => (
-                  <a key={s.label} href="#" className="flex items-center gap-2 rounded-lg border border-temple-gold/20 bg-temple-gold/5 px-4 py-2 text-sm text-foreground hover:bg-temple-gold/20 transition-colors">
+                  <a key={s.label} href={s.href} className="flex items-center gap-2 rounded-lg border border-temple-gold/20 bg-temple-gold/5 px-4 py-2 text-sm text-foreground hover:bg-temple-gold/20 transition-colors">
                     <span>{s.icon}</span>
                     <span className="hidden sm:inline">{s.label}</span>
                   </a>

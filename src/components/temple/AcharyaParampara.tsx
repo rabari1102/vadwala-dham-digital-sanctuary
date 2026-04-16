@@ -2,11 +2,29 @@ import { useFadeInAll } from '@/hooks/useFadeIn';
 import LotusDivider from './LotusDivider';
 
 const acharyas = [
-  'Nilkanth Swami', 'Raghunath Swami', 'Yadav Swami', 'Shatpragnya Dasji',
-  'Labdhramji', 'Ratnadasji', 'Manadasji', 'Krishnadasji', 'Odhavdasji',
-  'Gokuldasji', 'Bhavdasji', 'Gulabdasji', 'Kevaldasji', 'Meghadasji',
-  'Yamunadasji', 'Gangaramji', 'Govindramji', 'Raghuvardasji', 'Jivramdasji',
-  'Gomatidasji', 'Kalyandasji', 'Kaniramdas ji (Vidyaman since 1994)', 'Vatpati Mahima',
+  { nameGuj: 'નીલકંઠ સ્વામી', name: 'Nilkanth Swami' },
+  { nameGuj: 'રઘુનાથ સ્વામી', name: 'Raghunath Swami' },
+  { nameGuj: 'યાદવ સ્વામી', name: 'Yadav Swami' },
+  { nameGuj: 'ષટપ્રજ્ઞદાસજી', name: 'Shatpragnya Dasji' },
+  { nameGuj: 'લબ્ધરામજી', name: 'Labdhramji' },
+  { nameGuj: 'રત્નદાસજી', name: 'Ratnadasji' },
+  { nameGuj: 'માનદાસજી', name: 'Manadasji' },
+  { nameGuj: 'કૃષ્ણદાસજી', name: 'Krishnadasji' },
+  { nameGuj: 'ઓધવદાસજી', name: 'Odhavdasji' },
+  { nameGuj: 'ગોકુલદાસજી', name: 'Gokuldasji' },
+  { nameGuj: 'ભાવદાસજી', name: 'Bhavdasji' },
+  { nameGuj: 'ગુલાબદાસજી', name: 'Gulabdasji' },
+  { nameGuj: 'કેવળદાસજી', name: 'Kevaldasji' },
+  { nameGuj: 'મેઘદાસજી', name: 'Meghadasji' },
+  { nameGuj: 'યમુનાદાસજી', name: 'Yamunadasji' },
+  { nameGuj: 'ગંગારામજી', name: 'Gangaramji' },
+  { nameGuj: 'ગોવિંદરામજી', name: 'Govindramji' },
+  { nameGuj: 'રઘુવરદાસજી', name: 'Raghuvardasji' },
+  { nameGuj: 'જીવરામદાસજી', name: 'Jivramdasji' },
+  { nameGuj: 'ગોમતીદાસજી', name: 'Gomatidasji' },
+  { nameGuj: 'કલ્યાણદાસજી', name: 'Kalyandasji' },
+  { nameGuj: 'કનીરામદાસજી', name: 'Kaniramdas ji', current: true, since: '૧૯૯૪' },
+  { nameGuj: 'વટપતિ મહિમા', name: 'Vatpati Mahima' },
 ];
 
 const AcharyaParampara = () => {
@@ -28,23 +46,31 @@ const AcharyaParampara = () => {
         <div className="max-w-3xl mx-auto relative">
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-temple-gold/30 -translate-x-1/2" />
 
-          {acharyas.map((name, i) => {
+          {acharyas.map((a, i) => {
             const isLeft = i % 2 === 0;
+            const isCurrent = 'current' in a && a.current;
             return (
               <div
                 key={i}
                 className={`fade-in-section relative flex items-center mb-6 md:mb-4 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
                 style={{ transitionDelay: `${i * 60}ms` }}
               >
-                <div className="absolute left-6 md:left-1/2 -translate-x-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-saffron text-primary-foreground text-sm font-bold shadow-md border-2 border-temple-gold">
+                <div className={`absolute left-6 md:left-1/2 -translate-x-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shadow-md border-2 ${
+                  isCurrent
+                    ? 'bg-temple-gold text-temple-dark border-temple-gold animate-pulse'
+                    : 'bg-gradient-saffron text-white border-temple-gold'
+                }`}>
                   {i + 1}
                 </div>
                 <div className={`ml-16 md:ml-0 md:w-[calc(50%-2rem)] ${isLeft ? 'md:mr-auto md:pr-8 md:text-right' : 'md:ml-auto md:pl-8 md:text-left'}`}>
-                  <div className="hover-lift rounded-lg border border-temple-gold/20 bg-card px-5 py-3 shadow-sm">
-                    <p className="font-heading font-semibold text-foreground text-sm md:text-base">{name}</p>
-                    {i === 21 && (
+                  <div className={`hover-lift rounded-lg border bg-card px-5 py-3 shadow-sm ${
+                    isCurrent ? 'border-temple-gold/60 ring-2 ring-temple-gold/20' : 'border-temple-gold/20'
+                  }`}>
+                    <p className="font-heading font-semibold text-foreground text-sm md:text-base">{a.nameGuj}</p>
+                    <p className="text-xs text-muted-foreground italic">{a.name}</p>
+                    {isCurrent && (
                       <span className="inline-block mt-1 text-xs bg-temple-gold/20 text-temple-saffron px-2 py-0.5 rounded-full font-medium">
-                        Current Acharya
+                        વિદ્યમાન — {a.since} થી
                       </span>
                     )}
                   </div>
