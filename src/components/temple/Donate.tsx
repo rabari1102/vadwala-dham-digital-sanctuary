@@ -1,56 +1,94 @@
 import { useFadeInAll } from '@/hooks/useFadeIn';
 import LotusDivider from './LotusDivider';
 
-const purposes = ['અન્નક્ષેત્ર', 'ગૌશાળા', 'શિક્ષણ', 'મંદિર જાળવણી', 'ઉત્સવ'];
+const purposes = [
+  { label: 'અન્નક્ષેત્ર', icon: '🍛' },
+  { label: 'ગૌશાળા', icon: '🐄' },
+  { label: 'શિક્ષણ', icon: '📚' },
+  { label: 'મંદિર જાળવણી', icon: '🏛️' },
+  { label: 'ઉત્સવ', icon: '🪔' },
+];
 
 const Donate = () => {
   const containerRef = useFadeInAll();
 
   return (
-    <section id="donate" className="py-16 md:py-24 bg-gradient-to-b from-background to-muted/30">
-      <div className="container mx-auto px-4" ref={containerRef}>
+    <section id="donate" className="py-16 md:py-24 bg-gradient-to-b from-orange-600 to-orange-700 relative overflow-hidden">
+      {/* Decorative circles */}
+      <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2" />
+
+      <div className="container mx-auto px-4 relative z-10" ref={containerRef}>
         <div className="fade-in-section text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-2">ડોનેશન</h2>
-          <p className="text-base md:text-lg text-muted-foreground font-heading italic max-w-xl mx-auto">
+          <span className="inline-block bg-white/20 text-white text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
+            Daan & Seva
+          </span>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">ડોનેશન</h2>
+          <p className="text-base md:text-lg text-orange-100 font-heading italic max-w-xl mx-auto">
             આપનો સહયોગ આ સેવા ને ટકાવી રાખે છે — Your support sustains these divine services
           </p>
-          <LotusDivider />
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <div className="h-px flex-1 max-w-24 bg-white/30" />
+            <span className="text-white text-lg">🙏</span>
+            <div className="h-px flex-1 max-w-24 bg-white/30" />
+          </div>
         </div>
 
-        <div className="fade-in-section max-w-3xl mx-auto">
-          <div className="rounded-2xl border-2 border-temple-gold/30 bg-card p-8 md:p-10 shadow-lg">
+        <div className="fade-in-section max-w-4xl mx-auto">
+          <div className="rounded-3xl bg-white p-6 md:p-10 shadow-2xl">
             <div className="flex flex-col md:flex-row gap-8 items-center">
-              <div className="flex-shrink-0">
-                <div className="w-48 h-64 rounded-xl border-2 border-temple-gold/40 bg-temple-gold/5 overflow-hidden flex flex-col items-center justify-center text-center p-4 shadow-inner">
+              {/* QR Code */}
+              <div className="flex-shrink-0 text-center">
+                <div className="w-52 h-52 rounded-2xl border-4 border-orange-100 overflow-hidden shadow-md mx-auto">
                   <img
                     src="https://dudhrejvadwala.com/wp-content/uploads/2025/01/Dudhrej-QR-622x1024.jpeg"
                     alt="Donate via UPI QR Code"
-                    className="w-full h-full object-contain rounded-lg"
+                    className="w-full h-full object-contain"
                     loading="lazy"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground text-center mt-2">Scan to Donate via UPI</p>
+                <p className="text-xs text-gray-400 mt-2 font-medium">Scan to Donate via UPI</p>
+                <div className="mt-2 inline-block bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full font-semibold border border-green-200">
+                  ✓ FCRA &amp; 80G Eligible
+                </div>
               </div>
 
+              {/* Details */}
               <div className="flex-1 text-center md:text-left">
-                <h3 className="font-heading font-bold text-xl text-foreground mb-1">
+                <h3 className="font-heading font-bold text-xl text-gray-800 mb-1">
                   શ્રી વડવાળા મંદિર દુધરેજધામ
                 </h3>
-                <p className="text-sm text-temple-saffron font-medium italic mb-1">Shri Vadwala Mandir Dudhrejdham</p>
-                <p className="text-sm text-muted-foreground mb-4">FCRA & 80G eligible donations</p>
+                <p className="text-sm text-orange-500 font-semibold mb-5">Shri Vadwala Mandir Dudhrejdham</p>
 
-                <p className="text-xs text-foreground/70 mb-2 font-medium">ડોનેશન હેતુ:</p>
-                <div className="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-widest mb-3">ડોનેશન હેતુ</p>
+                <div className="flex flex-wrap gap-2 mb-7 justify-center md:justify-start">
                   {purposes.map((p) => (
-                    <span key={p} className="rounded-full border border-temple-gold/30 bg-temple-gold/10 px-3 py-1 text-xs font-medium text-temple-saffron cursor-pointer hover:bg-temple-gold/30 transition-colors">{p}</span>
+                    <span
+                      key={p.label}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-700"
+                    >
+                      <span>{p.icon}</span>
+                      {p.label}
+                    </span>
                   ))}
                 </div>
 
-                <a href="#" className="inline-flex items-center gap-2 rounded-full bg-temple-gold px-8 py-3 text-base font-bold text-temple-dark hover:shadow-lg transition-all hover:scale-105">🙏 Donate Now</a>
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-8 py-3.5 text-base font-bold text-white hover:bg-orange-600 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                >
+                  🙏 Donate Now
+                </a>
 
-                <p className="text-xs text-muted-foreground mt-4">
-                  For bank transfer details, please contact: <strong className="text-foreground">96879 21008</strong> | <strong className="text-foreground">98255 68108</strong>
-                </p>
+                <div className="mt-5 pt-5 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">
+                    For bank transfer details, please contact:
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-1.5 justify-center md:justify-start">
+                    <a href="tel:9687921008" className="text-sm font-semibold text-orange-600 hover:underline">📞 96879 21008</a>
+                    <a href="tel:9825568108" className="text-sm font-semibold text-orange-600 hover:underline">📞 98255 68108</a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -45,13 +45,13 @@ const photos = [
 ];
 
 const filters = [
-  { label: 'All', tag: 'all' },
-  { label: 'જન્માષ્ટમી', tag: 'janmashtami' },
-  { label: 'દીપાવલી', tag: 'diwali' },
-  { label: 'ગુરુ પૂર્ણિમા', tag: 'gurupurnima' },
-  { label: 'ગૌશાળા', tag: 'gaushala' },
-  { label: 'શૈક્ષણિક', tag: 'education' },
-  { label: 'મંદિર', tag: 'temple' },
+  { label: 'બધા', sublabel: 'All', tag: 'all' },
+  { label: 'જન્માષ્ટમી', sublabel: 'Janmashtami', tag: 'janmashtami' },
+  { label: 'દીપાવલી', sublabel: 'Diwali', tag: 'diwali' },
+  { label: 'ગુરુ પૂર્ણિમા', sublabel: 'Guru Purnima', tag: 'gurupurnima' },
+  { label: 'ગૌશાળા', sublabel: 'Gaushala', tag: 'gaushala' },
+  { label: 'શૈક્ષણિક', sublabel: 'Education', tag: 'education' },
+  { label: 'મંદિર', sublabel: 'Temple', tag: 'temple' },
 ];
 
 const Gallery = () => {
@@ -62,38 +62,45 @@ const Gallery = () => {
   const filtered = activeTag === 'all' ? photos : photos.filter((p) => p.tag === activeTag);
 
   return (
-    <section id="gallery" className="py-16 md:py-24 mandala-bg">
+    <section id="gallery" className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4" ref={containerRef}>
-        <div className="fade-in-section text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-2">ફોટો ગેલેરી</h2>
-          <p className="text-lg text-muted-foreground font-heading italic">Religious Functions Organized By the Temple</p>
+        <div className="fade-in-section text-center mb-10">
+          <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
+            Photo Gallery
+          </span>
+          <h2 className="section-heading">ફોટો ગેલેરી</h2>
+          <p className="section-sub">Religious Functions Organized By the Temple</p>
           <LotusDivider />
         </div>
 
-        {/* Filters */}
+        {/* Filter pills */}
         <div className="fade-in-section flex flex-wrap justify-center gap-2 mb-10">
           {filters.map((f) => (
             <button
               key={f.tag}
               onClick={() => setActiveTag(f.tag)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300 border ${
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${
                 activeTag === f.tag
-                  ? 'bg-temple-saffron text-white border-temple-saffron shadow-md'
-                  : 'bg-card border-temple-gold/20 text-foreground hover:border-temple-gold/50'
+                  ? 'bg-orange-500 text-white border-orange-500 shadow-md'
+                  : 'bg-white border-orange-200 text-gray-600 hover:border-orange-400 hover:text-orange-600'
               }`}
             >
               {f.label}
+              <span className={`ml-1.5 text-xs ${activeTag === f.tag ? 'text-orange-100' : 'text-gray-400'}`}>
+                {f.sublabel !== f.label ? `· ${f.sublabel}` : ''}
+              </span>
             </button>
           ))}
         </div>
 
+        {/* Photo grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
           {filtered.map((photo, i) => (
             <div
               key={`${activeTag}-${i}`}
               onClick={() => setLightbox(i)}
-              className="fade-in-section group relative aspect-square rounded-xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300"
-              style={{ transitionDelay: `${i * 60}ms` }}
+              className="fade-in-section group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-50"
+              style={{ transitionDelay: `${i * 50}ms` }}
             >
               <img
                 src={photo.src}
@@ -101,15 +108,15 @@ const Gallery = () => {
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-temple-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                <span className="font-heading font-bold text-temple-cream text-sm p-4">{photo.cat}</span>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                <span className="font-heading font-semibold text-white text-xs leading-tight">{photo.cat}</span>
               </div>
             </div>
           ))}
         </div>
 
         <div className="text-center mt-10">
-          <a href="#" className="inline-flex items-center gap-2 rounded-full border-2 border-temple-gold bg-temple-gold/10 px-8 py-3 text-base font-semibold text-temple-saffron hover:bg-temple-gold hover:text-temple-dark transition-colors">
+          <a href="#" className="btn-saffron-outline">
             વધુ ફોટોઓ જુઓ — View More Photos →
           </a>
         </div>
@@ -118,36 +125,38 @@ const Gallery = () => {
       {/* Lightbox */}
       {lightbox !== null && (
         <div
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4"
           onClick={() => setLightbox(null)}
         >
           <button
             onClick={() => setLightbox(null)}
-            className="absolute top-4 right-4 text-white text-3xl hover:text-temple-gold transition-colors z-10"
+            className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl transition-colors z-10"
           >
             ✕
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! > 0 ? prev! - 1 : filtered.length - 1)); }}
-            className="absolute left-4 text-white text-3xl hover:text-temple-gold transition-colors z-10"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-orange-400 text-4xl transition-colors z-10"
           >
             ‹
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! < filtered.length - 1 ? prev! + 1 : 0)); }}
-            className="absolute right-4 text-white text-3xl hover:text-temple-gold transition-colors z-10 mr-8"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-orange-400 text-4xl transition-colors z-10"
           >
             ›
           </button>
           <img
             src={filtered[lightbox]?.src}
             alt={filtered[lightbox]?.cat}
-            className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain"
+            className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain"
             onClick={(e) => e.stopPropagation()}
           />
-          <p className="absolute bottom-6 text-temple-gold font-heading text-lg">
-            {filtered[lightbox]?.cat}
-          </p>
+          <div className="absolute bottom-6 left-0 right-0 text-center">
+            <span className="inline-block bg-orange-500/90 text-white font-heading text-sm px-6 py-2 rounded-full">
+              {filtered[lightbox]?.cat}
+            </span>
+          </div>
         </div>
       )}
     </section>

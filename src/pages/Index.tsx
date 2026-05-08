@@ -4,6 +4,7 @@ import About from '@/components/temple/About';
 import AcharyaParampara from '@/components/temple/AcharyaParampara';
 import Services from '@/components/temple/Services';
 import Festivals from '@/components/temple/Festivals';
+import DhajaChadava from '@/components/temple/DhajaChadava';
 import Gallery from '@/components/temple/Gallery';
 import Donate from '@/components/temple/Donate';
 import Contact from '@/components/temple/Contact';
@@ -18,6 +19,7 @@ const Index = () => (
     <AcharyaParampara />
     <Services />
     <Festivals />
+    <DhajaChadava />
     <Gallery />
     <Donate />
     <Contact />

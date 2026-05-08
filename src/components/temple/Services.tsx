@@ -50,13 +50,14 @@ const Services = () => {
   const containerRef = useFadeInAll();
 
   return (
-    <section id="services" className="py-16 md:py-24 mandala-bg">
+    <section id="services" className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4" ref={containerRef}>
         <div className="fade-in-section text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-2">
-            સામાજીક, ધાર્મિક અને શૈક્ષણિક પ્રવૃતિઓ
-          </h2>
-          <p className="text-lg text-muted-foreground font-heading italic">Social, Religious & Educational Activities</p>
+          <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
+            Seva & Activities
+          </span>
+          <h2 className="section-heading">સામાજીક, ધાર્મિક અને શૈક્ષણિક પ્રવૃતિઓ</h2>
+          <p className="section-sub">Social, Religious & Educational Activities</p>
           <LotusDivider />
         </div>
 
@@ -64,14 +65,16 @@ const Services = () => {
           {services.map((s, i) => (
             <div
               key={i}
-              className="fade-in-section hover-lift rounded-xl border border-temple-gold/20 bg-card p-6 shadow-sm group"
-              style={{ transitionDelay: `${i * 100}ms` }}
+              className="fade-in-section hover-lift rounded-2xl border border-orange-100 bg-white p-6 shadow-sm group hover:border-orange-300 transition-colors"
+              style={{ transitionDelay: `${i * 90}ms` }}
             >
-              <span className="text-4xl block mb-4 group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
-              <h3 className="font-heading font-bold text-base text-foreground mb-1">{s.titleGuj}</h3>
-              <p className="text-xs text-temple-saffron font-medium mb-3 italic">{s.title}</p>
-              <p className="text-sm text-foreground/80 leading-relaxed mb-2">{s.descGuj}</p>
-              <p className="text-xs text-muted-foreground leading-relaxed italic">{s.desc}</p>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-3xl mb-4 group-hover:bg-orange-100 transition-colors">
+                {s.icon}
+              </div>
+              <h3 className="font-heading font-bold text-base text-gray-800 mb-1">{s.titleGuj}</h3>
+              <p className="text-xs text-orange-500 font-semibold mb-3">{s.title}</p>
+              <p className="text-sm text-gray-600 leading-relaxed mb-2">{s.descGuj}</p>
+              <p className="text-xs text-gray-400 leading-relaxed italic">{s.desc}</p>
             </div>
           ))}
         </div>

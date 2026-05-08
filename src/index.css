@@ -6,50 +6,51 @@
 
 @layer base {
   :root {
-    --background: 39 76% 94%;
-    --foreground: 18 35% 12%;
+    --background: 0 0% 100%;
+    --foreground: 20 50% 15%;
 
-    --card: 39 60% 96%;
-    --card-foreground: 18 35% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 50% 15%;
 
-    --popover: 39 60% 96%;
-    --popover-foreground: 18 35% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 50% 15%;
 
-    --primary: 18 73% 41%;
-    --primary-foreground: 39 76% 94%;
+    --primary: 24 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 100% 27%;
-    --secondary-foreground: 39 76% 94%;
+    --secondary: 24 100% 35%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 35 40% 88%;
-    --muted-foreground: 18 20% 40%;
+    --muted: 28 60% 96%;
+    --muted-foreground: 20 30% 45%;
 
-    --accent: 43 72% 52%;
-    --accent-foreground: 18 35% 12%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 20 50% 15%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 35 40% 82%;
-    --input: 35 40% 82%;
-    --ring: 18 73% 41%;
+    --border: 24 30% 88%;
+    --input: 24 30% 88%;
+    --ring: 24 100% 50%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-foreground: 20 50% 15%;
+    --sidebar-primary: 24 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 28 60% 96%;
+    --sidebar-accent-foreground: 20 50% 15%;
+    --sidebar-border: 24 30% 88%;
+    --sidebar-ring: 24 100% 50%;
 
-    --temple-gold: 43 72% 52%;
-    --temple-maroon: 0 100% 27%;
-    --temple-saffron: 18 73% 41%;
-    --temple-cream: 39 76% 94%;
-    --temple-dark: 18 35% 12%;
+    /* Temple palette — white + deep saffron */
+    --temple-gold: 38 92% 50%;
+    --temple-maroon: 24 100% 38%;
+    --temple-saffron: 24 100% 50%;
+    --temple-cream: 28 100% 97%;
+    --temple-dark: 20 60% 15%;
   }
 }
 
@@ -76,17 +77,21 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 
-  .text-gradient-gold {
+  .text-gradient-saffron {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--temple-gold)), hsl(43 85% 65%), hsl(var(--temple-gold)));
+    background-image: linear-gradient(135deg, hsl(24 100% 45%), hsl(24 100% 58%), hsl(38 92% 50%));
   }
 
   .bg-gradient-saffron {
-    background: linear-gradient(135deg, hsl(var(--temple-saffron)), hsl(18 73% 50%), hsl(var(--temple-gold) / 0.8));
+    background: linear-gradient(135deg, hsl(24 100% 50%), hsl(24 100% 42%), hsl(24 100% 35%));
   }
 
-  .bg-gradient-maroon {
-    background: linear-gradient(135deg, hsl(var(--temple-maroon)), hsl(0 80% 20%));
+  .bg-gradient-saffron-light {
+    background: linear-gradient(135deg, hsl(28 100% 97%), hsl(24 60% 93%));
+  }
+
+  .bg-section-alt {
+    background: hsl(28 100% 97%);
   }
 
   .glow-live {
@@ -97,18 +102,18 @@
     @apply transition-all duration-300;
   }
   .hover-lift:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px -8px hsl(var(--temple-gold) / 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px -8px hsl(24 100% 50% / 0.25);
   }
 
   .marquee {
-    animation: marquee 20s linear infinite;
+    animation: marquee 25s linear infinite;
   }
 
   .fade-in-section {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
   }
   .fade-in-section.visible {
     opacity: 1;
@@ -116,8 +121,35 @@
   }
 
   .mandala-bg {
-    background-image: radial-gradient(circle at 20% 80%, hsl(var(--temple-gold) / 0.05) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 20%, hsl(var(--temple-saffron) / 0.05) 0%, transparent 50%);
+    background-image:
+      radial-gradient(circle at 15% 85%, hsl(24 100% 50% / 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 85% 15%, hsl(38 92% 50% / 0.04) 0%, transparent 50%);
+  }
+
+  .saffron-divider {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, hsl(24 100% 50%), hsl(38 92% 50%), hsl(24 100% 50%), transparent);
+    border-radius: 9999px;
+  }
+
+  .card-saffron {
+    @apply bg-white rounded-2xl border border-orange-100 shadow-sm;
+  }
+
+  .btn-saffron {
+    @apply inline-flex items-center gap-2 rounded-full bg-orange-500 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-saffron-outline {
+    @apply inline-flex items-center gap-2 rounded-full border-2 border-orange-500 bg-transparent px-6 py-3 text-sm font-semibold text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-200;
+  }
+
+  .section-heading {
+    @apply text-3xl md:text-4xl font-heading font-bold text-gray-800 mb-2;
+  }
+
+  .section-sub {
+    @apply text-base md:text-lg text-orange-500 font-heading italic;
   }
 }
 
@@ -127,15 +159,25 @@
 }
 
 @keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 html {
   scroll-behavior: smooth;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #fff; }
+::-webkit-scrollbar-thumb { background: hsl(24 100% 50%); border-radius: 4px; }
