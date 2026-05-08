@@ -29,7 +29,6 @@ function formatDate(dateStr: string) {
 const DhajaChadava = () => {
   const containerRef = useFadeInAll();
   const [entries, setEntries] = useState<DhajaEntry[]>(staticEntries);
-  const [todayStr] = useState(() => new Date().toISOString().slice(0, 10));
 
   useEffect(() => {
     fetch('/api/dhaja-chadava?date=today')
@@ -38,11 +37,11 @@ const DhajaChadava = () => {
       .catch(() => {});
   }, []);
 
-  const todayEntries = entries.filter((e) => e.date?.startsWith(todayStr) || e.date?.startsWith('2025-05-08'));
+  const todayEntries = entries;
 
   return (
     <section id="dhaja" className="py-16 md:py-24 bg-section-alt">
-      <div className="container mx-auto px-4" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6" ref={containerRef}>
         {/* Header */}
         <div className="fade-in-section text-center mb-12">
           <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
