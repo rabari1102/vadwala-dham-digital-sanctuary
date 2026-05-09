@@ -31,6 +31,18 @@ const Gallery = () => {
 
   const filtered = activeTag === 'all' ? photos : photos.filter((p) => p.tag === activeTag);
 
+  // ✅ Moved above early return — fixes Rules of Hooks violation
+  useEffect(() => {
+    if (lightbox === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null);
+      if (e.key === 'ArrowLeft') setLightbox((p) => (p! > 0 ? p! - 1 : filtered.length - 1));
+      if (e.key === 'ArrowRight') setLightbox((p) => (p! < filtered.length - 1 ? p! + 1 : 0));
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightbox, filtered.length]);
+
   if (!photos.length) {
     return (
       <section id="gallery" className="py-16 md:py-24 bg-white">
@@ -43,17 +55,6 @@ const Gallery = () => {
       </section>
     );
   }
-
-  useEffect(() => {
-    if (lightbox === null) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightbox(null);
-      if (e.key === 'ArrowLeft') setLightbox((p) => (p! > 0 ? p! - 1 : filtered.length - 1));
-      if (e.key === 'ArrowRight') setLightbox((p) => (p! < filtered.length - 1 ? p! + 1 : 0));
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [lightbox, filtered.length]);
 
   return (
     <section id="gallery" className="py-16 md:py-24 bg-white">
