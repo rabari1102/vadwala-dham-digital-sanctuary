@@ -5,20 +5,24 @@ import GalleryManager from '@/components/admin/GalleryManager';
 import DonationsEditor from '@/components/admin/DonationsEditor';
 import ContentEditor from '@/components/admin/ContentEditor';
 import ContactMessages from '@/components/admin/ContactMessages';
+import HeroManager from '@/components/admin/HeroManager';
+import AnnouncementsManager from '@/components/admin/AnnouncementsManager';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-type Tab = 'events' | 'gallery' | 'donations' | 'content' | 'messages';
+type Tab = 'hero' | 'announcements' | 'events' | 'gallery' | 'donations' | 'content' | 'messages';
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
+  { id: 'hero', label: 'Hero Slides', icon: '🖼️' },
+  { id: 'announcements', label: 'Announcements', icon: '📢' },
   { id: 'events', label: 'Events', icon: '🪔' },
-  { id: 'gallery', label: 'Gallery', icon: '🖼️' },
+  { id: 'gallery', label: 'Gallery', icon: '🏛️' },
   { id: 'donations', label: 'Donations', icon: '💰' },
   { id: 'content', label: 'Site Content', icon: '📝' },
   { id: 'messages', label: 'Messages', icon: '📬' },
 ];
 
-// In-memory token (not localStorage)
+// In-memory token (not localStorage — sandboxed env)
 let _token: string | null = null;
 
 export default function Admin() {
@@ -26,7 +30,8 @@ export default function Admin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logging, setLogging] = useState(false);
-  const [activeTab, setActiveTab] = useState<Tab>('events');
+  const [activeTab, setActiveTab] = useState<Tab>('hero');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +52,7 @@ export default function Admin() {
         toast.error(err.error || 'Login failed');
       }
     } catch {
-      toast.error('Network error. Is the backend running?');
+      toast.error('Network error — is the backend running?');
     } finally {
       setLogging(false);
     }
@@ -66,7 +71,7 @@ export default function Admin() {
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">🕉️</div>
             <h1 className="font-heading font-bold text-2xl text-gray-800">Admin Login</h1>
-            <p className="text-sm text-orange-600 mt-1">Shri Vadwala Mandir</p>
+            <p className="text-sm text-orange-600 mt-1">Shri Vadwala Mandir, Dudhrej Dham</p>
           </div>
           <form onSubmit={handleLogin} className="bg-white rounded-3xl shadow-xl p-8 space-y-5 border border-orange-100">
             <div>
@@ -97,9 +102,9 @@ export default function Admin() {
               {logging ? '⏳ Logging in…' : '🔑 Login'}
             </button>
           </form>
-          <p className="text-center text-xs text-gray-400 mt-4">
-            {import.meta.env.DEV && 'Default: admin / admin123'}
-          </p>
+          {import.meta.env.DEV && (
+            <p className="text-center text-xs text-gray-400 mt-4">Dev default: admin / admin123</p>
+          )}
         </div>
       </div>
     );
@@ -108,28 +113,62 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top bar */}
-      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 flex items-center justify-between shadow-lg">
+      <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-3 flex items-center justify-between shadow-lg sticky top-0 z-30">
         <div className="flex items-center gap-3">
+          {/* Mobile hamburger */}
+          <button
+            className="lg:hidden p-1 rounded-md hover:bg-white/10 transition"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Toggle sidebar"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
           <span className="text-2xl">🕉️</span>
           <div>
             <p className="font-heading font-bold text-sm leading-tight">Admin Panel</p>
-            <p className="text-orange-200 text-xs">Shri Vadwala Mandir Dudhrej Dham</p>
+            <p className="text-orange-200 text-xs hidden sm:block">Shri Vadwala Mandir Dudhrej Dham</p>
           </div>
         </div>
-        <button onClick={handleLogout} className="text-xs border border-white/40 rounded-lg px-4 py-2 hover:bg-white/10 transition">
-          🚪 Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-orange-200 text-xs hidden sm:block">
+            {TABS.find(t => t.id === activeTab)?.icon} {TABS.find(t => t.id === activeTab)?.label}
+          </span>
+          <button onClick={handleLogout} className="text-xs border border-white/40 rounded-lg px-4 py-2 hover:bg-white/10 transition">
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row max-w-7xl mx-auto">
+      <div className="flex max-w-7xl mx-auto relative">
+        {/* Sidebar overlay (mobile) */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/30 z-20 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <aside className="w-full lg:w-56 bg-white border-b lg:border-b-0 lg:border-r border-orange-100 shadow-sm">
-          <nav className="flex lg:flex-col overflow-x-auto lg:overflow-visible p-3 gap-1">
+        <aside
+          className={`
+            fixed lg:sticky top-[52px] z-20 h-[calc(100vh-52px)] overflow-y-auto
+            w-56 bg-white border-r border-orange-100 shadow-md lg:shadow-none
+            transition-transform duration-200
+            ${
+              sidebarOpen
+                ? 'translate-x-0'
+                : '-translate-x-full lg:translate-x-0'
+            }
+          `}
+        >
+          <nav className="flex flex-col p-3 gap-1">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-all ${
+                onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
+                className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-left whitespace-nowrap transition-all ${
                   activeTab === tab.id
                     ? 'bg-orange-500 text-white shadow-md'
                     : 'text-gray-600 hover:bg-orange-50 hover:text-orange-700'
@@ -143,12 +182,14 @@ export default function Admin() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-4 md:p-8 min-h-[calc(100vh-56px)]">
-          {activeTab === 'events' && <EventsManager token={token} />}
-          {activeTab === 'gallery' && <GalleryManager token={token} />}
-          {activeTab === 'donations' && <DonationsEditor token={token} />}
-          {activeTab === 'content' && <ContentEditor token={token} />}
-          {activeTab === 'messages' && <ContactMessages token={token} />}
+        <main className="flex-1 p-4 md:p-8 min-h-[calc(100vh-52px)] lg:ml-0">
+          {activeTab === 'hero'          && <HeroManager token={token} />}
+          {activeTab === 'announcements' && <AnnouncementsManager token={token} />}
+          {activeTab === 'events'        && <EventsManager token={token} />}
+          {activeTab === 'gallery'       && <GalleryManager token={token} />}
+          {activeTab === 'donations'     && <DonationsEditor token={token} />}
+          {activeTab === 'content'       && <ContentEditor token={token} />}
+          {activeTab === 'messages'      && <ContactMessages token={token} />}
         </main>
       </div>
     </div>
