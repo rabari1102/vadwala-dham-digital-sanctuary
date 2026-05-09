@@ -44,9 +44,20 @@ const Gallery = () => {
     );
   }
 
+  useEffect(() => {
+    if (lightbox === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightbox(null);
+      if (e.key === 'ArrowLeft') setLightbox((p) => (p! > 0 ? p! - 1 : filtered.length - 1));
+      if (e.key === 'ArrowRight') setLightbox((p) => (p! < filtered.length - 1 ? p! + 1 : 0));
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightbox, filtered.length]);
+
   return (
     <section id="gallery" className="py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6" ref={containerRef}>
         <div className="fade-in-section text-center mb-10">
           <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">Photo Gallery</span>
           <h2 className="section-heading">ફોટો ગેલેરી</h2>

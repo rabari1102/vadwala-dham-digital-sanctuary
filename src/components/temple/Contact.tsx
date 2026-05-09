@@ -26,7 +26,7 @@ const Contact = () => {
 
   return (
     <section id="contact" className="py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6" ref={containerRef}>
         <div className="fade-in-section text-center mb-12">
           <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">Get In Touch</span>
           <h2 className="section-heading">સંપર્ક કરો</h2>
@@ -110,7 +110,7 @@ const Contact = () => {
           </div>
 
           <div className="rounded-3xl border border-orange-100 bg-white overflow-hidden shadow-sm">
-            <iframe title="Shri Vadwala Mandir Location" src={data.mapEmbedUrl} width="100%" height="100%" style={{ border: 0, minHeight: '450px' }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+            <iframe title="Shri Vadwala Mandir Location" src={data.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3680!2d71.71667!3d22.71667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDQzJzAwLjAiTiA3McKwNDMnMDAuMCJF!5e0!3m2!1sen!2sin!4v1700000000000"} width="100%" height="100%" style={{ border: 0, minHeight: '450px' }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
           </div>
         </div>
       </div>

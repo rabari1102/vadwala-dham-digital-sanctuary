@@ -26,7 +26,7 @@ const Services = () => {
 
   return (
     <section id="services" className="py-16 md:py-24 bg-white">
-      <div className="container mx-auto px-4" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6" ref={containerRef}>
         <div className="fade-in-section text-center mb-12">
           <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
             Seva & Activities

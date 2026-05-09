@@ -21,7 +21,8 @@ const DhajaChadava = () => {
 
   return (
     <section id="dhaja" className="py-16 md:py-24 bg-section-alt">
-      <div className="container mx-auto px-4" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6" ref={containerRef}>
+        {/* Header */}
         <div className="fade-in-section text-center mb-12">
           <span className="inline-block bg-orange-100 text-orange-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">આજ ની ધજા</span>
           <div className="flex items-center justify-center gap-3 mb-3">

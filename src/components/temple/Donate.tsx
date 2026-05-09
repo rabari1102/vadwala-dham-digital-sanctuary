@@ -29,7 +29,7 @@ const Donate = () => {
       <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2" />
 
-      <div className="container mx-auto px-4 relative z-10" ref={containerRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10" ref={containerRef}>
         <div className="fade-in-section text-center mb-12">
           <span className="inline-block bg-white/20 text-white text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">Daan & Seva</span>
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2">ડોનેશન</h2>
