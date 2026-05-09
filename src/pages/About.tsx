@@ -30,6 +30,12 @@ export default function About() {
           <div className="flex justify-center items-center py-32">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-600"></div>
           </div>
+        ) : !about ? (
+          <div className="text-center py-20 text-gray-500">
+            <span className="text-5xl block mb-4">📜</span>
+            <p className="text-xl">ઇતિહાસ માહિતી ઉપલબ્ધ નથી</p>
+            <p className="text-sm mt-2">Admin panel ➜ About માંથી માહિતી ઉમેરો</p>
+          </div>
         ) : (
           <div className="max-w-5xl mx-auto px-4 py-12 space-y-16">
 

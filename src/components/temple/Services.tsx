@@ -6,12 +6,15 @@ import { api, type ServiceData } from '@/services/api';
 const Services = () => {
   const containerRef = useFadeInAll();
   const [services, setServices] = useState<ServiceData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getServices().then((d) => { if (d?.length) setServices(d); });
+    api.getServices()
+      .then((d) => { if (d?.length) setServices(d); })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!services.length) {
+  if (loading) {
     return (
       <section id="services" className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -36,15 +39,23 @@ const Services = () => {
           <LotusDivider />
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {services.map((s, i) => (
-            <div key={s._id || i} className="fade-in-section hover-lift rounded-2xl border border-orange-100 bg-white p-6 shadow-sm group hover:border-orange-300 transition-colors" style={{ transitionDelay: `${i * 90}ms` }}>
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-3xl mb-4 group-hover:bg-orange-100 transition-colors">{s.icon}</div>
-              <h3 className="font-heading font-bold text-base text-gray-800 mb-1">{s.titleGuj}</h3>
-              <p className="text-xs text-orange-500 font-semibold mb-3">{s.title}</p>
-              <p className="text-sm text-gray-600 leading-relaxed mb-2">{s.descGuj}</p>
-              <p className="text-xs text-gray-400 leading-relaxed italic">{s.desc}</p>
+          {services.length > 0 ? (
+            services.map((s, i) => (
+              <div key={s._id || i} className="fade-in-section hover-lift rounded-2xl border border-orange-100 bg-white p-6 shadow-sm group hover:border-orange-300 transition-colors" style={{ transitionDelay: `${i * 90}ms` }}>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50 text-3xl mb-4 group-hover:bg-orange-100 transition-colors">{s.icon}</div>
+                <h3 className="font-heading font-bold text-base text-gray-800 mb-1">{s.title || (s as any).titleGuj}</h3>
+                <p className="text-xs text-orange-500 font-semibold mb-3">{(s as any).titleEn || s.title}</p>
+                <p className="text-sm text-gray-600 leading-relaxed mb-2">{(s as any).description || s.descGuj}</p>
+                <p className="text-xs text-gray-400 leading-relaxed italic">{(s as any).descriptionEn || s.desc}</p>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 fade-in-section">
+              <span className="text-5xl block mb-4">🙏</span>
+              <p className="text-gray-500 font-heading text-lg">સેવા માહિતી ઉપલબ્ધ નથી.</p>
+              <p className="text-sm text-gray-400 italic mt-1">Service information is not available at the moment.</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>

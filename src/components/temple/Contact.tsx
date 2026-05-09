@@ -49,7 +49,7 @@ const Contact = () => {
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50 text-lg">📍</div>
                 <div>
                   <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Address</p>
-                  <p className="text-sm text-gray-700">{data.addressGuj}</p>
+                  <p className="text-sm text-gray-700">{data.address || (data as any).addressGuj}</p>
                   {data.addressEn && <p className="text-xs text-gray-400 mt-1 italic">{data.addressEn}</p>}
                 </div>
               </div>
@@ -58,7 +58,7 @@ const Contact = () => {
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50 text-lg">📞</div>
                 <div>
                   <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Phone</p>
-                  {data.phones.map((p, i) => (
+                  {((data as any).phone || data.phones || []).map((p: string, i: number) => (
                     <a key={i} href={`tel:${p}`} className="block text-sm text-orange-600 font-semibold hover:underline">
                       {p.replace(/(\d{5})(\d{5})/, '$1 $2')}
                     </a>
@@ -88,8 +88,14 @@ const Contact = () => {
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-orange-50 text-lg">🕐</div>
                 <div>
                   <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Darshan Timings</p>
-                  <p className="text-sm text-gray-700">Morning: <strong>{data.darshanjMorning}</strong></p>
-                  <p className="text-sm text-gray-700">Evening: <strong>{data.darshanEvening}</strong></p>
+                  {(data as any).timings ? (
+                    <p className="text-sm text-gray-700"><strong>{(data as any).timings}</strong></p>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-700">Morning: <strong>{data.darshanjMorning}</strong></p>
+                      <p className="text-sm text-gray-700">Evening: <strong>{data.darshanEvening}</strong></p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

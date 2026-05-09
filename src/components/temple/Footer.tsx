@@ -54,11 +54,12 @@ const Footer = () => {
           <div>
             <h4 className="font-heading font-bold text-white mb-4 text-base">સંપર્ક</h4>
             <div className="space-y-2">
-              {contact?.phones.map((p, i) => (
+              {((contact as any)?.phone || contact?.phones || []).map((p: string, i: number) => (
                 <a key={i} href={`tel:${p}`} className="flex items-center gap-2 text-sm text-orange-100 hover:text-white transition-colors">
                   <span>📞</span> {p.replace(/(\d{5})(\d{5})/, '$1 $2')}
                 </a>
-              )) || (
+              ))}
+              {!((contact as any)?.phone || contact?.phones)?.length && (
                 <>
                   <a href="tel:9687921008" className="flex items-center gap-2 text-sm text-orange-100 hover:text-white transition-colors"><span>📞</span> 96879 21008</a>
                   <a href="tel:9825568108" className="flex items-center gap-2 text-sm text-orange-100 hover:text-white transition-colors"><span>📞</span> 98255 68108</a>

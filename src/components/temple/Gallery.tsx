@@ -8,9 +8,12 @@ const Gallery = () => {
   const [photos, setPhotos] = useState<GalleryItem[]>([]);
   const [activeTag, setActiveTag] = useState('all');
   const [lightbox, setLightbox] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.getGallery().then((d) => { if (d?.length) setPhotos(d); });
+    api.getGallery()
+      .then((d) => { if (d?.length) setPhotos(d); })
+      .finally(() => setLoading(false));
   }, []);
 
   const filters = useMemo(() => {
@@ -22,14 +25,14 @@ const Gallery = () => {
       education: { label: 'શૈક્ષણિક', sublabel: 'Education' },
       temple: { label: 'મંદિર', sublabel: 'Temple' },
     };
-    const tags = [...new Set(photos.map((p) => p.tag))];
+    const tags = [...new Set(photos.map((p) => (p as any).category || p.tag))];
     return [
       { label: 'બધા', sublabel: 'All', tag: 'all' },
       ...tags.map((t) => ({ label: tagMap[t]?.label || t, sublabel: tagMap[t]?.sublabel || t, tag: t })),
     ];
   }, [photos]);
 
-  const filtered = activeTag === 'all' ? photos : photos.filter((p) => p.tag === activeTag);
+  const filtered = activeTag === 'all' ? photos : photos.filter((p) => ((p as any).category || p.tag) === activeTag);
 
   // ✅ Moved above early return — fixes Rules of Hooks violation
   useEffect(() => {
@@ -43,7 +46,7 @@ const Gallery = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [lightbox, filtered.length]);
 
-  if (!photos.length) {
+  if (loading) {
     return (
       <section id="gallery" className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4 text-center">
@@ -66,31 +69,41 @@ const Gallery = () => {
           <LotusDivider />
         </div>
 
-        <div className="fade-in-section flex flex-wrap justify-center gap-2 mb-10">
-          {filters.map((f) => (
-            <button key={f.tag} onClick={() => setActiveTag(f.tag)} className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${activeTag === f.tag ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-white border-orange-200 text-gray-600 hover:border-orange-400 hover:text-orange-600'}`}>
-              {f.label}
-              <span className={`ml-1.5 text-xs ${activeTag === f.tag ? 'text-orange-100' : 'text-gray-400'}`}>
-                {f.sublabel !== f.label ? `· ${f.sublabel}` : ''}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
-          {filtered.map((photo, i) => (
-            <div key={`${activeTag}-${photo._id || i}`} onClick={() => setLightbox(i)} className="fade-in-section group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-50" style={{ transitionDelay: `${i * 50}ms` }}>
-              <img src={photo.imageUrl} alt={photo.cat} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                <span className="font-heading font-semibold text-white text-xs leading-tight">{photo.cat}</span>
-              </div>
+        {photos.length > 0 ? (
+          <>
+            <div className="fade-in-section flex flex-wrap justify-center gap-2 mb-10">
+              {filters.map((f) => (
+                <button key={f.tag} onClick={() => setActiveTag(f.tag)} className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 border ${activeTag === f.tag ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-white border-orange-200 text-gray-600 hover:border-orange-400 hover:text-orange-600'}`}>
+                  {f.label}
+                  <span className={`ml-1.5 text-xs ${activeTag === f.tag ? 'text-orange-100' : 'text-gray-400'}`}>
+                    {f.sublabel !== f.label ? `· ${f.sublabel}` : ''}
+                  </span>
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="text-center mt-10">
-          <a href="#" className="btn-saffron-outline">વધુ ફોટોઓ જુઓ — View More Photos →</a>
-        </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+              {filtered.map((photo, i) => (
+                <div key={`${activeTag}-${photo._id || i}`} onClick={() => setLightbox(i)} className="fade-in-section group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-orange-50" style={{ transitionDelay: `${i * 50}ms` }}>
+                  <img src={photo.imageUrl} alt={(photo as any).category || photo.cat} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                    <span className="font-heading font-semibold text-white text-xs leading-tight">{(photo as any).category || photo.cat}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <a href="#" className="btn-saffron-outline">વધુ ફોટોઓ જુઓ — View More Photos →</a>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-12 fade-in-section">
+            <span className="text-5xl block mb-4">🖼️</span>
+            <p className="text-gray-500 font-heading text-lg">કોઈ ફોટો ઉપલબ્ધ નથી.</p>
+            <p className="text-sm text-gray-400 italic mt-1">No photos are available at the moment.</p>
+          </div>
+        )}
       </div>
 
       {lightbox !== null && (
@@ -98,9 +111,9 @@ const Gallery = () => {
           <button onClick={() => setLightbox(null)} className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl transition-colors z-10">✕</button>
           <button onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! > 0 ? prev! - 1 : filtered.length - 1)); }} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-orange-400 text-4xl transition-colors z-10">‹</button>
           <button onClick={(e) => { e.stopPropagation(); setLightbox((prev) => (prev! < filtered.length - 1 ? prev! + 1 : 0)); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-orange-400 text-4xl transition-colors z-10">›</button>
-          <img src={filtered[lightbox]?.imageUrl} alt={filtered[lightbox]?.cat} className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain" onClick={(e) => e.stopPropagation()} />
+          <img src={filtered[lightbox]?.imageUrl} alt={(filtered[lightbox] as any)?.category || filtered[lightbox]?.cat} className="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain" onClick={(e) => e.stopPropagation()} />
           <div className="absolute bottom-6 left-0 right-0 text-center">
-            <span className="inline-block bg-orange-500/90 text-white font-heading text-sm px-6 py-2 rounded-full">{filtered[lightbox]?.cat}</span>
+            <span className="inline-block bg-orange-500/90 text-white font-heading text-sm px-6 py-2 rounded-full">{(filtered[lightbox] as any)?.category || filtered[lightbox]?.cat}</span>
           </div>
         </div>
       )}
