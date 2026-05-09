@@ -2,6 +2,7 @@ require('dotenv').config();
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const Announcement = require('./models/Announcement');
 const Acharya = require('./models/Acharya');
@@ -13,6 +14,8 @@ const Donation = require('./models/Donation');
 const HeroSlide = require('./models/Hero');
 const Gallery = require('./models/Gallery');
 const DhajaChadava = require('./models/DhajaChadava');
+const Admin = require('./models/Admin');
+const SiteContent = require('./models/SiteContent');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vadwala_dham';
 
@@ -187,6 +190,33 @@ async function seed() {
     phones: ['9687921008', '9825568108'],
   });
   console.log('✅ Donation seeded');
+
+  // --- Admin User ---
+  await Admin.deleteMany({});
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
+  await Admin.create({ username: 'admin', passwordHash });
+  console.log('✅ Admin user seeded (username: admin)');
+
+  // --- Site Content ---
+  await SiteContent.deleteMany({});
+  await SiteContent.insertMany([
+    { key: 'hero_title', value: 'શ્રી વડવાળા મંદિર', type: 'text', label: 'Hero Title (Gujarati)' },
+    { key: 'hero_subtitle', value: 'દુધરેજધામ', type: 'text', label: 'Hero Subtitle (Gujarati)' },
+    { key: 'hero_tagline', value: 'Shri Vadwala Mandir, Dudhrej Dham', type: 'text', label: 'Hero Tagline (English)' },
+    { key: 'hero_description', value: 'અખિલ ભારતીય રબારી સમાજ ધર્મગુરુગાદી', type: 'text', label: 'Hero Description' },
+    { key: 'about_title', value: 'વડવાળા ધામ — ઐતિહાસિક પરિચય', type: 'text', label: 'About Section Title' },
+    { key: 'about_subtitle', value: 'History of Vadwala Dham', type: 'text', label: 'About Section Subtitle' },
+    { key: 'festivals_attendance', value: 'જન્માષ્ટમી, દિપાવલી, હોળી–ધુળેટી તેમજ ગુરૂ પૂર્ણિમા જેવા પાવન પ્રસંગોમાં અંદાજીત ૨ થી ૩ લાખ શ્રધ્ધાળુઓ દર્શનાર્થે આવે છે.', type: 'text', label: 'Festival Attendance Note' },
+    { key: 'donate_title', value: 'ડોનેશન', type: 'text', label: 'Donation Section Title' },
+    { key: 'donate_subtitle', value: 'આપનો સહયોગ આ સેવા ને ટકાવી રાખે છે — Your support sustains these divine services', type: 'text', label: 'Donation Section Subtitle' },
+    { key: 'contact_title', value: 'સંપર્ક કરો', type: 'text', label: 'Contact Section Title' },
+    { key: 'footer_copyright', value: 'Shri Vadwala Mandir Dudhrej Dham. All Rights Reserved.', type: 'text', label: 'Footer Copyright Text' },
+    { key: 'whatsapp_number', value: '919687921008', type: 'text', label: 'WhatsApp Number (with country code)' },
+    { key: 'site_name', value: 'શ્રી વડવાળા મંદિર દુધરેજધામ', type: 'text', label: 'Site Name' },
+    { key: 'site_name_en', value: 'Shri Vadwala Mandir Dudhrej Dham', type: 'text', label: 'Site Name (English)' },
+  ]);
+  console.log('✅ Site content seeded');
 
   console.log('\n🎉 All seed data inserted successfully!');
   await mongoose.disconnect();
