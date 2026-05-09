@@ -1,22 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-async function get<T>(path: string): Promise<T | null> {
+async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE_URL}${path}`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
-async function post<T>(path: string, body: unknown): Promise<T | null> {
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const res = await fetch(`${BASE_URL}${path}`, options);
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -117,35 +103,36 @@ export interface DhajaEntry {
   dedication?: string;
 }
 
+export interface SiteContentData {
+  _id: string;
+  key: string;
+  title: string;
+  body: string;
+  imageUrl?: string;
+  order: number;
+}
+
 export const api = {
-  // Hero
-  getHero: () => get<HeroSlide[]>('/hero'),
-
-  // Announcements
-  getAnnouncements: () => get<Announcement[]>('/announcements'),
-
-  // About
-  getAbout: () => get<AboutData>('/about'),
-
-  // Acharyas
-  getAcharyas: () => get<AcharyaData[]>('/acharyas'),
-
-  // Services
-  getServices: () => get<ServiceData[]>('/services'),
-
-  // Festivals
-  getFestivals: () => get<FestivalData[]>('/festivals'),
-
-  // Gallery
-  getGallery: (tag?: string) => get<GalleryItem[]>(`/gallery${tag && tag !== 'all' ? `?tag=${tag}` : ''}`),
-
-  // Contact
-  getContact: () => get<ContactData>('/contact'),
-
-  // Donation
-  getDonation: () => get<DonationData>('/donation'),
-
-  // Dhaja Chadava
-  getDhajaChadava: (date?: string) => get<DhajaEntry[]>(`/dhaja-chadava${date ? `?date=${date}` : ''}`),
-  addDhajaChadava: (data: unknown) => post('/dhaja-chadava', data),
+  getHero: () => apiFetch<HeroSlide[]>('/hero'),
+  getAnnouncements: () => apiFetch<Announcement[]>('/announcements'),
+  getAbout: () => apiFetch<AboutData>('/about'),
+  getAcharyas: () => apiFetch<AcharyaData[]>('/acharyas'),
+  getServices: () => apiFetch<ServiceData[]>('/services'),
+  getFestivals: () => apiFetch<FestivalData[]>('/festivals'),
+  getGallery: (tag?: string) => apiFetch<GalleryItem[]>(`/gallery${tag && tag !== 'all' ? `?tag=${tag}` : ''}`),
+  getContact: () => apiFetch<ContactData>('/contact'),
+  getDonation: () => apiFetch<DonationData>('/donation'),
+  getSiteContent: () => apiFetch<SiteContentData[]>('/content'),
+  getDhajaChadava: (date?: string) => apiFetch<DhajaEntry[]>(`/dhaja-chadava${date ? `?date=${date}` : ''}`),
+  addDhajaChadava: (data: unknown) => apiFetch('/dhaja-chadava', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  }),
+  adminLogin: (username: string, password: string) =>
+    apiFetch<{ token: string }>('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    }),
 };

@@ -10,21 +10,25 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-const allowedOrigins = process.env.FRONTEND_URL
-  ? [process.env.FRONTEND_URL]
-  : ['http://localhost:5173', 'http://localhost:3000'];
-
+// CORS — allow all origins in production (Vercel serverless)
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
-      cb(null, true);
-    } else {
-      cb(new Error('Not allowed by CORS'));
-    }
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    // In production allow any vercel.app subdomain + custom domain
+    const allowList = [
+      process.env.FRONTEND_URL,
+      'https://dudhrejvadwala.com',
+      'https://www.dudhrejvadwala.com',
+    ].filter(Boolean);
+    const isVercelPreview = origin.includes('.vercel.app');
+    const isAllowed = allowList.includes(origin) || isVercelPreview || process.env.NODE_ENV !== 'production';
+    if (isAllowed) return callback(null, true);
+    return callback(null, true); // Open CORS for temple public API
   },
   credentials: true,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
@@ -37,20 +41,19 @@ app.use('/api/about', require('./routes/about'));
 app.use('/api/acharyas', require('./routes/acharyas'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/festivals', require('./routes/festivals'));
-app.use('/api/events', require('./routes/festivals')); // alias
+app.use('/api/events', require('./routes/festivals'));
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/dhaja-chadava', require('./routes/dhajaChadava'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/donation', require('./routes/donation'));
-app.use('/api/donations', require('./routes/donation')); // alias
+app.use('/api/donations', require('./routes/donation'));
 app.use('/api/content', require('./routes/content'));
 
-// Admin routes (login is public; CRUD routes are protected inside)
+// Admin routes
 app.use('/api/admin', require('./routes/admin'));
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok', timestamp: new Date() }));
 
-// MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vadwala_dham';
 
 mongoose
@@ -63,3 +66,5 @@ mongoose
     console.error('❌ MongoDB connection failed:', err.message);
     process.exit(1);
   });
+
+module.exports = app;
