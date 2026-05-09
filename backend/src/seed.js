@@ -1,4 +1,6 @@
 require('dotenv').config();
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 const mongoose = require('mongoose');
 
 const Announcement = require('./models/Announcement');
@@ -8,12 +10,24 @@ const Festival = require('./models/Festival');
 const About = require('./models/About');
 const Contact = require('./models/Contact');
 const Donation = require('./models/Donation');
+const HeroSlide = require('./models/Hero');
+const Gallery = require('./models/Gallery');
+const DhajaChadava = require('./models/DhajaChadava');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vadwala_dham';
 
 async function seed() {
   await mongoose.connect(MONGODB_URI);
   console.log('✅ Connected to MongoDB');
+
+  // --- Hero Slides ---
+  await HeroSlide.deleteMany({});
+  await HeroSlide.insertMany([
+    { imageUrl: '/gallery/temple-night.jpg', tagline: 'સૌરાષ્ટ્રની દેવભૂમિ', taglineEn: 'The Holy Land of Saurashtra', order: 1 },
+    { imageUrl: '/gallery/temple-day.webp', tagline: '૫૦૦ વર્ષ જૂની આધ્યાત્મિક વિભૂતિ', taglineEn: 'A 500-Year-Old Spiritual Legacy', order: 2 },
+    { imageUrl: '/gallery/janmashtami-1.jpg', tagline: 'અખિલ ભારતીય રબારી સમાજ ધર્મગુરુગાદી', taglineEn: 'Akhil Bharatiya Rabari Samaj Dharmagurugadi', order: 3 },
+  ]);
+  console.log('✅ Hero slides seeded');
 
   // --- Announcements ---
   await Announcement.deleteMany({});
@@ -101,6 +115,43 @@ async function seed() {
     { icon: '🪔', nameGuj: 'દિપાવલી પર્વ', name: 'Diwali Parv', date: 'આસો વદ ૧૪', dateEn: 'Aso Vad 14', isUpcoming: true, order: 4 },
   ]);
   console.log('✅ Festivals seeded');
+
+  // --- Gallery ---
+  await Gallery.deleteMany({});
+  await Gallery.insertMany([
+    { imageUrl: '/gallery/janmashtami-1.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 1 },
+    { imageUrl: '/gallery/temple-day.webp', cat: 'મંદિર — Temple Architecture', tag: 'temple', order: 2 },
+    { imageUrl: '/gallery/diwali-2.jpg', cat: 'દીપાવલી મહોત્સવ', tag: 'diwali', order: 3 },
+    { imageUrl: '/gallery/gaushala-1.jpg', cat: 'ગૌશાળા — Gaushala', tag: 'gaushala', order: 4 },
+    { imageUrl: '/gallery/janmashtami-6.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 5 },
+    { imageUrl: '/gallery/diwali-acharya.jpg', cat: 'દીપાવલી — આચાર્યશ્રી', tag: 'diwali', order: 6 },
+    { imageUrl: '/gallery/gaushala-2.jpg', cat: 'ગૌશાળા — જય ગૌમાતા', tag: 'gaushala', order: 7 },
+    { imageUrl: '/gallery/education-girls.jpg', cat: 'શૈક્ષણિક — કન્યા છાત્રાલય', tag: 'education', order: 8 },
+    { imageUrl: '/gallery/diwali-1.jpg', cat: 'દીપાવલી મહોત્સવ', tag: 'diwali', order: 9 },
+    { imageUrl: '/gallery/janmashtami-5.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 10 },
+    { imageUrl: '/gallery/guru-purnima.jpg', cat: 'ગુરુ પૂર્ણિમા', tag: 'gurupurnima', order: 11 },
+    { imageUrl: '/gallery/education-school.jpg', cat: 'શૈક્ષણિક — વિધાલય', tag: 'education', order: 12 },
+    { imageUrl: '/gallery/temple-night.jpg', cat: 'મંદિર — Night View', tag: 'temple', order: 13 },
+    { imageUrl: '/gallery/janmashtami-7.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 14 },
+    { imageUrl: '/gallery/gaushala-3.jpg', cat: 'ગૌશાળા — Gaushala', tag: 'gaushala', order: 15 },
+    { imageUrl: '/gallery/diwali-3.jpg', cat: 'દીપાવલી મહોત્સવ', tag: 'diwali', order: 16 },
+    { imageUrl: '/gallery/gaushala-banner.jpg', cat: 'શ્રી વટેશ્વર ગૌશાળા', tag: 'gaushala', order: 17 },
+    { imageUrl: '/gallery/janmashtami-4.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 18 },
+    { imageUrl: '/gallery/janmashtami-3.jpg', cat: 'જન્માષ્ટમી મહોત્સવ', tag: 'janmashtami', order: 19 },
+  ]);
+  console.log('✅ Gallery seeded');
+
+  // --- DhajaChadava ---
+  await DhajaChadava.deleteMany({});
+  await DhajaChadava.insertMany([
+    { name: 'Rameshbhai Rabari', nameGuj: 'રમેશભાઈ રબારી', village: 'ભાયાવદર', date: new Date().toISOString().slice(0, 10), dedication: 'શ્રી વડવાળા દેવના ચરણે ધજા ચઢાવો', samvat: 'વૈ. સુ. ૧' },
+    { name: 'Dhirubhai Vankar', nameGuj: 'ધીરુભાઈ વાંકર', village: 'સુરેન્દ્રનગર', date: new Date().toISOString().slice(0, 10), dedication: 'ગુરુ કૃપા', samvat: 'વૈ. સુ. ૧' },
+    { name: 'Savitaben Rabari', nameGuj: 'સવિતાબેન રબારી', village: 'ધ્રાંગધ્રા', date: new Date().toISOString().slice(0, 10), dedication: 'જય વડવાળા', samvat: 'વૈ. સુ. ૧' },
+    { name: 'Nareshbhai Mer', nameGuj: 'નરેશભાઈ મેર', village: 'ગોંડળ', date: new Date().toISOString().slice(0, 10), dedication: 'ઈશ્વરની ભક્તિ', samvat: 'વૈ. સુ. ૧' },
+    { name: 'Jayaben Chaudhary', nameGuj: 'જ્યયા ચૌધરી', village: 'રાજકોટ', date: new Date().toISOString().slice(0, 10), dedication: 'ગૌ-સેવા', samvat: 'વૈ. સુ. ૧' },
+    { name: 'Bhaveshbhai Patel', nameGuj: 'ભાવેશભાઈ પટેલ', village: 'અમદાવાદ', date: new Date().toISOString().slice(0, 10), samvat: 'વૈ. સુ. ૧' },
+  ]);
+  console.log('✅ DhajaChadava seeded');
 
   // --- Contact ---
   await Contact.deleteMany({});

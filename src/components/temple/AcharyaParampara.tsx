@@ -1,34 +1,33 @@
 import { useFadeInAll } from '@/hooks/useFadeIn';
 import LotusDivider from './LotusDivider';
-
-const acharyas = [
-  { nameGuj: 'નીલકંઠ સ્વામી', name: 'Nilkanth Swami' },
-  { nameGuj: 'રઘુનાથ સ્વામી', name: 'Raghunath Swami' },
-  { nameGuj: 'યાદવ સ્વામી', name: 'Yadav Swami' },
-  { nameGuj: 'ષટપ્રજ્ઞદાસજી', name: 'Shatpragnya Dasji' },
-  { nameGuj: 'લબ્ધરામજી', name: 'Labdhramji' },
-  { nameGuj: 'રત્નદાસજી', name: 'Ratnadasji' },
-  { nameGuj: 'માનદાસજી', name: 'Manadasji' },
-  { nameGuj: 'કૃષ્ણદાસજી', name: 'Krishnadasji' },
-  { nameGuj: 'ઓધવદાસજી', name: 'Odhavdasji' },
-  { nameGuj: 'ગોકુલદાસજી', name: 'Gokuldasji' },
-  { nameGuj: 'ભાવદાસજી', name: 'Bhavdasji' },
-  { nameGuj: 'ગુલાબદાસજી', name: 'Gulabdasji' },
-  { nameGuj: 'કેવળદાસજી', name: 'Kevaldasji' },
-  { nameGuj: 'મેઘદાસજી', name: 'Meghadasji' },
-  { nameGuj: 'યમુનાદાસજી', name: 'Yamunadasji' },
-  { nameGuj: 'ગંગારામજી', name: 'Gangaramji' },
-  { nameGuj: 'ગોવિંદરામજી', name: 'Govindramji' },
-  { nameGuj: 'રઘુવરદાસજી', name: 'Raghuvardasji' },
-  { nameGuj: 'જીવરામદાસજી', name: 'Jivramdasji' },
-  { nameGuj: 'ગોમતીદાસજી', name: 'Gomatidasji' },
-  { nameGuj: 'કલ્યાણદાસજી', name: 'Kalyandasji' },
-  { nameGuj: 'કનીરામદાસજી', name: 'Kaniramdas ji', current: true, since: '૧૯૯૪' },
-  { nameGuj: 'વટપતિ મહિમા', name: 'Vatpati Mahima' },
-];
+import { useEffect, useState } from 'react';
+import { api, type AcharyaData } from '@/services/api';
 
 const AcharyaParampara = () => {
   const containerRef = useFadeInAll();
+  const [acharyas, setAcharyas] = useState<AcharyaData[]>([]);
+
+  useEffect(() => {
+    api.getAcharyas().then((d) => { if (d?.length) setAcharyas(d); });
+  }, []);
+
+  if (!acharyas.length) {
+    return (
+      <section id="parampara" className="py-16 md:py-24 bg-section-alt">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 w-48 bg-orange-100 rounded mx-auto" />
+            <div className="h-8 w-64 bg-orange-50 rounded mx-auto" />
+            <div className="max-w-3xl mx-auto mt-8 space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-14 bg-white rounded-xl" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="parampara" className="py-16 md:py-24 bg-section-alt">
@@ -50,10 +49,10 @@ const AcharyaParampara = () => {
 
           {acharyas.map((a, i) => {
             const isLeft = i % 2 === 0;
-            const isCurrent = 'current' in a && a.current;
+            const isCurrent = a.current;
             return (
               <div
-                key={i}
+                key={a._id || i}
                 className={`fade-in-section relative flex items-center mb-5 md:mb-4 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
                 style={{ transitionDelay: `${i * 50}ms` }}
               >

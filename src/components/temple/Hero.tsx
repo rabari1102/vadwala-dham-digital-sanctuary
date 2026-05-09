@@ -1,23 +1,57 @@
-import templeNight from '@/assets/gallery/temple-night.jpg';
-import templeDay from '@/assets/gallery/temple-day.webp';
-import janmashtami from '@/assets/gallery/janmashtami-1.jpg';
 import { useState, useEffect } from 'react';
-
-const slides = [
-  { img: templeNight, tagline: 'સૌરાષ્ટ્રની દેવભૂમિ' },
-  { img: templeDay, tagline: '૫૦૦ વર્ષ જૂની આધ્યાત્મિક વિભૂતિ' },
-  { img: janmashtami, tagline: 'અખિલ ભારતીય રબારી સમાજ ધર્મગુરુગાદી' },
-];
-
-const marqueeText = '🙏 જય વડવાળા  |  Shri Vadwala Dev Ki Jai  |  Dudhrej Dham  |  અખિલ ભારતીય રબારી સમાજ ધર્મગુરુગાદી  |  જય વડવાળા  |  Shri Vadwala Dev Ki Jai  |  Dudhrej Dham  |  અખિલ ભારતીય રબારી સમાજ ધર્મગુરુગાદી  |  ';
+import { api, type HeroSlide, type Announcement } from '@/services/api';
 
 const Hero = () => {
+  const [slides, setSlides] = useState<HeroSlide[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [current, setCurrent] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    Promise.all([api.getHero(), api.getAnnouncements()]).then(([heroData, annData]) => {
+      if (heroData?.length) setSlides(heroData);
+      if (annData?.length) setAnnouncements(annData);
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (slides.length === 0) return;
     const timer = setInterval(() => setCurrent((c) => (c + 1) % slides.length), 5500);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
+
+  const marqueeText = announcements.length
+    ? announcements.map((a) => a.text).join('  |  ') + '  |  '
+    : '🙏 જય વડવાળા  |  Shri Vadwala Dev Ki Jai  |  Dudhrej Dham  |  ';
+
+  if (loading) {
+    return (
+      <section id="home" className="relative min-h-screen flex flex-col">
+        <div className="relative z-10 bg-orange-500 py-2 overflow-hidden mt-[60px]">
+          <div className="flex whitespace-nowrap">
+            <span className="marquee inline-block text-sm text-white font-medium tracking-wider">
+              Loading...
+            </span>
+          </div>
+        </div>
+        <div className="relative flex-1 flex items-center justify-center min-h-[88vh] bg-gradient-to-b from-orange-950 to-black">
+          <div className="text-center">
+            <div className="text-4xl md:text-5xl animate-pulse mb-4 drop-shadow-lg">🕉️</div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-white leading-tight mb-3 drop-shadow-2xl">
+              શ્રી વડવાળા મંદિર
+            </h1>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-heading text-orange-300 mb-2 drop-shadow-lg">
+              દુધરેજધામ
+            </h2>
+            <div className="animate-pulse mt-8">
+              <div className="h-4 w-48 bg-white/20 rounded mx-auto" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="home" className="relative min-h-screen flex flex-col">
@@ -34,9 +68,9 @@ const Hero = () => {
       <div className="relative flex-1 flex items-center justify-center min-h-[88vh]">
         {slides.map((slide, i) => (
           <div
-            key={i}
+            key={slide._id || i}
             className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-            style={{ backgroundImage: `url(${slide.img})`, opacity: current === i ? 1 : 0 }}
+            style={{ backgroundImage: `url(${slide.imageUrl})`, opacity: current === i ? 1 : 0 }}
           />
         ))}
 
@@ -75,10 +109,10 @@ const Hero = () => {
 
           {/* Dynamic slide tagline */}
           <p className="text-base md:text-xl text-white/90 max-w-2xl mx-auto mb-1 leading-relaxed font-heading drop-shadow">
-            {slides[current].tagline}
+            {slides[current]?.tagline}
           </p>
           <p className="text-sm text-white/60 italic mb-10">
-            A 500-year-old spiritual legacy enshrined on the holy land of Saurashtra
+            {slides[current]?.taglineEn || 'A 500-year-old spiritual legacy enshrined on the holy land of Saurashtra'}
           </p>
 
           {/* CTA buttons */}

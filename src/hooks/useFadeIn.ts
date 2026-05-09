@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 export function useFadeIn() {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,12 +23,21 @@ export function useFadeIn() {
   return ref;
 }
 
-/** Observe all .fade-in-section children within a container */
+/** Observe all .fade-in-section children within a container.
+ *  Uses MutationObserver so dynamically loaded content gets observed too. */
 export function useFadeInAll() {
   const ref = useRef<HTMLDivElement>(null);
 
+  const observeChildren = useCallback((container: HTMLElement, io: IntersectionObserver) => {
+    container.querySelectorAll('.fade-in-section').forEach((child) => {
+      if (!child.classList.contains('visible')) {
+        io.observe(child);
+      }
+    });
+  }, []);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -40,11 +49,22 @@ export function useFadeInAll() {
     );
 
     const el = ref.current;
-    if (el) {
-      el.querySelectorAll('.fade-in-section').forEach((child) => observer.observe(child));
-    }
-    return () => observer.disconnect();
-  }, []);
+    if (!el) return;
+
+    // Observe existing children
+    observeChildren(el, io);
+
+    // Watch for dynamically added children (async API data)
+    const mo = new MutationObserver(() => {
+      observeChildren(el, io);
+    });
+    mo.observe(el, { childList: true, subtree: true });
+
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
+  }, [observeChildren]);
 
   return ref;
 }
