@@ -1,60 +1,120 @@
 :root {
-  /* Temple-inspired color palette */
-  --color-ivory: #FDF6EC;
-  --color-saffron: #E8860C;
-  --color-saffron-light: #FCEBD4;
-  --color-saffron-dark: #C06E08;
-  --color-maroon: #7B1F2E;
-  --color-maroon-dark: #5A1520;
-  --color-maroon-light: #9B3344;
-  --color-gold: #C5A356;
-  --color-gold-muted: #D4B96A;
-  --color-gold-light: #F0E4C4;
-  --color-brown: #5C3D2E;
-  --color-brown-light: #8B6F47;
-  --color-cream: #FFF8F0;
-  --color-white: #FFFFFF;
-  --color-text: #2D1B0E;
-  --color-text-light: #6B5744;
-  --color-text-muted: #9B8A78;
-  --color-border: #E8DDD0;
-  --color-border-light: #F0E8DC;
-  --color-overlay: rgba(45, 27, 14, 0.6);
-  --color-overlay-dark: rgba(45, 27, 14, 0.85);
-  --color-success: #2D7B46;
-  --color-error: #C0392B;
+  /* === TEMPLE SACRED PALETTE === */
+  --color-saffron:          #E8730A;
+  --color-saffron-hover:    #C55E00;
+  --color-saffron-light:    #FEF0E0;
+  --color-saffron-muted:    #FDDBB8;
+  --color-saffron-glow:     rgba(232,115,10,0.18);
 
-  /* Typography */
-  --font-gujarati: 'Noto Sans Gujarati', sans-serif;
-  --font-english: 'Inter', sans-serif;
-  --font-body: var(--font-gujarati);
+  --color-maroon:           #7B1F2E;
+  --color-maroon-dark:      #4E1220;
+  --color-maroon-light:     #A8364A;
+  --color-maroon-glow:      rgba(123,31,46,0.14);
 
-  /* Spacing */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-  --space-4xl: 6rem;
+  --color-gold:             #C8922A;
+  --color-gold-light:       #F0E0B4;
+  --color-gold-muted:       #D4A84B;
+  --color-gold-pale:        #FAF0D7;
 
-  /* Sizes */
-  --max-width: 1200px;
-  --max-width-narrow: 900px;
-  --navbar-height: 72px;
-  --border-radius: 8px;
-  --border-radius-lg: 16px;
-  --border-radius-xl: 24px;
+  --color-brown:            #5C3D2E;
+  --color-brown-light:      #8B6F47;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(92, 61, 46, 0.08);
-  --shadow-md: 0 4px 12px rgba(92, 61, 46, 0.1);
-  --shadow-lg: 0 8px 30px rgba(92, 61, 46, 0.12);
-  --shadow-xl: 0 16px 48px rgba(92, 61, 46, 0.15);
+  /* Surfaces */
+  --color-ivory:            #FDF7ED;
+  --color-cream:            #FFF9F0;
+  --color-warm-white:       #FFFCF6;
+  --color-surface:          #FFFDF9;
+  --color-surface-2:        #FAF6EF;
+  --color-surface-offset:   #F5EFE4;
+  --color-white:            #FFFFFF;
 
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 300ms ease;
-  --transition-slow: 500ms ease;
+  /* Text */
+  --color-text:             #2A1506;
+  --color-text-light:       #6B4C32;
+  --color-text-muted:       #9B7A5A;
+  --color-text-faint:       #C4A882;
+  --color-text-inverse:     #FDF7ED;
+
+  /* Borders */
+  --color-border:           #E4D4BE;
+  --color-border-light:     #F0E6D6;
+  --color-border-gold:      rgba(200,146,42,0.30);
+
+  /* Overlays */
+  --color-overlay:          rgba(42,21,6,0.55);
+  --color-overlay-dark:     rgba(42,21,6,0.82);
+
+  /* Utility */
+  --color-success:          #2D7B46;
+  --color-error:            #C0392B;
+
+  /* === TYPOGRAPHY === */
+  --font-display:   'Playfair Display', 'Noto Serif Gujarati', Georgia, serif;
+  --font-gujarati:  'Noto Sans Gujarati', sans-serif;
+  --font-english:   'Inter', system-ui, sans-serif;
+  --font-body:      var(--font-gujarati);
+
+  /* Fluid Type Scale */
+  --text-xs:    clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+  --text-sm:    clamp(0.875rem, 0.82rem + 0.28vw, 1rem);
+  --text-base:  clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+  --text-lg:    clamp(1.125rem, 1rem    + 0.6vw,  1.375rem);
+  --text-xl:    clamp(1.4rem,   1.1rem  + 1.2vw,  2rem);
+  --text-2xl:   clamp(1.8rem,   1.2rem  + 2vw,    3rem);
+  --text-3xl:   clamp(2.2rem,   1rem    + 4vw,    4.5rem);
+  --text-hero:  clamp(2.8rem,   0.5rem  + 6vw,    6rem);
+
+  /* === SPACING (4px base) === */
+  --space-1:   0.25rem;
+  --space-2:   0.5rem;
+  --space-3:   0.75rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-8:   2rem;
+  --space-10:  2.5rem;
+  --space-12:  3rem;
+  --space-16:  4rem;
+  --space-20:  5rem;
+  --space-24:  6rem;
+
+  /* Legacy aliases */
+  --space-xs:  var(--space-1);
+  --space-sm:  var(--space-2);
+  --space-md:  var(--space-4);
+  --space-lg:  var(--space-6);
+  --space-xl:  var(--space-8);
+  --space-2xl: var(--space-12);
+  --space-3xl: var(--space-16);
+  --space-4xl: var(--space-24);
+
+  /* === SIZES === */
+  --max-width:         1200px;
+  --max-width-narrow:  900px;
+  --navbar-height:     76px;
+
+  /* === RADIUS === */
+  --radius-sm:         0.375rem;
+  --radius-md:         0.625rem;
+  --radius-lg:         1rem;
+  --radius-xl:         1.5rem;
+  --radius-full:       9999px;
+  --border-radius:     var(--radius-md);
+  --border-radius-lg:  var(--radius-lg);
+  --border-radius-xl:  var(--radius-xl);
+
+  /* === SHADOWS (warm-toned) === */
+  --shadow-sm:      0 1px 3px rgba(92,44,10,0.07), 0 1px 2px rgba(92,44,10,0.04);
+  --shadow-md:      0 4px 16px rgba(92,44,10,0.10), 0 2px 6px rgba(92,44,10,0.06);
+  --shadow-lg:      0 12px 36px rgba(92,44,10,0.13), 0 4px 12px rgba(92,44,10,0.07);
+  --shadow-xl:      0 24px 56px rgba(92,44,10,0.16), 0 8px 20px rgba(92,44,10,0.09);
+  --shadow-saffron: 0 6px 24px rgba(232,115,10,0.30);
+  --shadow-gold:    0 4px 20px rgba(200,146,42,0.25);
+  --shadow-maroon:  0 6px 24px rgba(78,18,32,0.30);
+
+  /* === TRANSITIONS === */
+  --transition-fast:   150ms cubic-bezier(0.16,1,0.3,1);
+  --transition-normal: 280ms cubic-bezier(0.16,1,0.3,1);
+  --transition-slow:   480ms cubic-bezier(0.16,1,0.3,1);
+  --transition-spring: 420ms cubic-bezier(0.34,1.56,0.64,1);
 }

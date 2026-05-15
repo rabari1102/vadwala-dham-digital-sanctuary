@@ -1,33 +1,48 @@
 .announcement-bar {
-  background: linear-gradient(90deg, var(--color-maroon), var(--color-maroon-dark));
-  color: var(--color-gold-light);
-  font-size: 0.85rem;
+  background: linear-gradient(90deg, var(--color-maroon-dark) 0%, var(--color-maroon) 50%, var(--color-brown) 100%);
+  background-size: 200% auto;
+  animation: gradientShift 6s ease infinite;
+  color: var(--color-ivory);
+  font-size: var(--text-xs);
+  padding: 0.55rem var(--space-4);
+  text-align: center;
+  position: relative;
   overflow: hidden;
 }
-
+.announcement-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation: shimmerGold 3s linear infinite;
+  background-size: 200% 100%;
+}
 .announcement-bar__inner {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
+  justify-content: center;
+  gap: var(--space-2);
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
 }
-
-.announcement-bar__inner svg {
-  flex-shrink: 0;
-  color: var(--color-saffron);
+.announcement-bar__icon {
+  font-size: 0.9rem;
+  animation: floatGently 2.5s ease-in-out infinite;
 }
-
-.announcement-bar__marquee {
-  overflow: hidden;
-  flex: 1;
+.announcement-bar__text {
+  letter-spacing: 0.03em;
+  font-weight: 500;
 }
-
-.announcement-bar__track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 25s linear infinite;
+.announcement-bar__dismiss {
+  position: absolute;
+  right: var(--space-4); top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.6);
+  font-size: 1.1rem;
+  transition: color var(--transition-fast);
+  background: none; border: none; cursor: pointer;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
 }
-
-.announcement-bar__item {
-  display: inline;
-}
+.announcement-bar__dismiss:hover { color: white; }

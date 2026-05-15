@@ -1,13 +1,83 @@
 .donate-cta {
-  background: linear-gradient(135deg, var(--color-maroon-dark), var(--color-maroon));
-  color: var(--color-ivory);
+  padding: clamp(var(--space-12), 8vw, var(--space-24)) 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 5% 50%, rgba(232,115,10,0.18), transparent),
+    radial-gradient(ellipse 50% 70% at 95% 50%, rgba(200,146,42,0.14), transparent),
+    linear-gradient(160deg, var(--color-maroon-dark) 0%, var(--color-maroon) 55%, var(--color-brown) 100%);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.donate-cta::before {
+  content: '🕉';
+  position: absolute;
+  font-size: 22rem;
+  opacity: 0.04;
+  right: 2rem; top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  user-select: none;
+  animation: rotateSlow 40s linear infinite;
+}
+.donate-cta::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), var(--color-saffron), var(--color-gold), transparent);
+  animation: shimmerGold 4s linear infinite;
+  background-size: 200% auto;
 }
 .donate-cta__inner {
-  text-align: center;
-  padding: var(--space-xl) 0;
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
 }
-.donate-cta__btn {
-  margin-top: var(--space-lg);
-  font-size: 1.05rem;
-  padding: 0.9rem 2.5rem;
+.donate-cta__icon {
+  font-size: 3.5rem;
+  margin-bottom: var(--space-5);
+  display: block;
+  animation: floatGently 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 16px rgba(232,115,10,0.50));
+}
+.donate-cta__title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ivory);
+  margin-bottom: var(--space-4);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  line-height: 1.2;
+}
+.donate-cta__text {
+  font-size: var(--text-base);
+  color: rgba(253,247,237,0.82);
+  margin-bottom: var(--space-8);
+  line-height: 1.8;
+  max-width: 55ch;
+  margin-left: auto; margin-right: auto;
+}
+.donate-cta__ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  opacity: 0.50;
+}
+.donate-cta__ornament::before,
+.donate-cta__ornament::after {
+  content: '';
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-light));
+}
+.donate-cta__ornament::after {
+  background: linear-gradient(90deg, var(--color-gold-light), transparent);
+}
+.donate-cta__actions {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
 }
