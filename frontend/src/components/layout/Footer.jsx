@@ -3,7 +3,14 @@ import { Phone, Mail, MapPin, Video, Camera, Globe } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import './Footer.css';
 
-const iconMap = { Youtube: Video, Instagram: Camera, Facebook: Globe, Video, Camera, Globe };
+const iconMap = {
+  Youtube: Video,
+  Instagram: Camera,
+  Facebook: Globe,
+  youtube: Video,
+  instagram: Camera,
+  facebook: Globe,
+};
 
 export default function Footer() {
   const { settings, contact } = useSiteSettings();
@@ -11,9 +18,9 @@ export default function Footer() {
   const quickLinks = [
     { label: 'હોમ', url: '/' },
     { label: 'ઇતિહાસ', url: '/history' },
+    { label: 'પ્રવૃત્તિઓ', url: '/activities' },
     { label: 'ગેલેરી', url: '/gallery' },
     { label: 'વિડીયો', url: '/videos' },
-    { label: 'દાન', url: '/donate' },
     { label: 'સંપર્ક', url: '/contact' },
   ];
 
@@ -23,6 +30,9 @@ export default function Footer() {
     { label: 'શૈક્ષણિક કાર્ય', url: '/activities' },
     { label: 'ધર્મશાળા', url: '/activities' },
   ];
+
+  // Get social links from settings or contact
+  const socialLinks = settings?.socialLinks || contact?.socialLinks || [];
 
   return (
     <footer className="footer" id="main-footer">
@@ -36,14 +46,31 @@ export default function Footer() {
                 {settings?.introContent?.slice(0, 150) || 'સૌરાષ્ટ્રની ભૂમિ સંત, શૂરવીર અને સતીઓની ભૂમિ ગણાય છે.'}...
               </p>
               <div className="footer__social">
-                {(settings?.socialLinks || contact?.socialLinks || []).map((s, i) => {
-                  const Icon = iconMap[s.icon] || Youtube;
-                  return (
-                    <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="footer__social-link" aria-label={s.platform}>
-                      <Icon size={18} />
+                {socialLinks.length > 0 ? (
+                  socialLinks.map((s, i) => {
+                    const Icon = iconMap[s.icon] || iconMap[s.icon?.toLowerCase()] || Facebook;
+                    return (
+                      s.url && (
+                        <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="footer__social-link" aria-label={s.platform || s.icon}>
+                          <Icon size={18} />
+                        </a>
+                      )
+                    );
+                  })
+                ) : (
+                  // Placeholder social links if none configured
+                  <>
+                    <a href="https://youtube.com/@dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer__social-link" aria-label="YouTube">
+                      <Video size={18} />
                     </a>
-                  );
-                })}
+                    <a href="https://instagram.com/dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer__social-link" aria-label="Instagram">
+                      <Camera size={18} />
+                    </a>
+                    <a href="https://facebook.com/dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer__social-link" aria-label="Facebook">
+                      <Globe size={18} />
+                    </a>
+                  </>
+                )}
               </div>
             </div>
 

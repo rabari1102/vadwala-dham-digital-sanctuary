@@ -15,7 +15,6 @@ export default function Navbar() {
     { label: 'પ્રવૃત્તિઓ', url: '/activities' },
     { label: 'ગેલેરી', url: '/gallery' },
     { label: 'વિડીયો', url: '/videos' },
-    { label: 'દાન', url: '/donate' },
     { label: 'સંપર્ક', url: '/contact' },
   ];
 

@@ -11,7 +11,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-padding-top: var(--navbar-height);
+  scroll-padding-top: calc(var(--navbar-height) + 2.5rem);
 }
 body {
   font-family: var(--font-body);
@@ -24,6 +24,11 @@ body {
 img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
 button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
 a { text-decoration: none; color: inherit; }
+
+/* ── Main content area ── */
+main {
+  min-height: 100vh;
+}
 
 /* ── Container ── */
 .container {

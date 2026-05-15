@@ -5,7 +5,14 @@ import SectionTitle from '../components/shared/SectionTitle';
 import { Phone, Mail, MapPin, Globe, Video, Camera } from 'lucide-react';
 import './ContactPage.css';
 
-const iconMap = { Youtube: Video, Instagram: Camera, Facebook: Globe, Video, Camera, Globe };
+const iconMap = { 
+  Youtube: Video, 
+  Instagram: Camera, 
+  Facebook: Globe,
+  youtube: Video,
+  instagram: Camera,
+  facebook: Globe
+};
 
 export default function ContactPage() {
   const { contact } = useSiteSettings();
@@ -20,6 +27,7 @@ export default function ContactPage() {
       await submitContactForm(form);
       setSent(true);
       setForm({ name: '', phone: '', email: '', message: '' });
+      setTimeout(() => setSent(false), 3000);
     } catch { /* ignore */ }
     setSending(false);
   };
@@ -36,32 +44,44 @@ export default function ContactPage() {
       <section className="section section--white">
         <div className="container">
           <div className="contact-grid">
-            {/* Info */}
+            {/* LEFT COLUMN - CONTACT INFO */}
             <div className="contact-info">
               <SectionTitle title="સંપર્ક માહિતી" align="left" />
               <div className="contact-info__items">
                 {contact?.address && (
                   <div className="contact-info__item">
-                    <MapPin size={20} className="contact-info__icon" />
-                    <div><h4>સરનામું</h4><p>{contact.address}</p></div>
+                    <MapPin size={24} className="contact-info__icon" />
+                    <div>
+                      <h4>સરનામું</h4>
+                      <p>{contact.address}</p>
+                    </div>
                   </div>
                 )}
                 {contact?.phones?.map((p, i) => (
                   <div key={i} className="contact-info__item">
-                    <Phone size={20} className="contact-info__icon" />
-                    <div><h4>ફોન {i + 1}</h4><p><a href={`tel:${p.replace(/\s/g, '')}`}>{p}</a></p></div>
+                    <Phone size={24} className="contact-info__icon" />
+                    <div>
+                      <h4>ફોન નંબર</h4>
+                      <p><a href={`tel:${p.replace(/\s/g, '')}`}>{p}</a></p>
+                    </div>
                   </div>
                 ))}
                 {contact?.emails?.map((e, i) => (
                   <div key={i} className="contact-info__item">
-                    <Mail size={20} className="contact-info__icon" />
-                    <div><h4>ઈમેઈલ</h4><p><a href={`mailto:${e}`}>{e}</a></p></div>
+                    <Mail size={24} className="contact-info__icon" />
+                    <div>
+                      <h4>ઈમેઈલ</h4>
+                      <p><a href={`mailto:${e}`}>{e}</a></p>
+                    </div>
                   </div>
                 ))}
                 {contact?.website && (
                   <div className="contact-info__item">
-                    <Globe size={20} className="contact-info__icon" />
-                    <div><h4>વેબસાઈટ</h4><p><a href={contact.website} target="_blank" rel="noopener noreferrer">{contact.website}</a></p></div>
+                    <Globe size={24} className="contact-info__icon" />
+                    <div>
+                      <h4>વેબસાઈટ</h4>
+                      <p><a href={contact.website} target="_blank" rel="noopener noreferrer">{contact.website}</a></p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -79,31 +99,79 @@ export default function ContactPage() {
               )}
             </div>
 
-            {/* Form */}
-            <div className="contact-form-wrap">
-              <SectionTitle title="સંદેશ મોકલો" align="left" />
-              {sent ? (
-                <div className="contact-success">✅ આપનો સંદેશ સફળતાપૂર્વક મોકલવામાં આવ્યો!</div>
-              ) : (
-                <form className="contact-form" onSubmit={handleSubmit}>
-                  <input type="text" placeholder="આપનું નામ *" value={form.name} onChange={e => setForm({...form, name: e.target.value})} required />
-                  <input type="tel" placeholder="ફોન નંબર" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} />
-                  <input type="email" placeholder="ઈમેઈલ" value={form.email} onChange={e => setForm({...form, email: e.target.value})} />
-                  <textarea placeholder="આપનો સંદેશ *" rows="5" value={form.message} onChange={e => setForm({...form, message: e.target.value})} required />
-                  <button type="submit" className="btn btn--primary" disabled={sending}>
-                    {sending ? 'મોકલી રહ્યા છે...' : 'સંદેશ મોકલો'}
-                  </button>
-                </form>
-              )}
+            {/* RIGHT COLUMN - CONTACT FORM */}
+            <div>
+              <div className="contact-form-wrapper">
+                <SectionTitle title="સંદેશ મોકલો" align="left" />
+                {sent ? (
+                  <div className="contact-success">✅ આપનો સંદેશ સફળતાપૂર્વક મોકલવામાં આવ્યો!</div>
+                ) : (
+                  <form className="contact-form" onSubmit={handleSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="name">આપનું નામ *</label>
+                      <input 
+                        id="name"
+                        type="text" 
+                        placeholder="નામ લખો" 
+                        value={form.name} 
+                        onChange={e => setForm({...form, name: e.target.value})} 
+                        required 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="phone">ફોન નંબર</label>
+                      <input 
+                        id="phone"
+                        type="tel" 
+                        placeholder="ફોન નંબર લખો" 
+                        value={form.phone} 
+                        onChange={e => setForm({...form, phone: e.target.value})} 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="email">ઈમેઈલ</label>
+                      <input 
+                        id="email"
+                        type="email" 
+                        placeholder="ઈમેઈલ લખો" 
+                        value={form.email} 
+                        onChange={e => setForm({...form, email: e.target.value})} 
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="message">આપનો સંદેશ *</label>
+                      <textarea 
+                        id="message"
+                        placeholder="તમારો સંદેશ લખો..." 
+                        value={form.message} 
+                        onChange={e => setForm({...form, message: e.target.value})} 
+                        required 
+                      />
+                    </div>
+
+                    <button type="submit" className="btn btn--submit" disabled={sending}>
+                      {sending ? '⏳ મોકલી રહ્યા છે...' : '✉️ સંદેશ મોકલો'}
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Map */}
+      {/* MAP SECTION */}
       {contact?.mapEmbedUrl && (
-        <section className="contact-map">
-          <iframe src={contact.mapEmbedUrl} title="Map" loading="lazy" allowFullScreen />
+        <section className="section" style={{paddingBottom: 0}}>
+          <div className="container">
+            <SectionTitle title="અમારો સ્થાન" align="center" />
+            <div className="contact-map">
+              <iframe src={contact.mapEmbedUrl} title="Map" loading="lazy" allowFullScreen="" />
+            </div>
+          </div>
         </section>
       )}
     </>
