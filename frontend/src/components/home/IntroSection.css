@@ -1,0 +1,18 @@
+.intro-section__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+.intro-section__content {
+  font-size: 1.05rem;
+  color: var(--color-text-light);
+  line-height: 1.9;
+}
+.intro-section__image img {
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+@media (max-width: 768px) {
+  .intro-section__grid { grid-template-columns: 1fr; gap: var(--space-xl); }
+}

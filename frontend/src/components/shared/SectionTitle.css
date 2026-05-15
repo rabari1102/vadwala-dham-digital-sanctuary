@@ -1,0 +1,55 @@
+.section-title {
+  margin-bottom: var(--space-2xl);
+}
+.section-title--center { text-align: center; }
+.section-title--left { text-align: left; }
+
+.section-title__ornament {
+  color: var(--color-saffron);
+  font-size: 1rem;
+  margin-bottom: var(--space-sm);
+  letter-spacing: 0.3em;
+}
+
+.section-title__heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-maroon);
+  margin-bottom: var(--space-sm);
+}
+
+.section-title--light .section-title__heading {
+  color: var(--color-ivory);
+}
+
+.section-title__subtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-light);
+  max-width: 600px;
+  line-height: 1.7;
+}
+.section-title--center .section-title__subtitle {
+  margin: 0 auto;
+}
+.section-title--light .section-title__subtitle {
+  color: var(--color-gold-light);
+}
+
+.section-title__line {
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-saffron), var(--color-gold));
+  border-radius: 2px;
+  margin-top: var(--space-md);
+}
+.section-title--center .section-title__line {
+  margin-left: auto;
+  margin-right: auto;
+}
+.section-title--light .section-title__line {
+  background: linear-gradient(90deg, var(--color-gold), var(--color-saffron));
+}
+
+@media (max-width: 768px) {
+  .section-title__heading { font-size: 1.5rem; }
+}

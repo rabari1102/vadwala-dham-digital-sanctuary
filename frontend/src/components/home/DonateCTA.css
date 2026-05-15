@@ -1,0 +1,13 @@
+.donate-cta {
+  background: linear-gradient(135deg, var(--color-maroon-dark), var(--color-maroon));
+  color: var(--color-ivory);
+}
+.donate-cta__inner {
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+.donate-cta__btn {
+  margin-top: var(--space-lg);
+  font-size: 1.05rem;
+  padding: 0.9rem 2.5rem;
+}

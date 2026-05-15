@@ -1,0 +1,33 @@
+.announcement-bar {
+  background: linear-gradient(90deg, var(--color-maroon), var(--color-maroon-dark));
+  color: var(--color-gold-light);
+  font-size: 0.85rem;
+  overflow: hidden;
+}
+
+.announcement-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.announcement-bar__inner svg {
+  flex-shrink: 0;
+  color: var(--color-saffron);
+}
+
+.announcement-bar__marquee {
+  overflow: hidden;
+  flex: 1;
+}
+
+.announcement-bar__track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 25s linear infinite;
+}
+
+.announcement-bar__item {
+  display: inline;
+}

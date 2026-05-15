@@ -1,0 +1,53 @@
+.donate-purposes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-xl);
+}
+.donate-purpose {
+  text-align: center;
+  padding: var(--space-xl);
+  background: var(--color-ivory);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal);
+}
+.donate-purpose:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+.donate-purpose__icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--color-saffron-light); color: var(--color-saffron);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto var(--space-lg);
+}
+.donate-purpose__title {
+  font-size: 1.05rem; font-weight: 600; color: var(--color-maroon);
+  margin-bottom: var(--space-sm);
+}
+.donate-purpose__desc {
+  font-size: 0.9rem; color: var(--color-text-light); line-height: 1.7;
+}
+.payment-cards {
+  display: flex; flex-direction: column; gap: var(--space-lg);
+}
+.payment-card {
+  padding: var(--space-xl); background: var(--color-white);
+  border-radius: var(--border-radius); border-left: 4px solid var(--color-gold);
+}
+.payment-card__type {
+  font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+.payment-card__label {
+  font-size: 1.1rem; font-weight: 600; color: var(--color-maroon);
+  margin: var(--space-sm) 0;
+}
+.payment-card__details {
+  font-size: 0.95rem; color: var(--color-text-light); white-space: pre-line;
+}
+.trust-note {
+  padding: var(--space-xl); background: var(--color-saffron-light);
+  border-radius: var(--border-radius-lg); border: 1px solid var(--color-saffron);
+}
+.trust-note h3 { color: var(--color-maroon); margin-bottom: var(--space-md); }
+.trust-note p { color: var(--color-text-light); line-height: 1.8; }
