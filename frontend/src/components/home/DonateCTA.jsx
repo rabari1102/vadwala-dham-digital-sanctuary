@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import SectionTitle from '../shared/SectionTitle';
 import './DonateCTA.css';
 
 export default function DonateCTA({ title, text }) {
@@ -7,8 +6,16 @@ export default function DonateCTA({ title, text }) {
     <section className="section donate-cta" id="donate-cta">
       <div className="container">
         <div className="donate-cta__inner">
-          <SectionTitle title={title || 'દાન – સેવા'} subtitle={text} light />
-          <Link to="/donate" className="btn btn--gold donate-cta__btn">🙏 દાન કરો</Link>
+          <div className="donate-cta__text">
+            <p className="donate-cta__eyebrow">Support the Mission</p>
+            <h2 className="donate-cta__heading">{title || 'Your Generosity Fuels Our Seva'}</h2>
+            <p className="donate-cta__sub">
+              {text || 'Every contribution supports Annshetra meals, Gaushala care, student education, and pilgrimage dharamshalas across Gujarat.'}
+            </p>
+          </div>
+          <Link to="/donate" className="btn btn-gold btn--lg donate-cta__btn">
+            🙏 Contribute Now
+          </Link>
         </div>
       </div>
     </section>

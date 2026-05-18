@@ -4,10 +4,12 @@ import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EmptyState from '../components/shared/EmptyState';
 import SectionTitle from '../components/shared/SectionTitle';
 import { formatDate } from '../utils/helpers';
-import { Utensils, Heart, GraduationCap, Sparkles, Home, HandHeart, Calendar } from 'lucide-react';
 import './ActivitiesPage.css';
 
-const iconMap = { Utensils, Heart, GraduationCap, Sparkles, Home, HandHeart };
+const iconMap = {
+  Utensils: '🍽', Heart: '🐄', GraduationCap: '📚',
+  Sparkles: '✦', Home: '🏠', HandHeart: '🙏',
+};
 
 export default function ActivitiesPage() {
   const { data: activities, loading: al } = useFetch(() => getActivities(), []);
@@ -15,35 +17,33 @@ export default function ActivitiesPage() {
 
   if (al || fl) return <LoadingSpinner />;
 
-  const upcoming = (festivals || []).filter(f => f.isUpcoming);
-
   return (
     <>
       <div className="page-banner">
-        <div className="page-banner__content">
-          <h1 className="page-banner__title">પ્રવૃત્તિઓ અને ઉત્સવો</h1>
-          <p className="page-banner__subtitle">મંદિરની સેવા, શૈક્ષણિક અને ધાર્મિક પ્રવૃત્તિઓ</p>
+        <div className="page-banner__content container">
+          <h1 className="page-banner__title">Seva & Festivals</h1>
+          <p className="page-banner__subtitle" lang="gu">મંદિરની સેવા, શૈક્ષણિક અને ધાર્મિક પ્રવૃત્તિઓ</p>
         </div>
       </div>
 
       {/* Activities */}
-      <section className="section section--white">
+      <section className="section activities-section">
         <div className="container">
-          <SectionTitle title="સેવા પ્રવૃત્તિઓ" />
+          <SectionTitle eyebrow="Our Mission" title="Service Activities" align="left" />
           {(!activities || activities.length === 0) ? (
-            <EmptyState message="પ્રવૃત્તિઓ ટૂંક સમયમાં ઉપલબ્ધ થશે" />
+            <EmptyState message="Activities coming soon" />
           ) : (
             <div className="activities-list">
               {activities.map((a, i) => {
-                const Icon = iconMap[a.icon] || Sparkles;
+                const icon = iconMap[a.icon] || '✦';
                 return (
-                  <div key={a._id || i} className="activity-detail animate-fade-in-up">
-                    <div className="activity-detail__header">
-                      <div className="activity-detail__icon"><Icon size={24} /></div>
-                      <h3 className="activity-detail__title">{a.title}</h3>
+                  <article key={a._id || i} className="activity-item">
+                    <span className="activity-item__icon">{icon}</span>
+                    <div className="activity-item__content">
+                      <h3 className="activity-item__title">{a.title}</h3>
+                      <p className="activity-item__desc">{a.description}</p>
                     </div>
-                    <p className="activity-detail__desc">{a.description}</p>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -52,21 +52,22 @@ export default function ActivitiesPage() {
       </section>
 
       {/* Festivals */}
-      <section className="section section--ivory">
+      <section className="section festivals-page-section">
         <div className="container">
-          <SectionTitle title="ઉત્સવો" subtitle="મંદિરમાં ઉજવાતા ધાર્મિક ઉત્સવો" />
+          <SectionTitle eyebrow="Sacred Calendar" title="Festivals" subtitle="Religious festivals celebrated at the temple" align="left" />
           {(!festivals || festivals.length === 0) ? (
-            <EmptyState message="ઉત્સવોની માહિતી ટૂંક સમયમાં" icon="🎉" />
+            <EmptyState message="Festival information coming soon" />
           ) : (
-            <div className="festivals-grid">
+            <div className="festivals-page-grid">
               {festivals.map((f, i) => (
-                <div key={f._id || i} className="festival-card animate-fade-in-up">
-                  <Calendar size={20} className="festival-card__icon" />
-                  <h3>{f.title}</h3>
+                <article key={f._id || i} className="festival-page-card">
+                  <div className="festival-page-card__header">
+                    <h3>{f.title}</h3>
+                    {f.isUpcoming && <span className="badge badge-primary">Upcoming</span>}
+                  </div>
                   {f.description && <p>{f.description}</p>}
-                  {f.date && <span className="festival-card__date">{formatDate(f.date)}</span>}
-                  {f.isUpcoming && <span className="festival-card__badge">આગામી</span>}
-                </div>
+                  {f.date && <time className="festival-page-card__date">{formatDate(f.date)}</time>}
+                </article>
               ))}
             </div>
           )}

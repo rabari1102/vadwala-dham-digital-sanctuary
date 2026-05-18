@@ -16,9 +16,12 @@ import AdminApp from './admin/AdminApp';
 function PublicLayout() {
   return (
     <SiteProvider>
+      <a href="#main-content" className="skip-nav">
+        Skip to main content
+      </a>
       <AnnouncementBar />
       <Navbar />
-      <main>
+      <main id="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/history" element={<HistoryPage />} />

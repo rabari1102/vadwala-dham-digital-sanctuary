@@ -7,21 +7,30 @@ export default function GalleryPreview({ items = [] }) {
   if (!items.length) return null;
 
   return (
-    <section className="section section--ivory gallery-preview" id="gallery-preview">
+    <section className="section gallery-preview" id="gallery-preview">
       <div className="container">
-        <SectionTitle title="ફોટો ગેલેરી" subtitle="મંદિરના ઉત્સવો અને દર્શનના ફોટો" />
-        <div className="gallery-preview__grid stagger">
+        <SectionTitle
+          eyebrow="Visual Stories"
+          title="Photo Gallery"
+          subtitle="Glimpses of sacred moments, festivals, and daily life at the temple."
+        />
+        <div className="gallery-preview__grid">
           {items.slice(0, 6).map((item, i) => (
-            <div key={item._id || i} className="gallery-preview__item animate-fade-in-up">
-              <img src={getImageUrl(item.image)} alt={item.title || 'Gallery'} loading="lazy" />
+            <div key={item._id || i} className={`gallery-preview__item ${i === 0 ? 'gallery-preview__item--featured' : ''}`}>
+              <img
+                src={getImageUrl(item.image)}
+                alt={item.title || 'Temple gallery'}
+                loading="lazy"
+                className="gallery-preview__img"
+              />
               <div className="gallery-preview__overlay">
-                <span>{item.title}</span>
+                <span className="gallery-preview__title">{item.title}</span>
               </div>
             </div>
           ))}
         </div>
-        <div style={{ textAlign: 'center', marginTop: 'var(--space-xl)' }}>
-          <Link to="/gallery" className="btn btn--outline">વધુ ફોટો જુઓ</Link>
+        <div className="gallery-preview__cta">
+          <Link to="/gallery" className="btn btn-ghost">View Full Gallery →</Link>
         </div>
       </div>
     </section>
