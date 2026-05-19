@@ -9,4 +9,6 @@ const announcementSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+announcementSchema.index({ isActive: 1, status: 1 });
+
 module.exports = mongoose.model('Announcement', announcementSchema);

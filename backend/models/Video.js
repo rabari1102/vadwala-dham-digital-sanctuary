@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const videoSchema = new mongoose.Schema({
   title: { type: String, required: true },
   thumbnail: { type: String, default: '' },
-  embedUrl: { type: String, required: true },
+  embedUrl: { type: String, default: '' },
   type: { type: String, enum: ['video', 'reel'], default: 'video' },
   category: { type: String, default: '' },
   publishDate: { type: Date, default: Date.now },

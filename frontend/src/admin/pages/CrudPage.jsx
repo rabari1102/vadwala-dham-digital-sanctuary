@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
 import adminApi from '../hooks/adminApi';
-import { Plus, Edit2, Trash2, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, ToggleLeft, ToggleRight } from 'lucide-react';
 
 /**
  * Reusable CRUD Page — powers ALL admin modules.
@@ -85,6 +85,12 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
   };
 
   const handleField = (key, value) => setFormData(d => ({ ...d, [key]: value }));
+  const closeForm = () => {
+    if (saving) return;
+    setShowForm(false);
+    setEditItem(null);
+    setFormData({});
+  };
 
   const filtered = items.filter(item => {
     if (!search) return true;
@@ -125,8 +131,7 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
     }
   };
 
-  // ── LIST VIEW ──
-  if (!showForm) return (
+  return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <h2 style={{ fontSize: '1.2rem' }}>{title}</h2>
@@ -197,32 +202,38 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
           </div>
         </div>
       )}
-    </>
-  );
 
-  // ── FORM VIEW ──
-  return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h2 style={{ fontSize: '1.2rem' }}>{editItem ? `Edit ${title}` : `Create ${title}`}</h2>
-        <button className="btn-admin btn-admin--outline" onClick={() => setShowForm(false)}>← Back to List</button>
-      </div>
-      <form className="admin-form" onSubmit={handleSave}>
-        <div className="admin-form__grid">
-          {fields.map(field => (
-            <div key={field.key} className={`admin-form__group ${field.fullWidth ? 'admin-form__group--full' : ''}`}>
-              {field.type !== 'checkbox' && <label className="admin-form__label">{field.label}</label>}
-              {renderFieldInput(field)}
+      {showForm && (
+        <div className="admin-modal-overlay" onClick={closeForm}>
+          <div className="admin-modal admin-modal--form" onClick={e => e.stopPropagation()}>
+            <div className="admin-modal__header">
+              <div>
+                <h3>{editItem ? `Edit ${title}` : `Create ${title}`}</h3>
+                <p>{editItem ? 'Update the selected record details.' : 'Add a new record to this module.'}</p>
+              </div>
+              <button type="button" className="admin-modal__close" onClick={closeForm} aria-label="Close">
+                <X size={18} />
+              </button>
             </div>
-          ))}
+            <form className="admin-form admin-form--modal" onSubmit={handleSave}>
+              <div className="admin-form__grid">
+                {fields.map(field => (
+                  <div key={field.key} className={`admin-form__group ${field.fullWidth ? 'admin-form__group--full' : ''}`}>
+                    {field.type !== 'checkbox' && <label className="admin-form__label">{field.label}</label>}
+                    {renderFieldInput(field)}
+                  </div>
+                ))}
+              </div>
+              <div className="admin-form__actions">
+                <button type="submit" className="btn-admin btn-admin--primary" disabled={saving}>
+                  {saving ? 'Saving...' : editItem ? 'Update' : 'Create'}
+                </button>
+                <button type="button" className="btn-admin btn-admin--outline" onClick={closeForm}>Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="admin-form__actions">
-          <button type="submit" className="btn-admin btn-admin--primary" disabled={saving}>
-            {saving ? 'Saving...' : editItem ? 'Update' : 'Create'}
-          </button>
-          <button type="button" className="btn-admin btn-admin--outline" onClick={() => setShowForm(false)}>Cancel</button>
-        </div>
-      </form>
+      )}
     </>
   );
 }

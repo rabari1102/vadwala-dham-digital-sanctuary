@@ -10,4 +10,7 @@ const festivalSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+festivalSchema.index({ status: 1, order: 1 });
+festivalSchema.index({ date: -1 });
+
 module.exports = mongoose.model('Festival', festivalSchema);

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
@@ -43,5 +45,11 @@ export const submitContactForm = (data) => API.post('/contact/form', data);
 
 // ── SEO ──
 export const getSeo = (pageSlug) => API.get('/seo', { params: { pageSlug } });
+
+// ── Gaushala Content ──
+export const getGaushalaContent = () => API.get('/gaushala-content', { params: { status: 'published' } });
+
+// ── Dhaja Booking ──
+export const submitDhajaBooking = (data) => API.post('/dhaja-bookings', data);
 
 export default API;

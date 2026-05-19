@@ -3,41 +3,43 @@ import useFetch from '../hooks/useFetch';
 import { getGalleryCategories, getGalleryItems } from '../api/apiService';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EmptyState from '../components/shared/EmptyState';
-import SectionTitle from '../components/shared/SectionTitle';
-import { getImageUrl } from '../utils/helpers';
+import { getImageUrl, downloadPhoto } from '../utils/helpers';
+import { useLanguage } from '../context/LanguageContext';
 import './GalleryPage.css';
 
 export default function GalleryPage() {
+  const { t, tr } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('all');
   const [lightbox, setLightbox] = useState(null);
   const { data: categories, loading: cl } = useFetch(() => getGalleryCategories(), []);
   const { data: items, loading: il } = useFetch(() => getGalleryItems(), []);
 
-  if (cl || il) return <LoadingSpinner />;
-
   const filtered = activeCategory === 'all'
     ? items || []
     : (items || []).filter(i => (i.categoryId?._id || i.categoryId) === activeCategory);
 
+  if (cl || il) return <LoadingSpinner />;
+
   return (
     <>
-      <div className="page-banner">
-        <div className="page-banner__content">
-          <h1 className="page-banner__title">ફોટો ગેલેરી</h1>
-          <p className="page-banner__subtitle">શ્રી વડવાળા મંદિરના ઉત્સવો અને દર્શનના ફોટો</p>
+      <section className="page-banner">
+        <div className="container page-banner__content">
+          <span className="page-banner__eyebrow">{t('visualStories')}</span>
+          <h1 className="page-banner__title">{t('photoGallery')}</h1>
+          <p className="page-banner__subtitle">{t('gallerySubtitle')}</p>
         </div>
-      </div>
+      </section>
 
-      <section className="section section--white">
+      <section className="section">
         <div className="container">
-          {/* Filters */}
+          {/* Category Filters */}
           {categories && categories.length > 0 && (
             <div className="gallery-filters">
               <button
                 className={`gallery-filter ${activeCategory === 'all' ? 'gallery-filter--active' : ''}`}
                 onClick={() => setActiveCategory('all')}
               >
-                બધા
+                {t('all')}
               </button>
               {categories.map(c => (
                 <button
@@ -45,28 +47,38 @@ export default function GalleryPage() {
                   className={`gallery-filter ${activeCategory === c._id ? 'gallery-filter--active' : ''}`}
                   onClick={() => setActiveCategory(c._id)}
                 >
-                  {c.title}
+                  {tr(c.title)}
                 </button>
               ))}
             </div>
           )}
 
           {filtered.length === 0 ? (
-            <EmptyState message="આ કેટેગરીમાં હાલમાં કોઈ ફોટો નથી" icon="📷" />
+            <EmptyState message={t('noPhotos')} icon="📷" />
           ) : (
-            <div className="gallery-grid stagger">
+            <div className="gallery-grid">
               {filtered.map((item, i) => (
-                <div
-                  key={item._id || i}
-                  className="gallery-item animate-fade-in-up"
-                  onClick={() => setLightbox(item)}
-                >
-                  <img src={getImageUrl(item.image)} alt={item.title || 'Gallery Image'} loading="lazy" />
-                  {item.title && (
-                    <div className="gallery-item__overlay">
-                      <span>{item.title}</span>
-                    </div>
+                <div key={item._id || i} className="gallery-item">
+                  <div className="gallery-item__image" onClick={() => setLightbox(item)}>
+                    <img src={getImageUrl(item.image)} alt={tr(item.title || 'Gallery')} loading="lazy" />
+                    {/* Download button on hover */}
+                    <button
+                      type="button"
+                      className="gallery-item__download"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        downloadPhoto(getImageUrl(item.image), `gallery-${i + 1}.jpg`);
+                      }}
+                      aria-label={`Download ${tr(item.title || 'photo')}`}
+                      title="ડાઉનલોડ કરો"
+                    >
+                      <span className="material-symbols-outlined">download</span>
+                    </button>
+                  </div>
+                  {item.categoryId?.title && (
+                    <span className="gallery-item__category">{tr(item.categoryId.title)}</span>
                   )}
+                  {item.title && <span className="gallery-item__title">{tr(item.title)}</span>}
                 </div>
               ))}
             </div>
@@ -74,13 +86,24 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Lightbox with download */}
       {lightbox && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
           <div className="lightbox__inner" onClick={e => e.stopPropagation()}>
-            <button className="lightbox__close" onClick={() => setLightbox(null)}>✕</button>
-            <img src={getImageUrl(lightbox.image)} alt={lightbox.title || ''} />
-            {lightbox.title && <p className="lightbox__caption">{lightbox.title}</p>}
+            <div className="lightbox__actions">
+              <button
+                className="lightbox__download"
+                onClick={() => downloadPhoto(getImageUrl(lightbox.image), `${tr(lightbox.title || 'photo')}.jpg`)}
+                title="ડાઉનલોડ કરો"
+              >
+                <span className="material-symbols-outlined">download</span>
+              </button>
+              <button className="lightbox__close" onClick={() => setLightbox(null)}>
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <img src={getImageUrl(lightbox.image)} alt={tr(lightbox.title || '')} />
+            {lightbox.title && <p className="lightbox__caption">{tr(lightbox.title)}</p>}
           </div>
         </div>
       )}

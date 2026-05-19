@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 const adminSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, minlength: 6 },
   phone: { type: String, default: '' },
   avatar: { type: String, default: '' },
   role: { type: String, enum: ['superadmin', 'admin', 'editor'], default: 'admin' },
@@ -12,14 +12,16 @@ const adminSchema = new mongoose.Schema({
   lastLogin: { type: Date }
 }, { timestamps: true });
 
-// Simple hash (use bcrypt in production)
-adminSchema.pre('save', function() {
+// Hash password with bcrypt before save
+adminSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
-  this.password = crypto.createHash('sha256').update(this.password).digest('hex');
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-adminSchema.methods.comparePassword = function(pwd) {
-  return crypto.createHash('sha256').update(pwd).digest('hex') === this.password;
+// Compare password using bcrypt
+adminSchema.methods.comparePassword = async function (pwd) {
+  return bcrypt.compare(pwd, this.password);
 };
 
 module.exports = mongoose.model('Admin', adminSchema);

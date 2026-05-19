@@ -1,0 +1,251 @@
+/* ═══════════════════════════════════════════════════════════════
+   DHAJA CHADAVANI PAGE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hero Banner */
+.dhaja-hero {
+  position: relative;
+  background: linear-gradient(135deg, #2c1810 0%, #4a2a1a 50%, #2c1810 100%);
+  color: var(--color-inverse-on-surface);
+  padding: clamp(60px, 10vw, 100px) 0 clamp(48px, 8vw, 80px);
+  overflow: hidden;
+  text-align: center;
+}
+.dhaja-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center top, rgba(224,120,48,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.dhaja-hero__icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+.dhaja-hero__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-inverse-primary);
+  margin-bottom: 12px;
+  display: block;
+}
+.dhaja-hero__title {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: 500;
+  margin-bottom: 12px;
+  position: relative;
+}
+.dhaja-hero__sub {
+  font-size: var(--text-body-lg);
+  opacity: 0.7;
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Info Section */
+.dhaja-info {
+  padding: var(--section-padding) 0;
+}
+.dhaja-info__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .dhaja-info__grid { grid-template-columns: repeat(3, 1fr); }
+}
+.dhaja-info__card {
+  padding: 32px 24px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  text-align: center;
+  transition: all var(--transition);
+}
+.dhaja-info__card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+.dhaja-info__card-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+.dhaja-info__card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-headline-md);
+  margin-bottom: 8px;
+}
+.dhaja-info__card p {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+}
+
+/* Process Steps */
+.dhaja-process {
+  padding: var(--section-padding) 0;
+  background: var(--color-surface-warm);
+}
+.dhaja-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.dhaja-step {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+}
+.dhaja-step__num {
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.dhaja-step__content h4 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.dhaja-step__content p {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.5;
+}
+
+/* Booking Form */
+.dhaja-form-section {
+  padding: var(--section-padding) 0;
+}
+.dhaja-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+}
+@media (min-width: 768px) {
+  .dhaja-form-grid { grid-template-columns: 1fr 1fr; gap: 48px; }
+}
+
+.dhaja-form-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.dhaja-form-note {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+}
+.dhaja-form-note h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.dhaja-form-note p {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+}
+.dhaja-form-note ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 8px;
+}
+.dhaja-form-note ul li {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  margin-bottom: 4px;
+}
+
+.dhaja-form-wrap {
+  padding: 32px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-warm);
+  border: 1px solid var(--color-divider);
+}
+.dhaja-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.dhaja-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 480px) {
+  .dhaja-form-row { grid-template-columns: 1fr 1fr; }
+}
+
+.dhaja-form select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b5040' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+/* Success */
+.dhaja-success {
+  text-align: center;
+  padding: 48px 24px;
+}
+.dhaja-success__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.dhaja-success h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-headline-md);
+  margin-bottom: 8px;
+  color: var(--color-tertiary);
+}
+.dhaja-success p {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Quote */
+.dhaja-quote {
+  padding: 64px 0;
+  text-align: center;
+  background: var(--color-surface-warm);
+}
+.dhaja-quote blockquote {
+  font-family: var(--font-display);
+  font-size: var(--text-headline-md);
+  font-style: italic;
+  color: var(--color-on-surface-variant);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .dhaja-form-wrap { padding: 20px; }
+}

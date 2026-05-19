@@ -9,4 +9,7 @@ const galleryItemSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+galleryItemSchema.index({ status: 1, order: 1 });
+galleryItemSchema.index({ categoryId: 1, status: 1 });
+
 module.exports = mongoose.model('GalleryItem', galleryItemSchema);

@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Contact = require('../models/Contact');
+const ContactMessage = require('../models/ContactMessage');
+const { requireAuth } = require('../middleware/auth');
 
-// GET contact info (singleton)
 router.get('/', async (req, res) => {
   try {
-    let contact = await Contact.findOne();
+    var contact = await Contact.findOne();
     if (!contact) {
       contact = await Contact.create({
         address: 'શ્રી વડવાળા મંદિર દુધરેજધામ, દુધરેજ, સુરેન્દ્રનગર (ગુજરાત) - 363040',
@@ -20,10 +21,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT update contact
-router.put('/', async (req, res) => {
+router.put('/', requireAuth, async (req, res) => {
   try {
-    let contact = await Contact.findOne();
+    var contact = await Contact.findOne();
     if (!contact) {
       contact = new Contact(req.body);
     } else {
@@ -36,15 +36,58 @@ router.put('/', async (req, res) => {
   }
 });
 
-// POST contact form submission
 router.post('/form', async (req, res) => {
   try {
-    // In production, store or email the submission
-    const { name, phone, email, message } = req.body;
+    var name = req.body.name;
+    var phone = req.body.phone;
+    var email = req.body.email;
+    var message = req.body.message;
     if (!name || !message) {
       return res.status(400).json({ error: 'Name and message are required' });
     }
-    res.json({ message: 'Form submitted successfully' });
+    var msg = new ContactMessage({ name: name, phone: phone, email: email, message: message });
+    await msg.save();
+    res.status(201).json({ message: 'Form submitted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/messages', requireAuth, async (req, res) => {
+  try {
+    var filter = {};
+    if (req.query.isRead !== undefined) filter.isRead = req.query.isRead === 'true';
+    var messages = await ContactMessage.find(filter).sort('-createdAt');
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/messages/unread-count', requireAuth, async (req, res) => {
+  try {
+    var count = await ContactMessage.countDocuments({ isRead: false });
+    res.json({ count: count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/messages/:id/read', requireAuth, async (req, res) => {
+  try {
+    var msg = await ContactMessage.findByIdAndUpdate(req.params.id, { isRead: true }, { new: true });
+    if (!msg) return res.status(404).json({ error: 'Message not found' });
+    res.json(msg);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/messages/:id', requireAuth, async (req, res) => {
+  try {
+    var msg = await ContactMessage.findByIdAndDelete(req.params.id);
+    if (!msg) return res.status(404).json({ error: 'Message not found' });
+    res.json({ message: 'Message deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

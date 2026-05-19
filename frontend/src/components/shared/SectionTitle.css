@@ -1,65 +1,33 @@
-/* ═══════════════════════════════════════════════════════
-   SECTION TITLE — 2026 Sacred-Modern
-   ═══════════════════════════════════════════════════════ */
-
+/* ── Section Title ── */
 .section-title {
-  margin-bottom: var(--space-12);
+  margin-bottom: 40px;
 }
 .section-title--center {
   text-align: center;
 }
-.section-title--left {
-  text-align: left;
-}
-
 .section-title__eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-gold);
-  margin-bottom: var(--space-3);
+  color: var(--color-primary);
+  display: block;
+  margin-bottom: 8px;
 }
-
 .section-title__heading {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: 600;
-  color: var(--color-text);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  font-size: var(--text-display-lg);
+  font-weight: 500;
+  color: var(--color-on-surface);
+  line-height: 1.2;
 }
-
-.section-title__subtitle {
-  font-size: var(--text-base);
-  color: var(--color-text-muted);
-  margin-top: var(--space-3);
-  max-width: 56ch;
-  line-height: 1.7;
+.section-title__sub {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  margin-top: 10px;
+  max-width: 560px;
+  line-height: 1.6;
 }
-.section-title--center .section-title__subtitle {
+.section-title--center .section-title__sub {
   margin-inline: auto;
-}
-
-.section-title__accent {
-  width: 48px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
-  border-radius: var(--radius-full);
-  margin-top: var(--space-4);
-}
-.section-title--center .section-title__accent {
-  margin-inline: auto;
-}
-
-/* ── Light variant (for dark backgrounds) ── */
-.section-title--light .section-title__heading {
-  color: var(--color-text-inverse);
-}
-.section-title--light .section-title__subtitle {
-  color: rgba(253, 248, 240, 0.75);
-}
-.section-title--light .section-title__eyebrow {
-  color: var(--color-gold-highlight);
 }

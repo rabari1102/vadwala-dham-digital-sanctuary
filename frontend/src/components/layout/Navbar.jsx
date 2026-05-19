@@ -1,37 +1,60 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
-import ThemeToggle from '../shared/ThemeToggle';
+import { useLanguage } from '../../context/LanguageContext';
+import { getImageUrl } from '../../utils/helpers';
 import './Navbar.css';
 
+const LOGO_URL = 'https://dudhrejvadwala.com/wp-content/uploads/2025/01/Vadwalal-Logo-1024x672.png';
+
 const defaultNavLinks = [
-  { label: 'Home',       labelGu: 'ઘર',      url: '/' },
-  { label: 'History',    labelGu: 'ઇતિહાસ',  url: '/history' },
-  { label: 'Seva',       labelGu: 'સેવા',     url: '/activities' },
-  { label: 'Gallery',    labelGu: 'ગેલેરી',   url: '/gallery' },
-  { label: 'Videos',     labelGu: 'વિડીયો',   url: '/videos' },
-  { label: 'Contact',    labelGu: 'સંપર્ક',   url: '/contact' },
+  { key: 'home', url: '/' },
+  { key: 'history', url: '/history' },
+  { key: 'seva', url: '/activities' },
+  { key: 'gallery', url: '/gallery' },
+  { key: 'videos', url: '/videos' },
+  { key: 'dhaja', url: '/dhaja' },
+  { key: 'gaushala', url: '/gaushala' },
+  { key: 'donate', url: '/donate' },
+  { key: 'contact', url: '/contact' },
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { settings } = useSiteSettings();
+  const { t, tr, toggleLanguage, isGujarati } = useLanguage();
   const location = useLocation();
 
-  /* Build nav links from API or defaults */
   const apiLinks = settings?.navLinks?.filter(l => l.isActive)?.sort((a, b) => a.order - b.order);
-  const navLinks = apiLinks?.length
+  let navLinks = apiLinks?.length
     ? apiLinks.map(l => {
-        const def = defaultNavLinks.find(d => d.url === l.url);
-        return {
-          label: def ? def.label : (l.labelEn || l.label),
-          labelGu: l.labelGu || l.label,
-          url: l.url
-        };
+        const def = defaultNavLinks.find(d => d.url === l.url) || {};
+        return { label: def.key ? t(def.key) : tr(l.label), url: l.url };
       })
-    : defaultNavLinks;
+    : defaultNavLinks.map(l => ({ ...l, label: t(l.key) }));
+
+  // Always ensure Dhaja link is present (insert before Donate)
+  if (!navLinks.find(l => l.url === '/dhaja')) {
+    const donateIdx = navLinks.findIndex(l => l.url === '/donate');
+    const dhajaItem = { label: t('dhaja'), url: '/dhaja' };
+    if (donateIdx >= 0) {
+      navLinks = [...navLinks.slice(0, donateIdx), dhajaItem, ...navLinks.slice(donateIdx)];
+    } else {
+      navLinks = [...navLinks, dhajaItem];
+    }
+  }
+
+  // Always ensure Gaushala link is present (insert before Donate)
+  if (!navLinks.find(l => l.url === '/gaushala')) {
+    const donateIdx = navLinks.findIndex(l => l.url === '/donate');
+    const gaushalaItem = { label: t('gaushala'), url: '/gaushala' };
+    if (donateIdx >= 0) {
+      navLinks = [...navLinks.slice(0, donateIdx), gaushalaItem, ...navLinks.slice(donateIdx)];
+    } else {
+      navLinks = [...navLinks, gaushalaItem];
+    }
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -39,12 +62,8 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  /* Close menu on route change */
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location.pathname]);
+  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
-  /* Prevent body scroll when menu open */
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -55,13 +74,13 @@ export default function Navbar() {
       <div className="container site-header__inner">
         {/* Logo */}
         <Link to="/" className="logo-link" aria-label="Shri Vadwala Mandir Home">
-          <svg width="36" height="36" viewBox="0 0 40 40" fill="none" aria-hidden="true" className="logo-svg">
-            <path d="M20 4 L28 14 L32 14 L32 36 L8 36 L8 14 L12 14 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-            <path d="M16 36 L16 26 Q20 22 24 26 L24 36" stroke="currentColor" strokeWidth="1.5"/>
-            <circle cx="20" cy="8" r="2" fill="currentColor"/>
-          </svg>
-          <span className="logo-text">
-            <span className="logo-gujarati" lang="gu">{settings?.siteName || 'શ્રી વડવાળા'}</span>
+          <img
+            src={getImageUrl(settings?.logo) || LOGO_URL}
+            alt="શ્રી વડવાળા મંદિર"
+            className="logo-img"
+          />
+          <span className="logo-text hide-mobile">
+            <span className="logo-gujarati">{tr(settings?.siteName || 'શ્રી વડવાળા મંદિર')}</span>
             <span className="logo-subtitle">Dudhrej Dham</span>
           </span>
         </Link>
@@ -75,37 +94,36 @@ export default function Navbar() {
                   to={item.url}
                   className={`nav-link ${location.pathname === item.url ? 'nav-link--active' : ''}`}
                 >
-                  <span className="nav-label-en">{item.label}</span>
-                  <span className="nav-label-gu" lang="gu">{item.labelGu}</span>
+                  {item.label}
                 </Link>
               </li>
             ))}
           </ul>
           <div className="nav-mobile-actions">
             <Link to="/donate" className="btn btn-primary nav-donate-btn">
-              🙏 Donate
+              🙏 {t('donateNow')}
             </Link>
           </div>
         </nav>
 
-        {/* Header actions */}
+        {/* Actions */}
         <div className="header-actions">
-          <ThemeToggle />
-          <Link to="/donate" className="btn btn-primary btn--sm header-donate-btn">
-            🙏 દાન કરો
-          </Link>
+          <button type="button" className="language-toggle" onClick={toggleLanguage}>
+            {isGujarati ? 'EN' : 'ગુજરાતી'}
+          </button>
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            <span className="material-symbols-outlined">
+              {menuOpen ? 'close' : 'menu'}
+            </span>
           </button>
         </div>
       </div>
 
-      {/* Mobile overlay */}
       {menuOpen && <div className="nav-overlay" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
     </header>
   );

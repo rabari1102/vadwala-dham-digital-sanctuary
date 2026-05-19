@@ -1,8 +1,16 @@
-export default function EmptyState({ message = 'હાલમાં કોઈ માહિતી ઉપલબ્ધ નથી', icon = '📭' }) {
+export default function EmptyState({ message, icon }) {
   return (
-    <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--color-text-muted)' }}>
-      <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{icon}</div>
-      <p style={{ fontSize: '1.05rem' }}>{message}</p>
+    <div style={{
+      textAlign: 'center',
+      padding: '80px 24px',
+      color: 'var(--color-on-surface-variant)',
+    }}>
+      {icon && <span style={{ fontSize: '48px', display: 'block', marginBottom: '16px' }}>{icon}</span>}
+      <p style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'var(--text-headline-md)',
+        fontStyle: 'italic',
+      }}>{message}</p>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Settings = require('../models/Settings');
+const { requireAuth } = require('../middleware/auth');
 
-// GET settings (returns single document)
 router.get('/', async (req, res) => {
   try {
-    let settings = await Settings.findOne();
+    var settings = await Settings.findOne();
     if (!settings) {
       settings = await Settings.create({});
     }
@@ -15,10 +15,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT update settings
-router.put('/', async (req, res) => {
+router.put('/', requireAuth, async (req, res) => {
   try {
-    let settings = await Settings.findOne();
+    var settings = await Settings.findOne();
     if (!settings) {
       settings = new Settings(req.body);
     } else {

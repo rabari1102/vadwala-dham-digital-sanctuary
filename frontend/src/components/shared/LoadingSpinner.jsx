@@ -1,10 +1,10 @@
 import './LoadingSpinner.css';
 
-export default function LoadingSpinner({ text = 'લોડ થઈ રહ્યું છે...' }) {
+export default function LoadingSpinner() {
   return (
     <div className="loading-spinner">
-      <div className="loading-spinner__ring" />
-      <p className="loading-spinner__text">{text}</p>
+      <span className="material-symbols-outlined">progress_activity</span>
+      <span className="loading-spinner__text">Loading</span>
     </div>
   );
 }

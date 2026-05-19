@@ -1,65 +1,106 @@
-import { Link } from 'react-router-dom';
-import SectionTitle from '../shared/SectionTitle';
+import { useLanguage } from '../../context/LanguageContext';
 import './ServiceCards.css';
 
-const fallbackSeva = [
-  {
-    title: 'Annshetra',
-    titleGu: 'અન્નક્ષેત્ર',
-    icon: '🍽',
-    shortDescription: '24-hour free meals served daily to 1,000–1,500 devotees and saints.',
+const defaultRituals = {
+  morning: {
+    icon: 'wb_twilight',
+    period: 'પ્રાતઃ કાલ',
+    items: [
+      { name: 'મંગળા આરતી', time: '૦૫:૩૦ AM' },
+      { name: 'બાલ ભોગ', time: '૦૭:૦૦ AM' },
+      { name: 'શણગાર આરતી', time: '૦૮:૧૫ AM' },
+    ],
   },
-  {
-    title: 'Gaushala',
-    titleGu: 'ગૌશાળા',
-    icon: '🐄',
-    shortDescription: 'Two Gaushalas preserving indigenous cattle breeds at Vadwala and Jegadwa.',
+  afternoon: {
+    icon: 'sunny',
+    period: 'મધ્યાહન',
+    items: [
+      { name: 'રાજભોગ આરતી', time: '૧૧:૩૦ AM' },
+      { name: 'થાળ પ્રસાદ', time: '૧૨:૧૫ PM' },
+      { name: 'મંદિર દ્વાર બંધ', time: '૦૧:૦૦ PM' },
+    ],
   },
-  {
-    title: 'Education',
-    titleGu: 'શિક્ષણ',
-    icon: '📚',
-    shortDescription: 'Boys\' hostel, Girls\' hostel, and Saraswati Vidhyalay school for rural youth.',
+  evening: {
+    icon: 'nights_stay',
+    period: 'સંધ્યા કાલ',
+    items: [
+      { name: 'ઉત્થાપન', time: '૦૪:૩૦ PM' },
+      { name: 'સંધ્યા આરતી', time: '૦૭:૧૫ PM' },
+      { name: 'શયન આરતી', time: '૦૯:૦૦ PM' },
+    ],
   },
-  {
-    title: 'Dharamshala',
-    titleGu: 'ધર્મશાળા',
-    icon: '🏠',
-    shortDescription: 'Pilgrim rest houses at Dakor and Junagadh for travelers on sacred journeys.',
-  },
-];
+};
 
 export default function ServiceCards({ activities = [] }) {
-  const featured = activities.filter(a => a.isFeatured).slice(0, 4);
-  const items = featured.length > 0
-    ? featured.map(a => ({
-        title: a.title,
-        titleGu: a.title,
-        icon: a.icon === 'Utensils' ? '🍽' : a.icon === 'Heart' ? '🐄' : a.icon === 'GraduationCap' ? '📚' : a.icon === 'Home' ? '🏠' : '✦',
-        shortDescription: a.shortDescription || a.description?.slice(0, 120),
-      }))
-    : fallbackSeva;
+  const { t, tr } = useLanguage();
 
   return (
-    <section className="section seva-section" id="services-section">
+    <section className="rituals-section" id="rituals-section">
       <div className="container">
-        <SectionTitle
-          eyebrow="Our Seva"
-          title="Service as Devotion"
-          subtitle="The temple's mission flows through four pillars of community care."
-        />
-        <div className="seva-grid">
-          {items.map((item, i) => (
-            <Link to="/activities" key={i} className="seva-card">
-              <span className="seva-card__icon" role="img" aria-label={item.title}>{item.icon}</span>
-              <h3 className="seva-card__title">
-                {item.title}
-                <span className="gujarati-tag" lang="gu">{item.titleGu}</span>
-              </h3>
-              <p className="seva-card__desc">{item.shortDescription}</p>
-              <span className="seva-card__link" aria-hidden="true">Learn more →</span>
-            </Link>
-          ))}
+        <div className="rituals-header">
+          <p className="rituals-header__eyebrow">{t('sacredCalendar')}</p>
+          <h2 className="rituals-header__title">{t('dailyWorship')}</h2>
+          <p className="rituals-header__sub">{t('dailyWorshipText')}</p>
+        </div>
+
+        <div className="rituals-grid">
+          {/* Morning */}
+          <div className="ritual-card">
+            <div className="ritual-card__header">
+              <span className="material-symbols-outlined ritual-card__icon" style={{ color: 'var(--color-primary)' }}>
+                {defaultRituals.morning.icon}
+              </span>
+              <h3 className="ritual-card__period">{defaultRituals.morning.period}</h3>
+            </div>
+            <div className="ritual-card__items">
+              {defaultRituals.morning.items.map((item, i) => (
+                <div key={i} className="ritual-item">
+                  <span className="ritual-item__name">{item.name}</span>
+                  <span className="ritual-item__time">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Afternoon */}
+          <div className="ritual-card ritual-card--secondary">
+            <div className="ritual-card__header">
+              <span className="material-symbols-outlined ritual-card__icon">
+                {defaultRituals.afternoon.icon}
+              </span>
+              <h3 className="ritual-card__period">{defaultRituals.afternoon.period}</h3>
+            </div>
+            <div className="ritual-card__items">
+              {defaultRituals.afternoon.items.map((item, i) => (
+                <div key={i} className="ritual-item">
+                  <span className="ritual-item__name">{item.name}</span>
+                  <span className="ritual-item__time">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Evening */}
+          <div className="ritual-card ritual-card--tertiary">
+            <div className="ritual-card__header">
+              <span className="material-symbols-outlined ritual-card__icon">
+                {defaultRituals.evening.icon}
+              </span>
+              <h3 className="ritual-card__period">{defaultRituals.evening.period}</h3>
+            </div>
+            <div className="ritual-card__items">
+              {defaultRituals.evening.items.map((item, i) => (
+                <div key={i} className="ritual-item">
+                  <span className="ritual-item__name">{item.name}</span>
+                  <span className="ritual-item__time">{item.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rituals-footer">
+          <p className="rituals-footer__note">* Timings may vary during festivals</p>
         </div>
       </div>
     </section>

@@ -25,4 +25,14 @@ dist-ssr
 
 
 package-lock.json
+
+# Environment files (NEVER commit these)
 .env
+.env.local
+.env.*.local
+
+# Keep example files
+!.env.example
+
+# Uploads
+uploads/

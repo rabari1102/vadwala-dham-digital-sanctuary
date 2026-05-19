@@ -13,4 +13,7 @@ const activitySchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+activitySchema.index({ status: 1, order: 1 });
+activitySchema.index({ isFeatured: 1, status: 1 });
+
 module.exports = mongoose.model('Activity', activitySchema);

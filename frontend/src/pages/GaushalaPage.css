@@ -1,0 +1,563 @@
+/* ═══════════════════════════════════════════════════════════════
+   GAUSHALA PAGE — Shree Shital Gaushala — Orange & Cream
+   Matches Vadwala Dham design system
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reduce section spacing globally for this page ── */
+.gaushala-section {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+@media (min-width: 768px) {
+  .gaushala-section {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+}
+
+/* ── Loading Skeleton ── */
+.gaushala-loading {
+  padding: 80px 0;
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-dim) 25%, var(--color-divider) 50%, var(--color-surface-dim) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+.skeleton-title {
+  height: 36px;
+  width: 60%;
+  margin-bottom: 20px;
+}
+.skeleton-text {
+  height: 18px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.skeleton--short {
+  width: 45%;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Intro Panel ── */
+.gaushala-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 800px;
+}
+.gaushala-intro p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+
+/* ── Vision Block ── */
+.gaushala-vision {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .gaushala-vision {
+    grid-template-columns: 3fr 2fr;
+    gap: 40px;
+  }
+}
+.gaushala-vision__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gaushala-vision__text p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+.gaushala-values {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gaushala-values li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface);
+  transition: all var(--transition);
+}
+.gaushala-values li:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+.gaushala-values li .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Inspiration Quote Card ── */
+.gaushala-quote-card {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-surface-warm) 100%);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.gaushala-quote-card::before {
+  content: '🙏';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 80px;
+  opacity: 0.08;
+}
+.gaushala-quote-card blockquote {
+  font-family: var(--font-gujarati);
+  font-size: clamp(15px, 2.5vw, 17px);
+  color: var(--color-on-surface);
+  line-height: 1.7;
+  font-style: italic;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 16px;
+}
+.gaushala-quote-card cite {
+  font-style: normal;
+  font-size: var(--text-body-sm);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  display: block;
+}
+
+/* ── Facilities Grid ── */
+.gaushala-facilities__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 800px;
+}
+.gaushala-facilities__content p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+.gaushala-seva-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+@media (min-width: 600px) {
+  .gaushala-seva-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.gaushala-seva-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface);
+  transition: all var(--transition);
+}
+.gaushala-seva-list li:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.gaushala-seva-list li .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 22px;
+  flex-shrink: 0;
+  background: var(--color-primary-light);
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+}
+
+/* ── Events / Festival Block ── */
+.gaushala-events__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 800px;
+}
+.gaushala-events__content p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+.gaushala-event-highlight {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--color-surface-warm) 0%, var(--color-primary-light) 100%);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  align-items: center;
+}
+.gaushala-event-highlight .material-symbols-outlined {
+  font-size: 36px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+.gaushala-event-highlight__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gaushala-event-highlight__text strong {
+  font-family: var(--font-gujarati);
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface);
+}
+.gaushala-event-highlight__text span {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+}
+
+/* ── Support / Participation ── */
+.gaushala-support {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .gaushala-support {
+    grid-template-columns: 3fr 2fr;
+    gap: 40px;
+  }
+}
+.gaushala-support__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gaushala-support__text p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+.gaushala-support-actions {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gaushala-support-actions li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface);
+  transition: all var(--transition);
+  cursor: default;
+}
+.gaushala-support-actions li:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+.gaushala-support-actions li .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+/* Support CTA Box */
+.gaushala-cta-box {
+  background: linear-gradient(145deg, var(--color-primary), var(--color-primary-hover));
+  border-radius: var(--radius-xl);
+  padding: 32px 24px;
+  color: var(--color-on-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.gaushala-cta-box::before {
+  content: '🐄';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  font-size: 100px;
+  opacity: 0.1;
+}
+.gaushala-cta-box h3 {
+  font-family: var(--font-gujarati);
+  font-size: clamp(20px, 3vw, 24px);
+  font-weight: 600;
+}
+.gaushala-cta-box p {
+  font-size: var(--text-body-sm);
+  opacity: 0.9;
+  line-height: 1.6;
+}
+.gaushala-cta-box .btn {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.gaushala-cta-box .btn:hover {
+  background: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Location Block ── */
+.gaushala-location__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 700px;
+}
+.gaushala-location__content p {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.8;
+}
+.gaushala-location-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+}
+.gaushala-location-note .material-symbols-outlined {
+  color: var(--color-primary);
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Photo & Video Gallery ── */
+/* ── Gallery Actions (Download All) ── */
+.gaushala-gallery-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+.gaushala-gallery-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-body-sm);
+}
+.gaushala-gallery-actions .btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.gaushala-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 600px) {
+  .gaushala-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .gaushala-gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.gaushala-gallery-figure {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  transition: all var(--transition);
+}
+.gaushala-gallery-figure:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+/* Image wrapper with download overlay */
+.gaushala-gallery-figure__img-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.gaushala-gallery-figure__img-wrap img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.gaushala-gallery-figure:hover .gaushala-gallery-figure__img-wrap img {
+  transform: scale(1.03);
+}
+
+/* Download button — hidden by default, shown on hover */
+.gaushala-gallery-download {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s ease;
+  z-index: 2;
+}
+.gaushala-gallery-download .material-symbols-outlined {
+  font-size: 22px;
+}
+.gaushala-gallery-figure:hover .gaushala-gallery-download {
+  opacity: 1;
+  transform: translateY(0);
+}
+.gaushala-gallery-download:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(0) scale(1.1);
+}
+
+.gaushala-gallery-figure figcaption {
+  padding: 10px 14px;
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ── Video Section ── */
+.gaushala-video-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+@media (min-width: 768px) {
+  .gaushala-video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.gaushala-video-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gaushala-video-item h4 {
+  font-family: var(--font-gujarati);
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface);
+}
+
+/* Video wrapper for iframes */
+.gaushala-video-item .video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  background: #000;
+}
+.gaushala-video-item .video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Click-to-play thumbnail */
+.video-thumbnail {
+  position: relative;
+  display: block;
+  width: 100%;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  background: #000;
+  padding: 0;
+  transition: all var(--transition);
+}
+.video-thumbnail:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+.video-thumbnail img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+.video-thumbnail:hover img {
+  opacity: 0.85;
+}
+.video-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
+}
+.video-thumbnail:hover .video-play-btn {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: var(--color-primary-hover);
+}
+.video-play-btn .material-symbols-outlined {
+  font-size: 36px;
+  color: white;
+  margin-left: 3px;
+}

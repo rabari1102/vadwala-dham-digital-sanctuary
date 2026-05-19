@@ -1,45 +1,38 @@
 const express = require('express');
+const { requireAuth } = require('../middleware/auth');
 
-/**
- * Creates a generic CRUD router for any Mongoose model.
- * Supports: GET all (with filters, sort), GET by ID, POST, PUT, DELETE
- */
-function createCrudRouter(Model, options = {}) {
+function createCrudRouter(Model, options) {
+  options = options || {};
   const router = express.Router();
 
-  // GET all — supports ?status=published&sort=order&limit=10&featured=true
   router.get('/', async (req, res) => {
     try {
-      const { status, sort, limit, type, categoryId, isUpcoming, featured, isActive, pageSlug } = req.query;
+      const q = req.query;
       const filter = {};
-      if (status) filter.status = status;
-      if (type) filter.type = type;
-      if (categoryId) filter.categoryId = categoryId;
-      if (isUpcoming !== undefined) filter.isUpcoming = isUpcoming === 'true';
-      if (featured !== undefined) filter.isFeatured = featured === 'true';
-      if (isActive !== undefined) filter.isActive = isActive === 'true';
-      if (pageSlug) filter.pageSlug = pageSlug;
-
-      let query = Model.find(filter);
-      if (sort) query = query.sort(sort);
+      if (q.status) filter.status = q.status;
+      if (q.type) filter.type = q.type;
+      if (q.categoryId) filter.categoryId = q.categoryId;
+      if (q.isUpcoming !== undefined) filter.isUpcoming = q.isUpcoming === 'true';
+      if (q.featured !== undefined) filter.isFeatured = q.featured === 'true';
+      if (q.isActive !== undefined) filter.isActive = q.isActive === 'true';
+      if (q.pageSlug) filter.pageSlug = q.pageSlug;
+      var query = Model.find(filter);
+      if (q.sort) query = query.sort(q.sort);
       else query = query.sort('order');
-      if (limit) query = query.limit(parseInt(limit));
-
+      if (q.limit) query = query.limit(parseInt(q.limit));
       if (options.populate) query = query.populate(options.populate);
-
-      const items = await query;
+      var items = await query;
       res.json(items);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  // GET by ID
   router.get('/:id', async (req, res) => {
     try {
-      let query = Model.findById(req.params.id);
+      var query = Model.findById(req.params.id);
       if (options.populate) query = query.populate(options.populate);
-      const item = await query;
+      var item = await query;
       if (!item) return res.status(404).json({ error: 'Not found' });
       res.json(item);
     } catch (err) {
@@ -47,10 +40,9 @@ function createCrudRouter(Model, options = {}) {
     }
   });
 
-  // POST create
-  router.post('/', async (req, res) => {
+  router.post('/', requireAuth, async (req, res) => {
     try {
-      const item = new Model(req.body);
+      var item = new Model(req.body);
       await item.save();
       res.status(201).json(item);
     } catch (err) {
@@ -58,10 +50,9 @@ function createCrudRouter(Model, options = {}) {
     }
   });
 
-  // PUT update
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', requireAuth, async (req, res) => {
     try {
-      const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+      var item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
       if (!item) return res.status(404).json({ error: 'Not found' });
       res.json(item);
     } catch (err) {
@@ -69,10 +60,9 @@ function createCrudRouter(Model, options = {}) {
     }
   });
 
-  // DELETE
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', requireAuth, async (req, res) => {
     try {
-      const item = await Model.findByIdAndDelete(req.params.id);
+      var item = await Model.findByIdAndDelete(req.params.id);
       if (!item) return res.status(404).json({ error: 'Not found' });
       res.json({ message: 'Deleted successfully' });
     } catch (err) {
@@ -80,10 +70,9 @@ function createCrudRouter(Model, options = {}) {
     }
   });
 
-  // PATCH — toggle publish/unpublish
-  router.patch('/:id/toggle-status', async (req, res) => {
+  router.patch('/:id/toggle-status', requireAuth, async (req, res) => {
     try {
-      const item = await Model.findById(req.params.id);
+      var item = await Model.findById(req.params.id);
       if (!item) return res.status(404).json({ error: 'Not found' });
       item.status = item.status === 'published' ? 'draft' : 'published';
       await item.save();
@@ -93,14 +82,16 @@ function createCrudRouter(Model, options = {}) {
     }
   });
 
-  // PATCH — reorder
-  router.patch('/reorder', async (req, res) => {
+  router.patch('/reorder', requireAuth, async (req, res) => {
     try {
-      const { items } = req.body; // [{ id, order }]
-      if (!items || !Array.isArray(items)) {
+      var list = req.body.items;
+      if (!list || !Array.isArray(list)) {
         return res.status(400).json({ error: 'items array required' });
       }
-      const ops = items.map(i => Model.findByIdAndUpdate(i.id, { order: i.order }));
+      var ops = [];
+      for (var idx = 0; idx < list.length; idx++) {
+        ops.push(Model.findByIdAndUpdate(list[idx].id, { order: list[idx].order }));
+      }
       await Promise.all(ops);
       res.json({ message: 'Reordered successfully' });
     } catch (err) {

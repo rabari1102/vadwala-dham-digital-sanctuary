@@ -1,11 +1,14 @@
 import useFetch from '../hooks/useFetch';
 import { getHistorySections, getAcharyaParampara } from '../api/apiService';
+import { useLanguage } from '../context/LanguageContext';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EmptyState from '../components/shared/EmptyState';
 import SectionTitle from '../components/shared/SectionTitle';
+import { getImageUrl } from '../utils/helpers';
 import './HistoryPage.css';
 
 export default function HistoryPage() {
+  const { t, tr } = useLanguage();
   const { data: sections, loading: sl } = useFetch(() => getHistorySections(), []);
   const { data: acharyas, loading: al } = useFetch(() => getAcharyaParampara(), []);
 
@@ -13,33 +16,38 @@ export default function HistoryPage() {
 
   return (
     <>
-      {/* Page Banner */}
-      <div className="page-banner">
-        <div className="page-banner__content">
-          <h1 className="page-banner__title">ઇતિહાસ</h1>
-          <p className="page-banner__subtitle">વડવાળા ધામનો ગૌરવશાળી ઇતિહાસ</p>
+      {/* Hero */}
+      <section className="page-banner">
+        <div className="container page-banner__content">
+          <span className="page-banner__eyebrow">{t('history')}</span>
+          <h1 className="page-banner__title">
+            {t('historySubtitle')}
+          </h1>
+          <p className="page-banner__subtitle">
+            Beyond the stone and mortar lies a story etched in the breath of devotion.
+          </p>
         </div>
-      </div>
+      </section>
 
-      {/* History Content */}
-      <section className="section section--white">
-        <div className="container container--narrow">
+      {/* History Blocks */}
+      <section className="section">
+        <div className="container">
           {(!sections || sections.length === 0) ? (
-            <EmptyState message="ઇતિહાસની માહિતી ટૂંક સમયમાં ઉપલબ્ધ થશે" icon="📜" />
+            <EmptyState message={t('noHistory')} icon="📜" />
           ) : (
             <div className="history-blocks">
               {sections.map((s, i) => (
                 <div key={s._id || i} className={`history-block ${i % 2 !== 0 ? 'history-block--alt' : ''}`}>
-                  <div className="history-block__content animate-fade-in-up">
-                    {s.year && <span className="history-block__year">{s.year}</span>}
-                    <h2 className="history-block__title">{s.title}</h2>
-                    <p className="history-block__text">{s.content}</p>
-                  </div>
                   {s.image && (
                     <div className="history-block__image">
-                      <img src={s.image} alt={s.title} />
+                      <img src={getImageUrl(s.image)} alt={tr(s.title)} loading="lazy" />
                     </div>
                   )}
+                  <div className="history-block__content">
+                    {s.year && <span className="history-block__year">{s.year}</span>}
+                    <h2 className="history-block__title">{tr(s.title)}</h2>
+                    <p className="history-block__text">{tr(s.content)}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -49,21 +57,29 @@ export default function HistoryPage() {
 
       {/* Acharya Parampara */}
       {acharyas && acharyas.length > 0 && (
-        <section className="section section--ivory">
-          <div className="container container--narrow">
-            <SectionTitle title="આચાર્યશ્રી પરંપરા" subtitle="ગાદીસ્થ આચાર્યશ્રીઓની પરંપરા" />
-            <div className="parampara-timeline">
+        <section className="parampara-section">
+          <div className="container">
+            <SectionTitle eyebrow={t('parampara')} title={t('paramparaSubtitle')} />
+            <div className="parampara-grid">
               {acharyas.map((a, i) => (
-                <div key={a._id || i} className="parampara-item animate-fade-in-up">
-                  <div className="parampara-item__number">{a.order || i + 1}</div>
-                  <div className="parampara-item__info">
-                    <h3 className="parampara-item__name">{a.name}</h3>
-                    {(a.periodStart || a.periodEnd) && (
-                      <span className="parampara-item__period">
-                        {a.periodStart}{a.periodEnd ? ` – ${a.periodEnd}` : ''}
-                      </span>
+                <div key={a._id || i} className="parampara-card" style={i === 1 ? { transform: 'translateY(48px)' } : {}}>
+                  <div className="parampara-card__image">
+                    {a.image ? (
+                      <img src={getImageUrl(a.image)} alt={a.name} loading="lazy" />
+                    ) : (
+                      <div style={{
+                        width: '100%', aspectRatio: '1', background: 'var(--color-surface-container)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--color-outline)' }}>person</span>
+                      </div>
                     )}
                   </div>
+                  <h4 className="parampara-card__name">{a.name}</h4>
+                  <p className="parampara-card__period">
+                    {a.periodStart}{a.periodEnd ? ` – ${a.periodEnd}` : ''}
+                  </p>
+                  {a.description && <p className="parampara-card__desc">{tr(a.description)}</p>}
                 </div>
               ))}
             </div>

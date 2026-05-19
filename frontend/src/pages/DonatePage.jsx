@@ -4,13 +4,17 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import EmptyState from '../components/shared/EmptyState';
 import SectionTitle from '../components/shared/SectionTitle';
-import { Utensils, Heart, GraduationCap, Building } from 'lucide-react';
+import { getImageUrl } from '../utils/helpers';
+import { useLanguage } from '../context/LanguageContext';
 import './DonatePage.css';
 
-const iconMap = { Utensils, Heart, GraduationCap, Building };
+const iconMap = {
+  Utensils: 'restaurant', Heart: 'favorite', GraduationCap: 'school', Building: 'account_balance',
+};
 
 export default function DonatePage() {
   const { settings } = useSiteSettings();
+  const { t, tr } = useLanguage();
   const { data: items, loading: il } = useFetch(() => getDonationItems(), []);
   const { data: paymentInfo, loading: pl } = useFetch(() => getPaymentInfo(), []);
 
@@ -18,27 +22,30 @@ export default function DonatePage() {
 
   return (
     <>
-      <div className="page-banner">
-        <div className="page-banner__content">
-          <h1 className="page-banner__title">દાન – સેવા</h1>
-          <p className="page-banner__subtitle">મંદિરના વિવિધ સેવા કાર્યોમાં આપનો સહકાર</p>
+      <section className="page-banner">
+        <div className="container page-banner__content">
+          <span className="page-banner__eyebrow">{t('supportMission')}</span>
+          <h1 className="page-banner__title">{t('donationTitle')}</h1>
+          <p className="page-banner__subtitle">{t('donationSubtitle')}</p>
         </div>
-      </div>
+      </section>
 
-      <section className="section section--white">
+      <section className="section">
         <div className="container">
-          <SectionTitle title="દાનના હેતુઓ" subtitle="નીચેના સેવા કાર્યોમાં દાન આપી શકો છો" />
+          <SectionTitle eyebrow={t('contributeNow')} title={t('donationPurposes')} subtitle={t('donationPurposesSub')} />
           {(!items || items.length === 0) ? (
-            <EmptyState message="દાનની માહિતી ટૂંક સમયમાં ઉપલબ્ધ થશે" icon="🙏" />
+            <EmptyState message={t('noDonation')} icon="🙏" />
           ) : (
-            <div className="donate-purposes stagger">
+            <div className="donate-funds">
               {items.map((item, i) => {
-                const Icon = iconMap[item.icon] || Heart;
+                const icon = iconMap[item.icon] || 'volunteer_activism';
                 return (
-                  <div key={item._id || i} className="donate-purpose animate-fade-in-up">
-                    <div className="donate-purpose__icon"><Icon size={24} /></div>
-                    <h3 className="donate-purpose__title">{item.title}</h3>
-                    <p className="donate-purpose__desc">{item.description}</p>
+                  <div key={item._id || i} className="donate-fund">
+                    <span className="material-symbols-outlined donate-fund__icon">{icon}</span>
+                    <div className="donate-fund__content">
+                      <h3 className="donate-fund__title">{tr(item.title)}</h3>
+                      <p className="donate-fund__desc">{tr(item.description)}</p>
+                    </div>
                   </div>
                 );
               })}
@@ -47,33 +54,38 @@ export default function DonatePage() {
         </div>
       </section>
 
-      <section className="section section--ivory">
-        <div className="container container--narrow">
-          <SectionTitle title="દાન કેવી રીતે કરવું" />
+      <section className="section section--alt">
+        <div className="container">
+          <SectionTitle eyebrow={t('howToDonate')} title={t('howToDonate')} />
           {(!paymentInfo || paymentInfo.length === 0) ? (
-            <EmptyState message="ચુકવણીની માહિતી ટૂંક સમયમાં ઉપલબ્ધ થશે" />
+            <EmptyState message={t('noPayment')} />
           ) : (
-            <div className="payment-cards">
-              {paymentInfo.map((p, i) => (
-                <div key={p._id || i} className="payment-card">
-                  <span className="payment-card__type">
-                    {p.type === 'bank' ? '🏦 Bank' : p.type === 'upi' ? '📱 UPI' : '📱 QR'}
-                  </span>
-                  <h3 className="payment-card__label">{p.label}</h3>
-                  <p className="payment-card__details">{p.details}</p>
-                </div>
-              ))}
+            <div className="payment-section">
+              <div className="payment-cards">
+                {paymentInfo.map((p, i) => (
+                  <div key={p._id || i} className="payment-card">
+                    <span className="payment-card__type">
+                      {p.type === 'bank' ? '🏦 Bank Transfer' : p.type === 'upi' ? '📱 UPI' : '📱 QR Code'}
+                    </span>
+                    <h3 className="payment-card__label">{tr(p.label)}</h3>
+                    <p className="payment-card__details">{tr(p.details)}</p>
+                    {p.qrImage && (
+                      <img className="payment-card__qr" src={getImageUrl(p.qrImage)} alt={`${p.label} QR`} loading="lazy" />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </section>
 
       {settings?.trustNote && (
-        <section className="section section--white">
-          <div className="container container--narrow">
+        <section className="section">
+          <div className="container">
             <div className="trust-note">
-              <h3>⚠️ મહત્વની નોંધ</h3>
-              <p>{settings.trustNote}</p>
+              <h3>{t('importantNote')}</h3>
+              <p>{tr(settings.trustNote)}</p>
             </div>
           </div>
         </section>

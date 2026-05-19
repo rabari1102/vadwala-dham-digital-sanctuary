@@ -1,37 +1,32 @@
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import useFetch from '../hooks/useFetch';
-import { getBanners, getActivities, getFestivals, getGalleryItems } from '../api/apiService';
+import { getBanners, getActivities, getFestivals } from '../api/apiService';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
+import FloatingDonateButton from '../components/shared/FloatingDonateButton';
 import HeroSlider from '../components/home/HeroSlider';
-import IntroSection from '../components/home/IntroSection';
-import ServiceCards from '../components/home/ServiceCards';
 import FestivalSection from '../components/home/FestivalSection';
-import GalleryPreview from '../components/home/GalleryPreview';
-import DonateCTA from '../components/home/DonateCTA';
-import ContactSummary from '../components/home/ContactSummary';
+import ServiceCards from '../components/home/ServiceCards';
+import IntroSection from '../components/home/IntroSection';
 
 export default function HomePage() {
   const { settings } = useSiteSettings();
   const { data: banners, loading: bl } = useFetch(() => getBanners(), []);
   const { data: activities, loading: al } = useFetch(() => getActivities(), []);
   const { data: festivals, loading: fl } = useFetch(() => getFestivals(), []);
-  const { data: galleryItems, loading: gl } = useFetch(() => getGalleryItems({ limit: 6 }), []);
 
-  if (bl && al && fl && gl) return <LoadingSpinner />;
+  if (bl && al && fl) return <LoadingSpinner />;
 
   return (
     <>
       <HeroSlider banners={banners || []} />
+      <FestivalSection festivals={festivals || []} />
+      <ServiceCards activities={activities || []} />
       <IntroSection
         title={settings?.introTitle}
         content={settings?.introContent}
         image={settings?.introImage}
       />
-      <ServiceCards activities={activities || []} />
-      <FestivalSection festivals={festivals || []} />
-      <GalleryPreview items={galleryItems || []} />
-      <DonateCTA title={settings?.donateCtaTitle} text={settings?.donateCtaText} />
-      <ContactSummary />
+      <FloatingDonateButton />
     </>
   );
 }
