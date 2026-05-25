@@ -163,6 +163,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Root check
+app.get('/', (req, res) => {
+  res.send('Vadwala Dham Digital Sanctuary API is running.');
+});
+
 // ── Database Connection & Server Start ──
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
