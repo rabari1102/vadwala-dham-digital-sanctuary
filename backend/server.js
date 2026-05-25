@@ -167,41 +167,56 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
-  .then(async () => {
-    console.log('MongoDB connected successfully');
+if (!MONGODB_URI) {
+  console.error('WARNING: MONGODB_URI is not defined. Database features will not work.');
+} else {
+  // Connect to MongoDB asynchronously
+  mongoose.connect(MONGODB_URI)
+    .then(() => {
+      console.log('MongoDB connected successfully');
+    })
+    .catch((err) => {
+      console.error('MongoDB connection error:', err.message);
+      // In serverless, do not call process.exit(1) on connection failure
+      // because it will crash the serverless container boot.
+      if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+        process.exit(1);
+      }
+    });
+}
 
-    // Seed default admin if none exists
-    const Admin = require('./models/Admin');
-    const adminCount = await Admin.countDocuments();
-    if (adminCount === 0) {
-      const defaultEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@vadwala.com';
-      const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'VadwalaDham2024!';
-      await Admin.create({
-        name: 'Admin',
-        email: defaultEmail,
-        password: defaultPassword,
-        role: 'superadmin',
-        status: 'active',
-      });
-      console.log(`Default admin created: ${defaultEmail}`);
-    }
-
-    // Seed public content (skip existing)
+// Start listener and seeding ONLY when not running on Vercel / Serverless
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  // Run seeding only once the connection is open
+  mongoose.connection.once('open', async () => {
     try {
-      const stats = await seedPublicContent({ log: console.log });
+      // Seed default admin if none exists
+      const Admin = require('./models/Admin');
+      const adminCount = await Admin.countDocuments();
+      if (adminCount === 0) {
+        const defaultEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@vadwala.com';
+        const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'VadwalaDham2024!';
+        await Admin.create({
+          name: 'Admin',
+          email: defaultEmail,
+          password: defaultPassword,
+          role: 'superadmin',
+          status: 'active',
+        });
+        console.log(`Default admin created: ${defaultEmail}`);
+      }
+
+      // Seed public content (skip existing)
+      await seedPublicContent({ log: console.log });
       console.log('Public content seed complete');
     } catch (seedErr) {
       console.error('Seed error (non-fatal):', seedErr.message);
     }
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1);
   });
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
