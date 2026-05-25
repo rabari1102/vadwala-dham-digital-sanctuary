@@ -106,18 +106,38 @@ app.get('/uploads/*splat', async (req, res) => {
 });
 
 // Download endpoint — forces Content-Disposition: attachment so browser saves with correct filename
-app.get('/api/download', (req, res) => {
+app.get('/api/download', async (req, res) => {
   const { file, name } = req.query;
   if (!file) return res.status(400).json({ error: 'Missing file parameter' });
 
   // Security: only allow filenames, no path traversal
   const safeFile = path.basename(file);
-  const filePath = path.join(__dirname, 'uploads', safeFile);
-
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
-
   const downloadName = name || safeFile;
-  res.download(filePath, downloadName);
+
+  try {
+    // 1. Try to find in database (handles flat files and subfolders like gurus/)
+    const escapedFile = safeFile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const media = await Media.findOne({ filename: { $regex: new RegExp('(^|/)' + escapedFile + '$') } });
+    
+    if (media) {
+      res.set({
+        'Content-Type': media.contentType,
+        'Content-Disposition': `attachment; filename="${encodeURIComponent(downloadName)}"`
+      });
+      return res.send(media.data);
+    }
+
+    // 2. Fallback to local disk (useful for local dev)
+    const filePath = path.join(__dirname, 'uploads', safeFile);
+    if (fs.existsSync(filePath)) {
+      return res.download(filePath, downloadName);
+    }
+
+    return res.status(404).json({ error: 'File not found' });
+  } catch (err) {
+    console.error('Download error:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Rate limiting on auth routes
