@@ -488,7 +488,7 @@ async function seedPublicContent(options = {}) {
   }
 
   for (const item of buildGalleryItems(categoriesBySlug)) {
-    const result = await createIfMissing(GalleryItem, { image: item.image }, item);
+    const result = await createIfMissing(GalleryItem, { title: item.title, categoryId: item.categoryId }, item);
     stats.galleryItems = (stats.galleryItems || 0) + (result.created ? 1 : 0);
   }
 

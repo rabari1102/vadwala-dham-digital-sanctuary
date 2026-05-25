@@ -38,20 +38,51 @@ var upload = multer({
   }
 });
 
-router.post('/', requireAuth, upload.single('file'), function (req, res) {
+const Media = require('../models/Media');
+
+router.post('/', requireAuth, upload.single('file'), async function (req, res) {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  var url = '/uploads/' + req.file.filename;
-  res.json({ url: url, filename: req.file.filename });
+  try {
+    const data = fs.readFileSync(req.file.path);
+    await Media.findOneAndUpdate(
+      { filename: req.file.filename },
+      {
+        filename: req.file.filename,
+        contentType: req.file.mimetype,
+        data: data
+      },
+      { upsert: true, new: true }
+    );
+    var url = '/uploads/' + req.file.filename;
+    res.json({ url: url, filename: req.file.filename });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.post('/multiple', requireAuth, upload.array('files', 20), function (req, res) {
+router.post('/multiple', requireAuth, upload.array('files', 20), async function (req, res) {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No files uploaded' });
   }
-  var files = req.files.map(function (f) {
-    return { url: '/uploads/' + f.filename, filename: f.filename };
-  });
-  res.json(files);
+  try {
+    const files = [];
+    for (const f of req.files) {
+      const data = fs.readFileSync(f.path);
+      await Media.findOneAndUpdate(
+        { filename: f.filename },
+        {
+          filename: f.filename,
+          contentType: f.mimetype,
+          data: data
+        },
+        { upsert: true }
+      );
+      files.push({ url: '/uploads/' + f.filename, filename: f.filename });
+    }
+    res.json(files);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

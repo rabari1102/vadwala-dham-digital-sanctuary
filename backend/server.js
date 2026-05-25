@@ -37,12 +37,22 @@ app.use(cors({
   credentials: true,
 }));
 
+// Request logger middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+  });
+  next();
+});
+
 // Body parsing
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Serve uploaded/local images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve uploaded/local images dynamically from MongoDB with disk fallback
 
 // Mongo injection sanitization
 function sanitizeMongoKeys(value) {
@@ -67,11 +77,35 @@ app.use((req, res, next) => {
   next();
 });
 
-// Static files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve media dynamically from MongoDB
+const Media = require('./models/Media');
+const fs = require('fs');
+app.get('/uploads/*splat', async (req, res) => {
+  try {
+    const filePath = Array.isArray(req.params.splat) 
+      ? req.params.splat.join('/') 
+      : req.params.splat;
+      
+    const media = await Media.findOne({ filename: filePath });
+    if (media) {
+      res.set('Content-Type', media.contentType);
+      return res.send(media.data);
+    }
+
+    // Fallback: check local disk
+    const localPath = path.join(__dirname, 'uploads', filePath);
+    if (fs.existsSync(localPath)) {
+      return res.sendFile(localPath);
+    }
+
+    res.status(404).send('Not Found');
+  } catch (err) {
+    console.error('Error serving media from DB:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Download endpoint — forces Content-Disposition: attachment so browser saves with correct filename
-const fs = require('fs');
 app.get('/api/download', (req, res) => {
   const { file, name } = req.query;
   if (!file) return res.status(400).json({ error: 'Missing file parameter' });
