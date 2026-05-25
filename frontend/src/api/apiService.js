@@ -52,4 +52,12 @@ export const getGaushalaContent = () => API.get('/gaushala-content', { params: {
 // ── Dhaja Booking ──
 export const submitDhajaBooking = (data) => API.post('/dhaja-bookings', data);
 
+// ── Gurus ──
+export const getGurus = () => API.get('/gurus', { params: { status: 'published' } });
+export const getGuruBySlug = (slug) => API.get(`/gurus/${slug}`);
+export const getGuruImages = (slug) => API.get(`/gurus/${slug}/images`);
+
+// ── Tithis ──
+export const getUpcomingTithis = (params) => API.get('/tithi-days/upcoming', { params });
+
 export default API;

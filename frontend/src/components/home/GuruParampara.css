@@ -1,0 +1,271 @@
+/* ═══════════════════════════════════════════════════════════════
+   GURU PARAMPARA — Devotional, alternating layout
+   ═══════════════════════════════════════════════════════════════ */
+
+.guru-parampara {
+  padding: var(--section-padding) 0;
+  background: linear-gradient(180deg, var(--color-surface-warm) 0%, var(--color-background) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative top border */
+.guru-parampara::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 800px);
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  border-radius: 2px;
+}
+
+.guru-parampara__header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.guru-parampara__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.guru-parampara__title {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: 500;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+/* ── Card Grid ── */
+.guru-parampara__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* ── Individual Guru Card ── */
+.guru-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: box-shadow var(--transition), transform var(--transition);
+  position: relative;
+}
+
+.guru-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+/* Saffron accent line on card */
+.guru-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.guru-card:hover::after {
+  opacity: 1;
+}
+
+/* ── Image Area ── */
+.guru-card__image-wrap {
+  flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
+  height: 320px; /* fixed taller height on mobile to ensure portrait/square aspect */
+}
+
+.guru-card__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-slow);
+}
+
+.guru-card:hover .guru-card__image {
+  transform: scale(1.04);
+}
+
+.guru-card__image-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-surface-container) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.guru-card__image-placeholder .material-symbols-outlined {
+  font-size: 80px;
+  opacity: 0.35;
+}
+
+/* ── Text Area ── */
+.guru-card__text {
+  flex: 1;
+  padding: 24px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.guru-card__name {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--color-on-surface);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.guru-card__role {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.guru-card__community {
+  font-size: var(--text-body-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.guru-card__bio {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.guru-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-top: 4px;
+  transition: gap var(--transition-fast);
+}
+
+.guru-card:hover .guru-card__cta {
+  gap: 12px;
+}
+
+.guru-card__cta .material-symbols-outlined {
+  font-size: 18px;
+  transition: transform var(--transition-fast);
+}
+
+.guru-card:hover .guru-card__cta .material-symbols-outlined {
+  transform: translateX(4px);
+}
+
+/* ── Scroll-in Animation ── */
+.guru-card {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow var(--transition);
+}
+
+.guru-card.guru-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.guru-card:nth-child(2) {
+  transition-delay: 0.15s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP LAYOUT — Side by side, alternating
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .guru-parampara__cards {
+    gap: 40px;
+  }
+
+  .guru-card {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 280px;
+  }
+
+  .guru-card__image-wrap {
+    flex: 0 0 250px;
+    max-width: 250px;
+    height: auto;
+    min-height: 300px;
+  }
+
+  .guru-card__text {
+    padding: 32px 40px;
+  }
+
+  /* Reverse layout for second card */
+  .guru-card--reverse {
+    flex-direction: row-reverse;
+  }
+
+  /* Animation tweaks for desktop */
+  .guru-card {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  .guru-card--reverse {
+    transform: translateX(40px);
+  }
+
+  .guru-card.guru-card--visible {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .guru-card__image-wrap {
+    flex: 0 0 280px;
+    max-width: 280px;
+    height: auto;
+    min-height: 340px;
+  }
+
+  .guru-card__text {
+    padding: 40px 48px;
+  }
+}

@@ -11,8 +11,10 @@ const nav = [
     { label: 'Banners', to: '/admin/banners', icon: Image },
     { label: 'History', to: '/admin/history', icon: History },
     { label: 'Acharya Parampara', to: '/admin/acharya-parampara', icon: Sun },
+    { label: 'Gurus', to: '/admin/gurus', icon: Users },
     { label: 'Activities', to: '/admin/activities', icon: Sparkles },
     { label: 'Festivals', to: '/admin/festivals', icon: Calendar },
+    { label: 'Tithi Calendar', to: '/admin/tithi-days', icon: Calendar },
     { label: 'Announcements', to: '/admin/announcements', icon: Megaphone },
   ]},
   { section: 'Media', items: [

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getImageUrl } from '../../utils/helpers';
+import { getImageUrl, downloadPhoto } from '../../utils/helpers';
 import { useLanguage } from '../../context/LanguageContext';
 import './HeroSlider.css';
 
@@ -58,14 +58,25 @@ export default function HeroSlider({ banners = [] }) {
         <div className="hero__visual">
           <div className="hero__image-wrap">
             {heroImage ? (
-              <img
-                src={heroImage}
-                alt="Shri Vadwala Mandir, Dudhrej Dham"
-                width="640" height="800"
-                loading="eager" decoding="async"
-                key={current}
-                className="hero__image"
-              />
+              <>
+                <img
+                  src={heroImage}
+                  alt="Shri Vadwala Mandir, Dudhrej Dham"
+                  width="640" height="800"
+                  loading="eager" decoding="async"
+                  key={current}
+                  className="hero__image"
+                />
+                <button
+                  type="button"
+                  className="hero__image-download"
+                  onClick={() => downloadPhoto(heroImage, `banner-${current + 1}.jpg`)}
+                  title="ડાઉનલોડ કરો / Download Banner"
+                  aria-label="Download banner"
+                >
+                  <span className="material-symbols-outlined">download</span>
+                </button>
+              </>
             ) : (
               <div className="hero__image-placeholder" aria-hidden="true">
                 <span className="material-symbols-outlined" style={{ fontSize: 80, opacity: 0.3 }}>temple_hindu</span>

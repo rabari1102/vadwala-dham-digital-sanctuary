@@ -1,0 +1,496 @@
+/* ── Guru Darshan Section Styling ── */
+
+.guru-darshan {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .guru-darshan {
+    display: block;
+    padding: 80px 0;
+    background: var(--color-background-alt, #faf8f5);
+    border-top: 1px solid rgba(220, 180, 120, 0.15);
+    border-bottom: 1px solid rgba(220, 180, 120, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+.guru-darshan::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(240, 150, 40, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Header */
+.guru-darshan__header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 50px auto;
+  position: relative;
+  z-index: 2;
+}
+
+.guru-darshan__eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary, #d97706);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+  background: rgba(217, 119, 6, 0.08);
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(217, 119, 6, 0.12);
+}
+
+.guru-darshan__title {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  color: var(--color-on-background, #1f2937);
+  line-height: 1.25;
+  margin-bottom: 16px;
+  font-family: var(--font-heading, inherit);
+  letter-spacing: -0.02em;
+}
+
+.guru-darshan__desc {
+  font-size: clamp(14px, 1.8vw, 16px);
+  color: var(--color-text-muted, #6b7280);
+  line-height: 1.6;
+}
+
+/* Custom Tabs */
+.guru-darshan__tabs-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 45px;
+  position: relative;
+  z-index: 2;
+}
+
+.guru-darshan__tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(220, 180, 120, 0.2);
+  box-shadow: 0 4px 20px -2px rgba(120, 80, 40, 0.05);
+  margin-bottom: 24px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.guru-darshan__tabs::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+.guru-darshan__tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-muted, #6b7280);
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.guru-darshan__tab-btn .tab-icon {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.guru-darshan__tab-btn:hover {
+  color: var(--color-primary, #d97706);
+}
+
+.guru-darshan__tab-btn--active {
+  background: var(--color-primary, #d97706);
+  color: #ffffff !important;
+  box-shadow: 0 4px 15px -3px rgba(217, 119, 6, 0.35);
+}
+
+.guru-darshan__tab-btn--active .tab-icon {
+  opacity: 1;
+}
+
+/* Sub-Info panel below tabs */
+.guru-darshan__sub-info {
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.guru-darshan__sub-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-on-background, #1f2937);
+  margin-bottom: 4px;
+}
+
+.guru-darshan__sub-title {
+  font-size: 13px;
+  color: var(--color-primary, #d97706);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* States (Loading/Error) */
+.guru-darshan__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  border: 1px dashed rgba(220, 180, 120, 0.2);
+}
+
+.guru-darshan__state--error {
+  color: #ef4444;
+}
+
+.guru-darshan__state--error span {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Responsive Image Grid */
+.guru-darshan__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 480px) {
+  .guru-darshan__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .guru-darshan__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .guru-darshan__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Gallery Card */
+.guru-darshan__card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(220, 180, 120, 0.1);
+  cursor: pointer;
+  aspect-ratio: 4 / 5;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.guru-darshan__img-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.guru-darshan__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover Overlay & Zoom */
+.guru-darshan__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.zoom-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #ffffff;
+  background: rgba(217, 119, 6, 0.9);
+  padding: 8px;
+  border-radius: 50%;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.guru-darshan__caption {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  transform: translateY(10px);
+  transition: transform 0.3s ease;
+}
+
+.guru-darshan__card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px -5px rgba(120, 80, 40, 0.12);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.guru-darshan__card:hover .guru-darshan__img {
+  transform: scale(1.08);
+}
+
+.guru-darshan__card:hover .guru-darshan__overlay {
+  opacity: 1;
+}
+
+.guru-darshan__card:hover .zoom-icon {
+  transform: scale(1);
+}
+
+.guru-darshan__card:hover .guru-darshan__caption {
+  transform: translateY(0);
+}
+
+/* Focus outline for accessibility */
+.guru-darshan__card:focus-visible {
+  outline: 3px solid var(--color-primary, #d97706);
+  outline-offset: 2px;
+}
+
+/* ── Lightbox / Modal Viewer ── */
+
+.guru-darshan-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 12, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.guru-darshan-lightbox__close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  z-index: 1020;
+}
+
+.guru-darshan-lightbox__close:hover {
+  background: rgba(217, 119, 6, 0.9);
+  border-color: transparent;
+  transform: rotate(90deg);
+}
+
+/* Lightbox Navigation */
+.guru-darshan-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  z-index: 1010;
+}
+
+.guru-darshan-lightbox__nav:hover {
+  background: var(--color-primary, #d97706);
+  border-color: transparent;
+  scale: 1.05;
+}
+
+.guru-darshan-lightbox__nav--prev {
+  left: 24px;
+}
+
+.guru-darshan-lightbox__nav--next {
+  right: 24px;
+}
+
+/* Hide side nav on small mobile to avoid layout crowding */
+@media (max-width: 640px) {
+  .guru-darshan-lightbox__nav {
+    display: none; /* Mobile can use swipe or click through counter */
+  }
+}
+
+/* Lightbox Image Container */
+.guru-darshan-lightbox__content {
+  max-width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.guru-darshan-lightbox__img {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Caption bar below image */
+.guru-darshan-lightbox__caption-panel {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-top: 16px;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.guru-darshan-lightbox__text {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.guru-darshan-lightbox__counter {
+  color: var(--color-primary, #d97706);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: monospace;
+  white-space: nowrap;
+  background: rgba(217, 119, 6, 0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Card Download Button */
+.guru-darshan__card-download {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  z-index: 15;
+}
+
+.guru-darshan__card:hover .guru-darshan__card-download {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.guru-darshan__card-download:hover {
+  background: var(--color-primary, #d97706);
+  scale: 1.1;
+}
+
+/* Lightbox Download Button */
+.guru-darshan-lightbox__download {
+  position: absolute;
+  top: 24px;
+  right: 84px; /* next to close button */
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  z-index: 1020;
+}
+
+.guru-darshan-lightbox__download:hover {
+  background: var(--color-primary, #d97706);
+  border-color: transparent;
+  scale: 1.05;
+}

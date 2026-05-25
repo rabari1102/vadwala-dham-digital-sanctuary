@@ -14,6 +14,7 @@ import ContactPage from './pages/ContactPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import DhajaPage from './pages/DhajaPage';
 import GaushalaPage from './pages/GaushalaPage';
+import GuruDetailPage from './pages/GuruDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AdminApp from './admin/AdminApp';
 
@@ -37,6 +38,7 @@ function PublicLayout() {
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="/dhaja" element={<DhajaPage />} />
             <Route path="/gaushala" element={<GaushalaPage />} />
+            <Route path="/gurus/:slug" element={<GuruDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

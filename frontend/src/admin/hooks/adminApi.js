@@ -18,6 +18,16 @@ const adminApi = {
   // For singleton endpoints (settings, contact)
   getSingleton: (endpoint) => axios.get(`${API}/${endpoint}`, { headers: getHeaders() }),
   updateSingleton: (endpoint, data) => axios.put(`${API}/${endpoint}`, data, { headers: getHeaders() }),
+  upload: (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return axios.post(`${API}/upload`, formData, {
+      headers: {
+        ...getHeaders(),
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
 };
 
 export default adminApi;

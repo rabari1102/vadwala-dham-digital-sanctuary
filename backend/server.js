@@ -19,6 +19,7 @@ app.use(helmet({
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
+  'http://localhost:5174',
   'http://localhost:3000',
 ].filter(Boolean);
 
@@ -116,6 +117,8 @@ const Announcement = require('./models/Announcement');
 const Seo = require('./models/Seo');
 const DhajaBooking = require('./models/DhajaBooking');
 const GaushalaContent = require('./models/GaushalaContent');
+const Guru = require('./models/Guru');
+const TithiDay = require('./models/TithiDay');
 
 // ── Import Routers ──
 const createCrudRouter = require('./utils/crudRouter');
@@ -124,6 +127,8 @@ const contactRouter = require('./routes/contact');
 const settingsRouter = require('./routes/settings');
 const uploadRouter = require('./routes/upload');
 const dhajaBookingRouter = require('./routes/dhajaBooking');
+const guruRouter = require('./routes/gurus');
+const tithiDaysRouter = require('./routes/tithiDays');
 
 // ── Mount Routes ──
 app.use('/api/auth', authLimiter, authRouter);
@@ -131,6 +136,8 @@ app.use('/api/settings', settingsRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/dhaja-bookings', dhajaBookingRouter);
+app.use('/api/gurus', guruRouter);
+app.use('/api/tithi-days', tithiDaysRouter);
 
 // CRUD routes — GET is public, POST/PUT/DELETE require auth
 app.use('/api/banners', createCrudRouter(Banner));

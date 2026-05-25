@@ -13,6 +13,8 @@ const Announcement = require('../models/Announcement');
 const Contact = require('../models/Contact');
 const Seo = require('../models/Seo');
 const GaushalaContent = require('../models/GaushalaContent');
+const Guru = require('../models/Guru');
+const TithiDay = require('../models/TithiDay');
 
 // Local uploads paths (images downloaded from old CDN via scripts/migrate-images.js)
 const LOCAL = '/uploads';
@@ -292,6 +294,8 @@ const seoItems = [
   { pageSlug: 'contact', title: 'સંપર્ક - શ્રી વડવાળા મંદિર', description: 'સરનામું, ફોન, ઈમેઈલ અને સંપર્ક ફોર્મ.' },
   { pageSlug: 'activities', title: 'પ્રવૃત્તિઓ - શ્રી વડવાળા મંદિર', description: 'અન્નક્ષેત્ર, ગૌશાળા, શિક્ષણ અને ધાર્મિક સેવા પ્રવૃત્તિઓ.' },
   { pageSlug: 'gaushala', title: 'શ્રી શીતલ ગૌશાળા - દુધરેજ વડવાળા ધામ', description: 'શ્રી શીતલ ગૌશાળા, ગીર ગાય સેવા, ગૌ રક્ષા અને ગૌ સેવાની પ્રવૃત્તિઓ – દુધરેજ વડવાળા ધામ.' },
+  { pageSlug: 'guru-kaniram-bapu', title: 'મહંત શ્રી કનીરામદાસજી બાપુ – શ્રી વડવાળા મંદિર દુધરેજધામ', description: 'પરમ પૂજ્ય મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુ, રબારી સમાજના ધર્મગુરુ, શ્રી વડવાળા મંદિર દુધરેજધામના મહંત.' },
+  { pageSlug: 'guru-mukundram-bapu', title: 'કોઠારી શ્રી મુકુંદરામ બાપુ – શ્રી વડવાળા મંદિર દુધરેજધામ', description: 'કોઠારી શ્રી મુકુંદરામ બાપુ, શ્રી વડવાળા મંદિર દુધરેજધામના કોઠારી અને વહીવટી વડા.' },
 ];
 
 const gaushalaDefaults = {
@@ -560,9 +564,456 @@ async function seedPublicContent(options = {}) {
     stats.gaushalaContent = 0;
   }
 
+  // ── Guru seed ──
+  stats.gurus = 0;
+  for (const guruData of guruSeeds) {
+    const existing = await Guru.findOne({ slug: guruData.slug });
+    if (!existing) {
+      await Guru.create(guruData);
+      stats.gurus++;
+    } else {
+      existing.full_name = guruData.full_name;
+      existing.role_title = guruData.role_title;
+      existing.short_title = guruData.short_title;
+      existing.community_role = guruData.community_role;
+      existing.biography_short = guruData.biography_short;
+      existing.biography_full = guruData.biography_full;
+      existing.teachings_themes = guruData.teachings_themes;
+      existing.notable_quotes = guruData.notable_quotes;
+      existing.seo_keywords = guruData.seo_keywords;
+      existing.events = guruData.events;
+      existing.images = guruData.images;
+      existing.order = guruData.order;
+      await existing.save();
+    }
+  }
+
+  // Seeding TithiDay
+  const tithiCount = await TithiDay.countDocuments();
+  if (tithiCount === 0) {
+    await TithiDay.insertMany(tithiSeeds);
+    stats.tithiDays = tithiSeeds.length;
+  } else {
+    stats.tithiDays = 0;
+  }
+
   log(`Public content seed checked: ${JSON.stringify(stats)}`);
   return stats;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// GURU SEED DATA
+// ═══════════════════════════════════════════════════════════════
+
+const GURU_IMG = '/uploads/gurus';
+
+const guruSeeds = [
+  // ── Mahant Shri Kaniram Bapu ──
+  {
+    slug: 'kaniram-bapu',
+    full_name: 'પરમ પૂજ્ય ૧૦૦૮ મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુ',
+    role_title: 'મહંત અને મહામંડલેશ્વર, શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    short_title: 'મહંત શ્રી કનીરામ બાપુ',
+    community_role: 'રબારી / માલધારી સમાજના ધર્મગુરુ',
+    key_associated_temple: 'શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    birth_date: null,
+    birthplace: null,
+    biography_short: 'પરમ પૂજ્ય મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુ, શ્રી વડવાળા મંદિર દુધરેજધામના ૨૨મા ગાદીપતિ, રબારી-માલધારી સમાજના આદરણીય ધર્મગુરુ છે. ધર્મ, સેવા, ગૌરક્ષા અને શિક્ષણ જેવા ક્ષેત્રોમાં તેમનું યોગદાન અમૂલ્ય છે.',
+    biography_full: `<h3>પ્રારંભિક જીવન / Early Life</h3>
+<p>પરમ પૂજ્ય ૧૦૦૮ મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુ (Param Pujya 1008 Mahamandaleshwar Shree Kaniramdas Bapu) એ શ્રી વડવાળા મંદિર દુધરેજધામ (Shree Vadvala Mandir Dudhrejdham) ની ગૌરવશાળી આચાર્ય પરંપરાના ૨૨મા ગાદીપતિ છે. ગુરુ કૃપા અને ભક્તિના માર્ગે ચાલી, તેમણે નાનપણથી જ આધ્યાત્મિક જીવનને સમર્પિત કર્યું.</p>
+
+<h3>આધ્યાત્મિક સફર / Spiritual Journey</h3>
+<p>૧૯૯૪ (વિ.સં.) થી વડવાળા ધામની ગાદી પર બિરાજમાન થયા પછી, શ્રી કનીરામદાસજી બાપુએ ધામની ધાર્મિક, સામાજિક અને શૈક્ષણિક પ્રવૃત્તિઓને નવી ઊંચાઈ પર લઈ ગયા. તેમના નેતૃત્વમાં ધામ રબારી-માલધારી સમાજની ધર્મગુરુગાદી (Dharm Guru Gadi) તરીકે સમગ્ર ભારતમાં પ્રસિદ્ધ થયું.</p>
+<p>મહામંડલેશ્વર (Mahamandaleshwar) ની ઉપાધિ ધરાવતા શ્રી કનીરામ બાપુ શંકરાચાર્ય પરંપરાના વારસાને જીવંત રાખનાર મહાન સંત છે. તેમના આશીર્વાદ મેળવવા માટે ગુજરાત, રાજસ્થાન, મધ્ય પ્રદેશ અને ભારતભરમાંથી ભક્તો આવે છે.</p>
+
+<h3>વડવાળા મંદિર ખાતે સેવા / Service at Vadvala Mandir, Dudhrej</h3>
+<p>બાપુશ્રીના માર્ગદર્શન હેઠળ અનેક મહત્વપૂર્ણ સેવાકાર્યો ચાલે છે:</p>
+<ul>
+  <li><strong>૨૪ કલાક અન્નક્ષેત્ર:</strong> દરરોજ ૧,૦૦૦ થી ૧,૫૦૦ દર્શનાર્થીઓ, સાધુ-સંતો અને યાત્રાળુઓને ભોજન પ્રસાદ.</li>
+  <li><strong>ગૌશાળા સેવા:</strong> શ્રી વડવાળા મંદિર ગૌશાળા, શ્રી વટેશ્વર ગૌશાળા (જેગડવા) અને તાજેતરમાં સ્થપાયેલી શ્રી શીતલ ગૌશાળા (Shree Shital Gaushala) દ્વારા ૭૫૦+ શુદ્ધ ગીર ગાયોનો ઉછેર.</li>
+  <li><strong>શૈક્ષણિક કાર્ય:</strong> સદ્ગુરૂ શ્રી ગોમતીદાસબાપુ કુમાર છાત્રાલય, સદ્ગુરૂ શ્રી કલ્યાણદાસબાપુ કન્યા છાત્રાલય અને શ્રી વડવાળાદેવ સરસ્વતી વિદ્યાલયનું સંચાલન.</li>
+  <li><strong>ધર્મશાળા સેવા:</strong> ડાકોર (શ્રી રઘુવિર ધામ) અને જુનાગઢ (શ્રી કલ્યાણ ગુરૂધામ) ખાતે ધર્મશાળાઓનું સંચાલન.</li>
+  <li><strong>મહાકુંભ સેવા:</strong> ઉજ્જૈન, નાસિક, પ્રયાગરાજ અને હરિદ્વારમાં મહાકુંભ પર્વે અન્નક્ષેત્ર અને વસ્ત્રદાન.</li>
+</ul>
+
+<h3>ઉપદેશ અને સંદેશ / Teachings and Message</h3>
+<p>બાપુશ્રી ધર્મ, સંસ્કાર, શિક્ષણ અને વ્યસનમુક્તિના સંદેશનો પ્રચાર કરે છે. તેમનું માનવું છે કે ગૌ સેવા, અન્ન સેવા અને વિદ્યાદાન એ જ સાચી ભક્તિ છે. ગુરુ પૂર્ણિમા, જન્માષ્ટમી, દિપાવલી અને હોળી-ધૂળેટી જેવા પર્વોમાં ૨ થી ૩ લાખ ભક્તો ધામમાં દર્શનાર્થે આવે છે, જે તેમની અપાર લોકપ્રિયતા અને પ્રભાવનું પ્રતીક છે.</p>`,
+    teachings_themes: [
+      'ધર્મ અને સંસ્કાર (Dharma and Sanskar)',
+      'શિક્ષણ અને વ્યસનમુક્તિ (Education and staying away from addictions)',
+      'ગૌરક્ષા અને ગૌ સેવા (Cow protection – Gauraksha)',
+      'અન્ન સેવા અને સમાજ સેવા (Service to society)',
+      'આધ્યાત્મિક જાગૃતિ (Spiritual awakening)',
+    ],
+    notable_quotes: [
+      'ગૌ માતાની સેવા કરવી એ સાક્ષાત નારાયણની સેવા છે.',
+      'ધર્મ, શિક્ષણ અને સેવા – આ ત્રણ જ સમાજ ઉત્થાનના આધારસ્તંભ છે.',
+    ],
+    seo_keywords: [
+      'Mahant Kaniram Bapu', 'Kaniram Bapu Dudhrej', 'Mahamandaleshwar Kaniram',
+      'કનીરામ બાપુ', 'વડવાળા ધામ', 'દુધરેજ મહંત', 'Rabari Samaj Guru',
+      'Vadvala Mandir Mahant', 'Dudhrej Dham Guru', 'મહામંડલેશ્વર કનીરામ બાપુ',
+    ],
+    events: [
+      { year_or_date: '૧૯૯૪ (વિ.સં.)', title: 'ગાદીપતિ પદ ગ્રહણ', description: 'શ્રી વડવાળા મંદિર દુધરેજધામના ૨૨મા ગાદીપતિ તરીકે પદ ગ્રહણ કર્યું.', sort_order: 1 },
+      { year_or_date: 'દર વર્ષે', title: 'ગુરુ પૂર્ણિમા મહોત્સવ', description: 'દર વર્ષે ગુરુ પૂર્ણિમાના પાવન પ્રસંગે ૨-૩ લાખ ભક્તો ધામમાં દર્શનાર્થે આવે છે. સંતવાણી, ગુરુ વંદના અને ભંડારાનું ભવ્ય આયોજન.', sort_order: 2 },
+      { year_or_date: 'દર વર્ષે', title: 'જન્માષ્ટમી, દિપાવલી અને હોળી મહોત્સવ', description: 'ધામમાં ભક્તિભાવ અને ભવ્યતાથી ઉજવાતા મુખ્ય ધાર્મિક પર્વો, જ્યાં લાખો શ્રદ્ધાળુઓ ભાગ લે છે.', sort_order: 3 },
+      { year_or_date: 'ચાલુ', title: 'ગૌશાળા સ્થાપના અને વિસ્તરણ', description: 'શ્રી વડવાળા મંદિર ગૌશાળા, શ્રી વટેશ્વર ગૌશાળા (જેગડવા) અને શ્રી શીતલ ગૌશાળાની સ્થાપના – ૭૫૦+ ગીર ગાયોનો ઉછેર.', sort_order: 4 },
+      { year_or_date: 'માર્ચ ૨૦૨૬', title: 'શ્રી શીતલ ગૌશાળા લોકાર્પણ', description: 'હોળી મહોત્સવ ૨૦૨૬ના પાવન પ્રસંગે પૂજ્ય મોરારી બાપુ, જગદ્ગુરુ શંકરાચાર્ય, ૨૫૦+ મહામંડલેશ્વરો અને લાખો ભક્તોની ઉપસ્થિતિમાં ભવ્ય ઉદ્ઘાટન.', sort_order: 5 },
+      { year_or_date: 'ચાલુ', title: 'શૈક્ષણિક અને સામાજિક સેવા', description: 'કુમાર છાત્રાલય, કન્યા છાત્રાલય, વિદ્યાલય અને ધર્મશાળાઓનું સંચાલન.', sort_order: 6 },
+      { year_or_date: 'દર ૧૨ વર્ષે', title: 'મહાકુંભ સેવા', description: 'ઉજ્જૈન, નાસિક, પ્રયાગરાજ અને હરિદ્વારમાં મહાકુંભ પર્વે ભવ્ય અન્નક્ષેત્ર, વસ્ત્રદાન અને સાધુ-સંતોની સેવા.', sort_order: 7 },
+    ],
+    images: [
+      { image_url: '', storage_key: `${GURU_IMG}/kaniram-bapu-01.jpg`, alt_text: 'મહંત શ્રી કનીરામ બાપુ – Mahant Shri Kaniram Bapu', caption: 'મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુ', is_primary: true, sort_order: 1 },
+      { image_url: '', storage_key: `${GURU_IMG}/kaniram-bapu-02.jpg`, alt_text: 'મહંત શ્રી કનીરામ બાપુ ગૌસેવા દર્શન', caption: 'ગૌસેવા દર્શન – ગીર ગાયો સાથે', is_primary: false, sort_order: 2 },
+      { image_url: '', storage_key: `${GURU_IMG}/kaniram-bapu-03.jpg`, alt_text: 'પૂજ્ય કનીરામ બાપુશ્રી', caption: 'પૂજ્ય બાપુશ્રી – શ્રી વડવાળા ધામ', is_primary: false, sort_order: 3 },
+      { image_url: '', storage_key: `${GURU_IMG}/kaniram-bapu-04.jpg`, alt_text: 'કનીરામ બાપુ યાત્રા', caption: 'દૈનિક મંગલ પ્રવાસ અને મુલાકાત', is_primary: false, sort_order: 4 },
+      { image_url: '', storage_key: `${GURU_IMG}/kaniram-bapu-05.jpg`, alt_text: 'કનીરામ બાપુ ગૌશાળા', caption: 'ગૌશાળા પરિસરમાં ગૌમાતા સાથે', is_primary: false, sort_order: 5 },
+    ],
+    order: 1,
+  },
+
+  // ── Kothari Shri Mukundram Bapu ──
+  {
+    slug: 'mukundram-bapu',
+    full_name: 'કોઠારી શ્રી મુકુંદરામ બાપુ',
+    role_title: 'કોઠારી, શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    short_title: 'કોઠારી શ્રી મુકુંદરામ બાપુ',
+    community_role: 'કોઠારી અને મંદિરના વહીવટી વડા',
+    key_associated_temple: 'શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    birth_date: null,
+    birthplace: null,
+    biography_short: 'કોઠારી શ્રી મુકુંદરામ બાપુ, શ્રી વડવાળા મંદિર દુધરેજધામના કોઠારી અને વહીવટી વડા છે. ધામના ભંડાર, અન્નક્ષેત્ર, ગૌશાળા અને દૈનિક વ્યવસ્થાપનનું સંચાલન તેમના હસ્તક છે.',
+    biography_full: `<h3>ભૂમિકા અને જવાબદારી / Role and Responsibility</h3>
+<p>કોઠારી શ્રી મુકુંદરામ બાપુ (Kothari Shree Mukundram Bapu) શ્રી વડવાળા મંદિર દુધરેજધામના કોઠારી (Kothari) છે. "કોઠારી" એ મંદિરની વહીવટી અને સેવાકીય વ્યવસ્થાના મુખ્ય સંચાલક પદ છે. ભંડાર (Bhandar), અન્નક્ષેત્ર (Annakshetra) અને મંદિરની દૈનિક કામગીરીનું સંપૂર્ણ સંચાલન તેમના માર્ગદર્શન હેઠળ ચાલે છે.</p>
+
+<h3>વડવાળા મંદિર ખાતે સેવા / Service at Vadvala Mandir</h3>
+<p>મહામંડલેશ્વર શ્રી કનીરામદાસજી બાપુના આશીર્વાદ અને માર્ગદર્શન હેઠળ, શ્રી મુકુંદરામ બાપુ ધામની વિશાળ સેવાકીય વ્યવસ્થાનું સંચાલન કરે છે:</p>
+<ul>
+  <li><strong>ભંડાર સેવા:</strong> ધામના ભંડારમાં માતા અન્નપૂર્ણા સદેહે વસે છે એવી શ્રદ્ધા છે. દરરોજ હજારો ભક્તોને પ્રસાદ વિતરણનું કાર્ય.</li>
+  <li><strong>અન્નક્ષેત્ર સંચાલન:</strong> ૨૪ કલાક ચાલતા અન્નક્ષેત્રનું સરળ અને અવિરત સંચાલન.</li>
+  <li><strong>દૈનિક વ્યવસ્થાપન:</strong> યાત્રાળુઓ, સાધુ-સંતો, દર્શનાર્થીઓ માટે રહેવા, ભોજન અને પૂજા-અર્ચનાની વ્યવસ્થા.</li>
+  <li><strong>ઉત્સવ આયોજન:</strong> ગુરુ પૂર્ણિમા, જન્માષ્ટમી, દિપાવલી અને હોળી-ધૂળેટી જેવા મોટા પર્વોમાં લાખો ભક્તોના રહેવા-જમવાની વ્યવસ્થાનું નિર્માણ.</li>
+</ul>
+
+<h3>સમર્પણ અને નિષ્ઠા / Dedication</h3>
+<p>કોઠારી તરીકે શ્રી મુકુંદરામ બાપુનું કાર્ય મંદિરના સુચારુ સંચાલન માટે અત્યંત મહત્વપૂર્ણ છે. દર્શનાર્થીઓ, ભક્તો અને સંતોની સેવા તેમના જીવનનું લક્ષ્ય છે. નિરંતર સેવાભાવ અને નિસ્વાર્થ સમર્પણ દ્વારા તેમણે ધામની પ્રવૃત્તિઓને સક્ષમ અને વ્યવસ્થિત રાખી છે.</p>`,
+    teachings_themes: [
+      'નિસ્વાર્થ સેવા (Selfless Service)',
+      'અન્ન સેવા (Food Service – Annakshetra)',
+      'મંદિર વ્યવસ્થાપન (Temple Management)',
+      'ભક્ત સેવા (Devotee Care)',
+    ],
+    notable_quotes: [],
+    seo_keywords: [
+      'Kothari Mukundram Bapu', 'Mukundram Bapu Dudhrej', 'Vadvala Mandir Kothari',
+      'મુકુંદરામ બાપુ', 'કોઠારી વડવાળા મંદિર', 'દુધરેજ કોઠારી',
+      'Dudhrej Dham Kothari', 'Vadwala Temple Administration',
+    ],
+    events: [
+      { year_or_date: 'ચાલુ', title: 'ભંડાર અને અન્નક્ષેત્ર સંચાલન', description: 'દરરોજ ૧,૦૦૦ થી ૧,૫૦૦ દર્શનાર્થીઓ અને સાધુ-સંતો માટે ૨૪ કલાક અન્નક્ષેત્ર સેવાનું સંચાલન.', sort_order: 1 },
+      { year_or_date: 'દર વર્ષે', title: 'પર્વ આયોજન', description: 'ગુરુ પૂર્ણિમા, જન્માષ્ટમી, દિપાવલી અને હોળી મહોત્સવમાં ૨-૩ લાખ ભક્તો માટે ભોજન, રહેવા અને પ્રસાદની વ્યવસ્થા.', sort_order: 2 },
+      { year_or_date: 'ચાલુ', title: 'યાત્રિક સેવા', description: 'ધામમાં આવતા યાત્રાળુઓ, સંતો અને દર્શનાર્થીઓ માટે નિવાસ, ભોજન અને અન્ય સગવડોનું સંચાલન.', sort_order: 3 },
+    ],
+    images: [
+      { image_url: '', storage_key: `${GURU_IMG}/mukundram-bapu-01.jpg`, alt_text: 'કોઠારી શ્રી મુકુંદરામ બાપુ – Kothari Shri Mukundram Bapu', caption: 'કોઠારી શ્રી મુકુંદરામ બાપુ', is_primary: true, sort_order: 1 },
+      { image_url: '', storage_key: `${GURU_IMG}/mukundram-bapu-02.jpg`, alt_text: 'મંદિર પરિસરમાં પૂજ્ય કોઠારી બાપુશ્રી', caption: 'મંદિર પરિસરમાં પૂજ્ય કોઠારી બાપુશ્રી', is_primary: false, sort_order: 2 },
+      { image_url: '', storage_key: `${GURU_IMG}/mukundram-bapu-03.jpg`, alt_text: 'જન્મદિવસ અભિનંદન અને સંત વંદના', caption: 'જન્મદિવસ અભિનંદન અને સંત વંદના', is_primary: false, sort_order: 3 },
+    ],
+    order: 2,
+  },
+];
+
+const tithiSeeds = [
+  {
+    dateGregorian: new Date('2026-06-16T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Jeth',
+    monthNameGu: 'જેઠ',
+    notes: 'Jeth Sud Bij',
+    notesGu: 'જેઠ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-06-29T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Jeth',
+    monthNameGu: 'જેઠ',
+    notes: 'Vat Savitri Vrat',
+    notesGu: 'વટ સાવિત્રી વ્રત',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-07-15T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Ashadh',
+    monthNameGu: 'અષાઢ',
+    notes: 'Ashadh Sud Bij',
+    notesGu: 'અષાઢ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-07-29T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Ashadh',
+    monthNameGu: 'અષાઢ',
+    notes: 'Guru Purnima',
+    notesGu: 'ગુરુ પૂર્ણિમા',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-08-13T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Shravan',
+    monthNameGu: 'શ્રાવણ',
+    notes: 'Shravan Sud Bij',
+    notesGu: 'શ્રાવણ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-08-28T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Shravan',
+    monthNameGu: 'શ્રાવણ',
+    notes: 'Raksha Bandhan / Shravani Poonam',
+    notesGu: 'રક્ષાબંધન / શ્રાવણી પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-09-12T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Bhadarva',
+    monthNameGu: 'ભાદરવો',
+    notes: 'Ramdevpir Dooj',
+    notesGu: 'રામદેવપીર બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-09-26T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Bhadarva',
+    monthNameGu: 'ભાદરવો',
+    notes: 'Bhadarvi Poonam',
+    notesGu: 'ભાદરવી પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-10-11T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Aso',
+    monthNameGu: 'આસો',
+    notes: 'Aso Sud Bij',
+    notesGu: 'આસો સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-10-25T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Aso',
+    monthNameGu: 'આસો',
+    notes: 'Sharad Purnima',
+    notesGu: 'શરદ પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-11-10T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Kartak',
+    monthNameGu: 'કાર્તક',
+    notes: 'Bhai Dooj',
+    notesGu: 'ભાઈબીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-11-24T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Kartak',
+    monthNameGu: 'કાર્તક',
+    notes: 'Kartaki Poonam / Dev Diwali',
+    notesGu: 'કાર્તકી પૂનમ / દેવ દિવાળી',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-12-10T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Magsar',
+    monthNameGu: 'માગશર',
+    notes: 'Magsar Sud Bij',
+    notesGu: 'માગશર સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2026-12-23T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Magsar',
+    monthNameGu: 'માગશર',
+    notes: 'Magsar Poonam',
+    notesGu: 'માગશર પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-01-09T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Posh',
+    monthNameGu: 'પોષ',
+    notes: 'Posh Sud Bij',
+    notesGu: 'પોષ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-01-22T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Posh',
+    monthNameGu: 'પોષ',
+    notes: 'Posh Poonam / Shakambhari Navratri End',
+    notesGu: 'પોષી પૂનમ / શાકંભરી નવરાત્રી પૂર્ણ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-02-07T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Maha',
+    monthNameGu: 'મહા',
+    notes: 'Maha Sud Bij',
+    notesGu: 'મહા સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-02-21T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Maha',
+    monthNameGu: 'મહા',
+    notes: 'Maha Poonam',
+    notesGu: 'મહા પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-03-09T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Fagan',
+    monthNameGu: 'ફાગણ',
+    notes: 'Fagan Sud Bij',
+    notesGu: 'ફાગણ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-03-22T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Fagan',
+    monthNameGu: 'ફાગણ',
+    notes: 'Holi / Hutashani Poonam',
+    notesGu: 'હોળી મહોત્સવ / હુતાશની પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-04-08T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Chaitra',
+    monthNameGu: 'ચૈત્ર',
+    notes: 'Chaitra Sud Bij',
+    notesGu: 'ચૈત્ર સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-04-21T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Chaitra',
+    monthNameGu: 'ચૈત્ર',
+    notes: 'Hanuman Jayanti / Chaitri Poonam',
+    notesGu: 'હનુમાન જયંતિ / ચૈત્રી પૂનમ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-05-07T00:00:00.000Z'),
+    tithiName: 'Bij',
+    tithiNameGu: 'બીજ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Vaishakh',
+    monthNameGu: 'વૈશાખ',
+    notes: 'Vaishakh Sud Bij',
+    notesGu: 'વૈશાખ સુદ બીજ',
+    isHighlighted: true
+  },
+  {
+    dateGregorian: new Date('2027-05-20T00:00:00.000Z'),
+    tithiName: 'Punam',
+    tithiNameGu: 'પૂનમ',
+    paksha: 'Sud',
+    pakshaGu: 'સુદ',
+    monthName: 'Vaishakh',
+    monthNameGu: 'વૈશાખ',
+    notes: 'Buddha Purnima / Vaishakhi Poonam',
+    notesGu: 'બુદ્ધ પૂર્ણિમા / વૈશાખી પૂનમ',
+    isHighlighted: true
+  }
+];
 
 module.exports = {
   seedPublicContent,
@@ -580,5 +1031,7 @@ module.exports = {
     contactDefaults,
     seoItems,
     gaushalaDefaults,
+    guruSeeds,
+    tithiSeeds,
   },
 };

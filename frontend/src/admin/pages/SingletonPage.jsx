@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
 import adminApi from '../hooks/adminApi';
+import ImageCropperModal from '../components/ImageCropperModal';
 
 /**
  * Singleton form page — for Settings, Contact (single document, no list view).
@@ -10,6 +11,8 @@ export default function SingletonPage({ title, endpoint, fields }) {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [cropFile, setCropFile] = useState(null);
+  const [cropField, setCropField] = useState(null);
 
   useEffect(() => {
     adminApi.getSingleton(endpoint)
@@ -22,6 +25,24 @@ export default function SingletonPage({ title, endpoint, fields }) {
   }, [endpoint]);
 
   const handleField = (key, value) => setFormData(d => ({ ...d, [key]: value }));
+
+  const handleFileUpload = async (key, file) => {
+    if (!file) return;
+    try {
+      addToast('Uploading image...', 'info');
+      const res = await adminApi.upload(file);
+      handleField(key, res.data.url);
+      addToast('Image uploaded successfully!', 'success');
+    } catch (err) {
+      addToast(err.response?.data?.error || 'Upload failed', 'error');
+    }
+  };
+
+  const handleImagePicker = (key, file) => {
+    if (!file) return;
+    setCropField(key);
+    setCropFile(file);
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -50,10 +71,23 @@ export default function SingletonPage({ title, endpoint, fields }) {
               {field.type === 'textarea' ? (
                 <textarea className="admin-form__input admin-form__textarea" value={formData[field.key] || ''} onChange={e => handleField(field.key, e.target.value)} />
               ) : field.type === 'image' ? (
-                <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   <input className="admin-form__input" value={formData[field.key] || ''} onChange={e => handleField(field.key, e.target.value)} placeholder="Image URL" />
-                  {formData[field.key] && <img src={formData[field.key]} alt="" className="admin-form__img-preview" />}
-                </>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input type="file" accept="image/*" onChange={e => handleImagePicker(field.key, e.target.files[0])} style={{ fontSize: '0.85rem', color: 'var(--admin-text-light)' }} />
+                    {formData[field.key] && (
+                      <button
+                        type="button"
+                        onClick={() => handleField(field.key, '')}
+                        className="btn-admin btn-admin--danger btn-admin--sm"
+                        style={{ padding: '2px 8px', fontSize: '0.75rem' }}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {formData[field.key] && <img src={formData[field.key]} alt="" className="admin-form__img-preview" onError={e => { e.target.style.display = 'none'; }} />}
+                </div>
               ) : (
                 <input className="admin-form__input" value={formData[field.key] || ''} onChange={e => handleField(field.key, e.target.value)} />
               )}
@@ -64,6 +98,22 @@ export default function SingletonPage({ title, endpoint, fields }) {
           <button type="submit" className="btn-admin btn-admin--primary" disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
         </div>
       </form>
+
+      {cropFile && (
+        <ImageCropperModal
+          file={cropFile}
+          onCancel={() => {
+            setCropFile(null);
+            setCropField(null);
+          }}
+          onSave={async (croppedFile) => {
+            setCropFile(null);
+            const fieldKey = cropField;
+            setCropField(null);
+            await handleFileUpload(fieldKey, croppedFile);
+          }}
+        />
+      )}
     </>
   );
 }

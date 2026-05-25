@@ -1,0 +1,350 @@
+/* ═══════════════════════════════════════════════════════════════
+   UPCOMING TITHIS SECTION — Premium Glassmorphism & Moon Glow
+   ═══════════════════════════════════════════════════════════════ */
+
+.tithi-section {
+  padding: 80px 0;
+  background: linear-gradient(185deg, #0f0e0d 0%, #050505 100%);
+  border-top: 1px solid rgba(220, 180, 120, 0.1);
+  border-bottom: 1px solid rgba(220, 180, 120, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Starry background lights */
+.tithi-section::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  width: 50vw;
+  height: 50vh;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.tithi-section::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 50vw;
+  height: 50vh;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Header */
+.tithi-header {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+@media (min-width: 768px) {
+  .tithi-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+
+.tithi-header__text {
+  max-width: 600px;
+}
+
+.tithi-header__eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary, #d97706);
+  margin-bottom: 10px;
+  background: rgba(217, 119, 6, 0.1);
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.tithi-header__title {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.tithi-header__desc {
+  font-size: var(--text-body-sm, 14px);
+  color: #a3a3a3;
+  line-height: 1.6;
+}
+
+/* Filter buttons */
+.tithi-filters {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  align-self: flex-start;
+}
+
+.tithi-filter-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a3a3a3;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tithi-filter-btn:hover {
+  color: #ffffff;
+}
+
+.tithi-filter-btn.active {
+  background: rgba(217, 119, 6, 0.15);
+  color: var(--color-primary, #d97706);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.1);
+}
+
+/* Grid & Cards */
+.tithi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .tithi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tithi-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+}
+
+.tithi-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.tithi-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlighted border and glows for tithi types */
+.tithi-card.punam {
+  border-left: 3px solid #ffca28;
+}
+
+.tithi-card.bij {
+  border-left: 3px solid #00acc1;
+}
+
+/* "Next" specific card highlight */
+.tithi-card.next-tithi {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.05);
+}
+
+.tithi-card.next-tithi.punam {
+  border-left: 3px solid #ffca28;
+  border-color: rgba(255, 202, 40, 0.25) rgba(255, 202, 40, 0.1) rgba(255, 202, 40, 0.1) rgba(255, 202, 40, 0.8);
+}
+
+.tithi-card.next-tithi.bij {
+  border-left: 3px solid #00acc1;
+  border-color: rgba(0, 172, 193, 0.25) rgba(0, 172, 193, 0.1) rgba(0, 172, 193, 0.1) rgba(0, 172, 193, 0.8);
+}
+
+.tithi-card.next-tithi:hover {
+  border-color: rgba(217, 119, 6, 0.4);
+  box-shadow: 0 10px 35px rgba(217, 119, 6, 0.12);
+}
+
+/* Glow Effect */
+.glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Card Header */
+.tithi-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tithi-card__icon-wrapper {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tithi-moon-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tithi-card__badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--color-primary, #d97706);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.3);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* Card Body */
+.tithi-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tithi-card__main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tithi-card__name {
+  font-size: 24px;
+  font-weight: 750;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.tithi-card__paksha {
+  font-size: 14px;
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+.tithi-card__divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
+}
+
+.tithi-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tithi-card__date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tithi-card__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #737373;
+}
+
+.tithi-card__date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+.tithi-card__notes {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.tithi-card__notes-text {
+  font-size: 12.5px;
+  color: var(--color-primary, #d97706);
+  font-weight: 600;
+}
+
+/* Loading/Error/Empty States */
+.tithi-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 250px;
+}
+
+.tithi-error,
+.tithi-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  border-radius: 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.01);
+  color: #a3a3a3;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  padding: 24px;
+}
+
+.tithi-error p {
+  color: #ef4444;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(217, 119, 6, 0.3);
+    opacity: 0.9;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(217, 119, 6, 0.6);
+    opacity: 1;
+  }
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
 import adminApi from '../hooks/adminApi';
 import { Plus, Edit2, Trash2, X, ToggleLeft, ToggleRight } from 'lucide-react';
+import ImageCropperModal from '../components/ImageCropperModal';
 
 /**
  * Reusable CRUD Page — powers ALL admin modules.
@@ -22,6 +23,8 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
   const [formData, setFormData] = useState({});
   const [deleteId, setDeleteId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [cropFile, setCropFile] = useState(null);
+  const [cropField, setCropField] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -92,6 +95,48 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
     setFormData({});
   };
 
+  const handleFileUpload = async (key, file) => {
+    if (!file) return;
+    try {
+      addToast('Uploading image...', 'info');
+      const res = await adminApi.upload(file);
+      handleField(key, res.data.url);
+      addToast('Image uploaded successfully!', 'success');
+    } catch (err) {
+      addToast(err.response?.data?.error || 'Upload failed', 'error');
+    }
+  };
+
+  const handleTextAreaFileUpload = async (key, files) => {
+    if (!files || files.length === 0) return;
+    try {
+      addToast(`Uploading ${files.length} image(s)...`, 'info');
+      const urls = [];
+      for (let i = 0; i < files.length; i++) {
+        const res = await adminApi.upload(files[i]);
+        urls.push(res.data.url);
+      }
+      setFormData(prev => {
+        const currentVal = prev[key] || '';
+        const currentLines = currentVal.split('\n').map(l => l.trim()).filter(Boolean);
+        const newLines = [...currentLines, ...urls];
+        return {
+          ...prev,
+          [key]: newLines.join('\n')
+        };
+      });
+      addToast('Images uploaded and added successfully!', 'success');
+    } catch (err) {
+      addToast(err.response?.data?.error || 'Upload failed', 'error');
+    }
+  };
+
+  const handleImagePicker = (key, file) => {
+    if (!file) return;
+    setCropField(key);
+    setCropFile(file);
+  };
+
   const filtered = items.filter(item => {
     if (!search) return true;
     const s = search.toLowerCase();
@@ -105,7 +150,59 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
     const val = formData[field.key] ?? '';
     switch (field.type) {
       case 'textarea':
-        return <textarea className="admin-form__input admin-form__textarea" value={val} onChange={e => handleField(field.key, e.target.value)} required={field.required} />;
+        const isGallery = field.key.includes('images') || field.key.includes('gallery');
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <textarea className="admin-form__input admin-form__textarea" value={val} onChange={e => handleField(field.key, e.target.value)} required={field.required} />
+            {isGallery && (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '4px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--admin-text-light)' }}>📷 Upload & Add Gallery Images</span>
+                  <input type="file" accept="image/*" multiple onChange={e => handleTextAreaFileUpload(field.key, e.target.files)} style={{ fontSize: '0.8rem', color: 'var(--admin-text-light)' }} />
+                </div>
+                {val && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
+                    {val.split('\n').map(l => l.trim()).filter(Boolean).map((url, idx) => (
+                      <div key={idx} style={{ position: 'relative', width: '60px', height: '60px', borderRadius: '6px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.target.style.display = 'none'; }} />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const remaining = val.split('\n').map(l => l.trim()).filter(Boolean);
+                            remaining.splice(idx, 1);
+                            handleField(field.key, remaining.join('\n'));
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '2px',
+                            right: '2px',
+                            background: '#ef4444',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '16px',
+                            height: '16px',
+                            fontSize: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            lineHeight: 1,
+                            padding: 0
+                          }}
+                          title="Remove Image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        );
       case 'select':
         return (
           <select className="admin-form__input admin-form__select" value={val} onChange={e => handleField(field.key, e.target.value)}>
@@ -121,10 +218,23 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
         return <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><input type="checkbox" checked={!!val} onChange={e => handleField(field.key, e.target.checked)} /> {field.label}</label>;
       case 'image':
         return (
-          <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <input type="text" className="admin-form__input" value={val} onChange={e => handleField(field.key, e.target.value)} placeholder="Image URL" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <input type="file" accept="image/*" onChange={e => handleImagePicker(field.key, e.target.files[0])} style={{ fontSize: '0.85rem', color: 'var(--admin-text-light)' }} />
+              {val && (
+                <button
+                  type="button"
+                  onClick={() => handleField(field.key, '')}
+                  className="btn-admin btn-admin--danger btn-admin--sm"
+                  style={{ padding: '2px 8px', fontSize: '0.75rem' }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
             {val && <img src={val} alt="" className="admin-form__img-preview" onError={e => { e.target.style.display = 'none'; }} />}
-          </>
+          </div>
         );
       default:
         return <input type="text" className="admin-form__input" value={val} onChange={e => handleField(field.key, e.target.value)} required={field.required} />;
@@ -233,6 +343,22 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
             </form>
           </div>
         </div>
+      )}
+
+      {cropFile && (
+        <ImageCropperModal
+          file={cropFile}
+          onCancel={() => {
+            setCropFile(null);
+            setCropField(null);
+          }}
+          onSave={async (croppedFile) => {
+            setCropFile(null);
+            const fieldKey = cropField;
+            setCropField(null);
+            await handleFileUpload(fieldKey, croppedFile);
+          }}
+        />
       )}
     </>
   );

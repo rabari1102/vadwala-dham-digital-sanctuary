@@ -235,6 +235,64 @@ const SEO = {
   ],
 };
 
+const TITHI_DAYS = {
+  title: 'Tithi Calendar',
+  endpoint: 'tithi-days',
+  columns: [
+    { key: 'dateGregorian', label: 'Gregorian Date', render: (item) => item.dateGregorian ? new Date(item.dateGregorian).toLocaleDateString() : '' },
+    { key: 'tithiName', label: 'Tithi (EN)' },
+    { key: 'tithiNameGu', label: 'Tithi (GU)' },
+    { key: 'monthNameGu', label: 'Month (GU)' },
+    { key: 'isHighlighted', label: 'Highlighted', render: (item) => item.isHighlighted ? '⭐ Yes' : 'No' }
+  ],
+  fields: [
+    { key: 'dateGregorian', label: 'Gregorian Date', type: 'date', required: true },
+    { key: 'tithiName', label: 'Tithi Name (English)', type: 'select', required: true, options: [
+      { value: 'Punam', label: 'Punam (Purnima)' },
+      { value: 'Bij', label: 'Bij (Dwitiya)' },
+      { value: 'Ekadashi', label: 'Ekadashi' },
+      { value: 'Amavasya', label: 'Amavasya' },
+      { value: 'Other', label: 'Other' }
+    ] },
+    { key: 'tithiNameGu', label: 'Tithi Name (Gujarati)', type: 'text', required: true },
+    { key: 'paksha', label: 'Paksha (English)', type: 'select', required: true, options: [
+      { value: 'Sud', label: 'Sud (Shukla)' },
+      { value: 'Vad', label: 'Vad (Krishna)' }
+    ] },
+    { key: 'pakshaGu', label: 'Paksha (Gujarati)', type: 'text' },
+    { key: 'monthName', label: 'Month (English)', type: 'text' },
+    { key: 'monthNameGu', label: 'Month (Gujarati)', type: 'text' },
+    { key: 'notes', label: 'Notes (English)', type: 'text' },
+    { key: 'notesGu', label: 'Notes (Gujarati)', type: 'text' },
+    { key: 'isHighlighted', label: 'Highlight this day', type: 'checkbox' }
+  ]
+};
+
+const GURUS = {
+  title: 'Gurus',
+  endpoint: 'gurus',
+  columns: [
+    { key: 'short_title', label: 'Title/Name' },
+    { key: 'role_title', label: 'Role' },
+    { key: 'order', label: 'Order' },
+  ],
+  fields: [
+    { key: 'full_name', label: 'Full Name', type: 'text', required: true, fullWidth: true },
+    { key: 'short_title', label: 'Short Name / Title', type: 'text' },
+    { key: 'slug', label: 'Slug (e.g. kaniram-bapu)', type: 'text', required: true },
+    { key: 'role_title', label: 'Role Title', type: 'text' },
+    { key: 'community_role', label: 'Community Role', type: 'text' },
+    { key: 'key_associated_temple', label: 'Associated Temple', type: 'text', fullWidth: true },
+    { key: 'primary_image', label: 'Main Profile Image', type: 'image', fullWidth: true },
+    { key: 'gallery_images', label: 'Guru Gallery Images (One image key/URL per line)', type: 'textarea', fullWidth: true },
+    { key: 'biography_short', label: 'Short Biography', type: 'textarea', fullWidth: true },
+    { key: 'biography_full', label: 'Full Biography (HTML allowed)', type: 'textarea', fullWidth: true },
+    { key: 'birth_date', label: 'Birth Date (e.g. 1945 or Date)', type: 'text' },
+    { key: 'birthplace', label: 'Birthplace', type: 'text' },
+    { key: 'order', label: 'Order', type: 'number' },
+  ],
+};
+
 const SETTINGS_FIELDS = [
   { key: 'siteName', label: 'Site Name (Gujarati)', type: 'text' },
   { key: 'siteNameEn', label: 'Site Name (English)', type: 'text' },
@@ -264,6 +322,7 @@ export default function AdminApp() {
             <Route path="banners" element={<CrudPage {...BANNERS} />} />
             <Route path="history" element={<CrudPage {...HISTORY} />} />
             <Route path="acharya-parampara" element={<CrudPage {...ACHARYA} />} />
+            <Route path="gurus" element={<CrudPage {...GURUS} />} />
             <Route path="activities" element={<CrudPage {...ACTIVITIES} />} />
             <Route path="festivals" element={<CrudPage {...FESTIVALS} />} />
             <Route path="gallery-categories" element={<CrudPage {...GALLERY_CATS} />} />
@@ -272,6 +331,7 @@ export default function AdminApp() {
             <Route path="donation-items" element={<CrudPage {...DONATIONS} />} />
             <Route path="payment-info" element={<CrudPage {...PAYMENT} />} />
             <Route path="announcements" element={<CrudPage {...ANNOUNCEMENTS} />} />
+            <Route path="tithi-days" element={<CrudPage {...TITHI_DAYS} />} />
             <Route path="seo" element={<CrudPage {...SEO} />} />
             <Route path="settings" element={<SingletonPage title="⚙️ Site Settings" endpoint="settings" fields={SETTINGS_FIELDS} />} />
             <Route path="contact" element={<SingletonPage title="📞 Contact Info" endpoint="contact" fields={CONTACT_FIELDS} />} />

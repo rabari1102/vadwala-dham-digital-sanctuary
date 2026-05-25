@@ -62,16 +62,13 @@ export default function HistoryPage() {
             <SectionTitle eyebrow={t('parampara')} title={t('paramparaSubtitle')} />
             <div className="parampara-grid">
               {acharyas.map((a, i) => (
-                <div key={a._id || i} className="parampara-card" style={i === 1 ? { transform: 'translateY(48px)' } : {}}>
+                <div key={a._id || i} className="parampara-card">
                   <div className="parampara-card__image">
                     {a.image ? (
                       <img src={getImageUrl(a.image)} alt={a.name} loading="lazy" />
                     ) : (
-                      <div style={{
-                        width: '100%', aspectRatio: '1', background: 'var(--color-surface-container)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                      }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--color-outline)' }}>person</span>
+                      <div className="parampara-card__placeholder">
+                        <span className="material-symbols-outlined">person</span>
                       </div>
                     )}
                   </div>

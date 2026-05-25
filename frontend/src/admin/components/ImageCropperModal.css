@@ -1,0 +1,196 @@
+/* ── Interactive Image Cropper Modal ── */
+
+.cropper-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10100;
+  animation: cropperFadeIn 0.25s ease-out;
+}
+
+@keyframes cropperFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cropper-modal {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: cropperScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cropperScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.cropper-modal__header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cropper-modal__header h3 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.cropper-modal__header p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #a1a1aa;
+}
+
+.cropper-modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 20px;
+  background: #0f0f11;
+  position: relative;
+}
+
+.cropper-modal__viewer {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid var(--color-primary, #d97706);
+  border-radius: 12px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  cursor: grab;
+}
+
+.cropper-modal__viewer:active {
+  cursor: grabbing;
+}
+
+/* Rule of Thirds Grid Overlay */
+.cropper-modal__grid-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+.cropper-modal__grid-h1 {
+  top: 33.33%;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.cropper-modal__grid-h2 {
+  top: 66.66%;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.cropper-modal__grid-v1 {
+  left: 33.33%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.cropper-modal__grid-v2 {
+  left: 66.66%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.cropper-modal__loader {
+  position: absolute;
+  inset: 0;
+  background: #0f0f11;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+}
+
+/* Controls & Slider */
+.cropper-modal__controls {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  color: #a1a1aa;
+}
+
+.cropper-modal__controls .material-symbols-outlined {
+  font-size: 20px;
+  user-select: none;
+}
+
+.cropper-modal__zoom-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cropper-modal__zoom-slider:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cropper-modal__zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary, #d97706);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s;
+}
+
+.cropper-modal__zoom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.cropper-modal__zoom-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary, #d97706);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s;
+}
+
+.cropper-modal__zoom-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Footer Actions */
+.cropper-modal__footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
