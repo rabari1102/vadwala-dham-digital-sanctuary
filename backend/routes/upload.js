@@ -5,9 +5,17 @@ const path = require('path');
 const fs = require('fs');
 const { requireAuth } = require('../middleware/auth');
 
-var uploadsDir = path.join(__dirname, '..', 'uploads');
+const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
+const uploadsDir = isVercel
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, '..', 'uploads');
+
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (err) {
+    console.error('Failed to create uploads directory:', err.message);
+  }
 }
 
 var storage = multer.diskStorage({
