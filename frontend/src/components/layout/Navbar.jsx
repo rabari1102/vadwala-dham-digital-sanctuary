@@ -10,6 +10,7 @@ const LOGO_URL = 'https://dudhrejvadwala.com/wp-content/uploads/2025/01/Vadwalal
 const defaultNavLinks = [
   { key: 'home', url: '/' },
   { key: 'history', url: '/history' },
+  { key: 'upcomingTithis', url: '/tithis' },
   { key: 'seva', url: '/activities' },
   { key: 'gallery', url: '/gallery' },
   { key: 'videos', url: '/videos' },
@@ -53,6 +54,17 @@ export default function Navbar() {
       navLinks = [...navLinks.slice(0, donateIdx), gaushalaItem, ...navLinks.slice(donateIdx)];
     } else {
       navLinks = [...navLinks, gaushalaItem];
+    }
+  }
+
+  // Always ensure Tithis link is present (insert before Donate)
+  if (!navLinks.find(l => l.url === '/tithis')) {
+    const donateIdx = navLinks.findIndex(l => l.url === '/donate');
+    const tithisItem = { label: t('upcomingTithis'), url: '/tithis' };
+    if (donateIdx >= 0) {
+      navLinks = [...navLinks.slice(0, donateIdx), tithisItem, ...navLinks.slice(donateIdx)];
+    } else {
+      navLinks = [...navLinks, tithisItem];
     }
   }
 

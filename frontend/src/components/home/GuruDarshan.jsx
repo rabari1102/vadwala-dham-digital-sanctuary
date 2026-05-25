@@ -19,6 +19,13 @@ const GURU_TABS = [
     labelEn: 'Kothari Shri Mukundram Bapu',
     subtitleGu: 'શ્રી વડવાળા મંદિરના મુખ્ય કોઠારી અને વહીવટી વડા',
     subtitleEn: 'Chief Administrator & Kothari of Shree Vadwala Mandir'
+  },
+  {
+    slug: 'nagardas-bapu',
+    labelGu: 'શ્રી નાગરદાસ બાપુ',
+    labelEn: 'Shri Nagardas Bapu',
+    subtitleGu: 'શ્રી વડવાળા મંદિરના પૂજનીય સંત અને સેવક',
+    subtitleEn: 'Revered Saint & Sevadhar of Shree Vadwala Mandir'
   }
 ];
 

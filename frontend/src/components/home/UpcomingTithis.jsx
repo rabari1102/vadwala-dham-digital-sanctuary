@@ -65,9 +65,9 @@ export default function UpcomingTithis() {
         <svg viewBox="0 0 24 24" className="tithi-moon-svg bij-moon">
           <defs>
             <linearGradient id="crescentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#e0f7fa" />
-              <stop offset="50%" stopColor="#b2ebf2" />
-              <stop offset="100%" stopColor="#4dd0e1" />
+              <stop offset="0%" stopColor="#fff3e0" />
+              <stop offset="50%" stopColor="#ffb74d" />
+              <stop offset="100%" stopColor="#e07830" />
             </linearGradient>
           </defs>
           <path

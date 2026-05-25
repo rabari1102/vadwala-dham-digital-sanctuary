@@ -722,6 +722,28 @@ const guruSeeds = [
     ],
     order: 2,
   },
+  // ── Shri Nagardas Bapu ──
+  {
+    slug: 'nagardas-bapu',
+    full_name: 'શ્રી નાગરદાસ બાપુ',
+    role_title: 'શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    short_title: 'શ્રી નાગરદાસ બાપુ',
+    community_role: 'શ્રી વડવાળા મંદિર સેવક',
+    key_associated_temple: 'શ્રી વડવાળા મંદિર, દુધરેજધામ',
+    birth_date: null,
+    birthplace: null,
+    biography_short: 'Official biography and information about Shri Nagardas Bapu will be added by the trust admin.',
+    biography_full: `<p>Official biography and information about Shri Nagardas Bapu will be added by the trust admin.</p>`,
+    teachings_themes: [],
+    notable_quotes: [],
+    seo_keywords: ['Nagardas Bapu', 'Nagar Das Bapu', 'નાગરદાસ બાપુ'],
+    events: [],
+    images: [
+      { image_url: '', storage_key: `${GURU_IMG}/nagardas-bapu-01.jpg`, alt_text: 'Shri Nagardas Bapu', caption: 'Shri Nagardas Bapu', is_primary: true, sort_order: 1 },
+      { image_url: '', storage_key: `${GURU_IMG}/nagardas-bapu-02.jpg`, alt_text: 'Shri Nagardas Bapu', caption: 'Shri Nagardas Bapu', is_primary: false, sort_order: 2 }
+    ],
+    order: 3,
+  },
 ];
 
 const tithiSeeds = [

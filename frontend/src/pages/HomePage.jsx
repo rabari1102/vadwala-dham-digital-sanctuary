@@ -4,7 +4,6 @@ import { getBanners, getActivities, getFestivals, getGurus } from '../api/apiSer
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import FloatingDonateButton from '../components/shared/FloatingDonateButton';
 import HeroSlider from '../components/home/HeroSlider';
-import UpcomingTithis from '../components/home/UpcomingTithis';
 import FestivalSection from '../components/home/FestivalSection';
 import ServiceCards from '../components/home/ServiceCards';
 import GuruParampara from '../components/home/GuruParampara';
@@ -23,7 +22,6 @@ export default function HomePage() {
   return (
     <>
       <HeroSlider banners={banners || []} />
-      <UpcomingTithis />
       <GuruParampara gurus={gurus || []} />
       <GuruDarshan />
       <FestivalSection festivals={festivals || []} />
