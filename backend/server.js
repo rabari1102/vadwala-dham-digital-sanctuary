@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 require('dotenv').config();
-const { seedPublicContent } = require('../utils/publicContentSeeder');
+const { seedPublicContent } = require('./utils/publicContentSeeder');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -37,8 +37,8 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Serve uploaded/local images (relative to parent directory of api/)
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Serve uploaded/local images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mongo injection sanitization
 function sanitizeMongoKeys(value) {
@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 });
 
 // Static files
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Download endpoint — forces Content-Disposition: attachment so browser saves with correct filename
 const fs = require('fs');
@@ -74,7 +74,7 @@ app.get('/api/download', (req, res) => {
 
   // Security: only allow filenames, no path traversal
   const safeFile = path.basename(file);
-  const filePath = path.join(__dirname, '..', 'uploads', safeFile);
+  const filePath = path.join(__dirname, 'uploads', safeFile);
 
   if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'File not found' });
 
@@ -103,32 +103,32 @@ const apiLimiter = rateLimit({
 app.use('/api', apiLimiter);
 
 // ── Import Models ──
-const Banner = require('../models/Banner');
-const HistorySection = require('../models/HistorySection');
-const AcharyaParampara = require('../models/AcharyaParampara');
-const GalleryCategory = require('../models/GalleryCategory');
-const GalleryItem = require('../models/GalleryItem');
-const Video = require('../models/Video');
-const Festival = require('../models/Festival');
-const DonationItem = require('../models/DonationItem');
-const PaymentInfo = require('../models/PaymentInfo');
-const Activity = require('../models/Activity');
-const Announcement = require('../models/Announcement');
-const Seo = require('../models/Seo');
-const DhajaBooking = require('../models/DhajaBooking');
-const GaushalaContent = require('../models/GaushalaContent');
-const Guru = require('../models/Guru');
-const TithiDay = require('../models/TithiDay');
+const Banner = require('./models/Banner');
+const HistorySection = require('./models/HistorySection');
+const AcharyaParampara = require('./models/AcharyaParampara');
+const GalleryCategory = require('./models/GalleryCategory');
+const GalleryItem = require('./models/GalleryItem');
+const Video = require('./models/Video');
+const Festival = require('./models/Festival');
+const DonationItem = require('./models/DonationItem');
+const PaymentInfo = require('./models/PaymentInfo');
+const Activity = require('./models/Activity');
+const Announcement = require('./models/Announcement');
+const Seo = require('./models/Seo');
+const DhajaBooking = require('./models/DhajaBooking');
+const GaushalaContent = require('./models/GaushalaContent');
+const Guru = require('./models/Guru');
+const TithiDay = require('./models/TithiDay');
 
 // ── Import Routers ──
-const createCrudRouter = require('../utils/crudRouter');
-const authRouter = require('../routes/auth');
-const contactRouter = require('../routes/contact');
-const settingsRouter = require('../routes/settings');
-const uploadRouter = require('../routes/upload');
-const dhajaBookingRouter = require('../routes/dhajaBooking');
-const guruRouter = require('../routes/gurus');
-const tithiDaysRouter = require('../routes/tithiDays');
+const createCrudRouter = require('./utils/crudRouter');
+const authRouter = require('./routes/auth');
+const contactRouter = require('./routes/contact');
+const settingsRouter = require('./routes/settings');
+const uploadRouter = require('./routes/upload');
+const dhajaBookingRouter = require('./routes/dhajaBooking');
+const guruRouter = require('./routes/gurus');
+const tithiDaysRouter = require('./routes/tithiDays');
 
 // ── Mount Routes ──
 app.use('/api/auth', authLimiter, authRouter);
@@ -172,7 +172,7 @@ mongoose.connect(MONGODB_URI)
     console.log('MongoDB connected successfully');
 
     // Seed default admin if none exists
-    const Admin = require('../models/Admin');
+    const Admin = require('./models/Admin');
     const adminCount = await Admin.countDocuments();
     if (adminCount === 0) {
       const defaultEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@vadwala.com';
