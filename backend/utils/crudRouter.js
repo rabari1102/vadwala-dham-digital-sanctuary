@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { requireAuth } = require('../middleware/auth');
+const { ensureSlug } = require('./slug');
 
 const SORT_PATTERN = /^-?[A-Za-z_]+(\s+-?[A-Za-z_]+)*$/;
 const MAX_LIMIT = 500;
@@ -84,7 +85,7 @@ function createCrudRouter(Model, options) {
 
   router.post('/', requireAuth, async (req, res) => {
     try {
-      const item = await Model.create(cleanBody(Model, req.body));
+      const item = await Model.create(await ensureSlug(Model, cleanBody(Model, req.body)));
       res.status(201).json(item);
     } catch (err) {
       res.status(400).json({ error: err.message });
@@ -101,7 +102,9 @@ function createCrudRouter(Model, options) {
       return res.status(400).json({ error: `Maximum ${MAX_BULK} items per request` });
     }
     try {
-      const docs = await Model.insertMany(items.map((item) => cleanBody(Model, item)), { ordered: false });
+      const prepared = [];
+      for (const item of items) prepared.push(await ensureSlug(Model, cleanBody(Model, item)));
+      const docs = await Model.insertMany(prepared, { ordered: false });
       res.status(201).json({ created: docs.length, items: docs });
     } catch (err) {
       const created = err.insertedDocs ? err.insertedDocs.length : 0;
@@ -141,7 +144,9 @@ function createCrudRouter(Model, options) {
   router.put('/:id', requireAuth, async (req, res) => {
     try {
       if (!isValidId(req.params.id)) return res.status(404).json({ error: 'Not found' });
-      const item = await Model.findByIdAndUpdate(req.params.id, cleanBody(Model, req.body), { returnDocument: 'after', runValidators: true }).lean();
+      const data = cleanBody(Model, req.body);
+      if (Model.schema.path('slug') && !data.slug) delete data.slug; // keep the existing slug
+      const item = await Model.findByIdAndUpdate(req.params.id, data, { returnDocument: 'after', runValidators: true }).lean();
       if (!item) return res.status(404).json({ error: 'Not found' });
       res.json(item);
     } catch (err) {

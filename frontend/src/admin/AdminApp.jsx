@@ -85,7 +85,6 @@ const ACTIVITIES = {
   ],
   fields: [
     { key: 'title', label: 'Title', type: 'text', required: true },
-    { key: 'slug', label: 'Slug', type: 'text' },
     { key: 'shortDescription', label: 'Short Description', type: 'text', fullWidth: true },
     { key: 'description', label: 'Full Description', type: 'textarea', fullWidth: true },
     { key: 'icon', label: 'Icon Name', type: 'select', options: [
@@ -127,12 +126,10 @@ const GALLERY_CATS = {
   columns: [
     { key: 'image', label: 'Cover' },
     { key: 'title', label: 'Category Name' },
-    { key: 'slug', label: 'Slug' },
     { key: 'order', label: 'Order' },
   ],
   fields: [
     { key: 'title', label: 'Category Name', type: 'text', required: true },
-    { key: 'slug', label: 'Slug (unique, e.g. diwali-2026)', type: 'text', required: true },
     { key: 'order', label: 'Order', type: 'number' },
     { key: 'image', label: 'Cover Image (optional)', type: 'image' },
   ],
@@ -235,16 +232,32 @@ const ANNOUNCEMENTS = {
   defaultValues: { isActive: true, type: 'general' },
 };
 
+const SEO_PAGES = [
+  { value: 'home', label: 'Home page' },
+  { value: 'history', label: 'History' },
+  { value: 'gallery', label: 'Photo Gallery' },
+  { value: 'videos', label: 'Videos' },
+  { value: 'activities', label: 'Seva & Activities' },
+  { value: 'gaushala', label: 'Gaushala' },
+  { value: 'dhaja', label: 'Dhaja' },
+  { value: 'tithis', label: 'Upcoming Tithis' },
+  { value: 'donate', label: 'Donate' },
+  { value: 'contact', label: 'Contact' },
+  { value: 'guru-kaniram-bapu', label: 'Guru page – Kaniram Bapu' },
+  { value: 'guru-mukundram-bapu', label: 'Guru page – Mukundram Bapu' },
+  { value: 'guru-nagardas-bapu', label: 'Guru page – Nagardas Bapu' },
+];
+
 const SEO = {
   title: 'SEO Settings',
   endpoint: 'seo',
   allowToggle: false,
   columns: [
-    { key: 'pageSlug', label: 'Page' },
+    { key: 'pageSlug', label: 'Page', render: (item) => SEO_PAGES.find((p) => p.value === item.pageSlug)?.label || item.pageSlug },
     { key: 'title', label: 'SEO Title' },
   ],
   fields: [
-    { key: 'pageSlug', label: 'Page Slug', type: 'text', required: true },
+    { key: 'pageSlug', label: 'Page', type: 'select', required: true, options: SEO_PAGES },
     { key: 'title', label: 'SEO Title', type: 'text', fullWidth: true },
     { key: 'description', label: 'Meta Description', type: 'textarea', fullWidth: true },
     { key: 'ogImage', label: 'Social Share Image', type: 'image' },
@@ -298,7 +311,6 @@ const GURUS = {
   fields: [
     { key: 'full_name', label: 'Full Name', type: 'text', required: true, fullWidth: true },
     { key: 'short_title', label: 'Short Name / Title', type: 'text' },
-    { key: 'slug', label: 'Slug (e.g. kaniram-bapu)', type: 'text', required: true },
     { key: 'role_title', label: 'Role Title', type: 'text' },
     { key: 'community_role', label: 'Community Role', type: 'text' },
     { key: 'key_associated_temple', label: 'Associated Temple', type: 'text', fullWidth: true },

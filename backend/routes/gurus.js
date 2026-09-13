@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { requireAuth } = require('../middleware/auth');
 const Guru = require('../models/Guru');
 const { findGuruSummaries } = require('../utils/guruSummary');
+const { uniqueSlug } = require('../utils/slug');
 
 const router = express.Router();
 
@@ -66,6 +67,7 @@ router.get('/:slug/images', async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   try {
     const { primary_image, gallery_images, ...rest } = req.body;
+    if (!rest.slug) rest.slug = await uniqueSlug(Guru, rest.short_title || rest.full_name, 'guru');
     const guru = new Guru(rest);
     
     const newImages = [];
@@ -100,6 +102,7 @@ router.post('/', requireAuth, async (req, res) => {
 router.put('/:slug', requireAuth, async (req, res) => {
   try {
     const { primary_image, gallery_images, ...rest } = req.body;
+    if (!rest.slug) delete rest.slug; // the slug is not edited from the admin form
     const guru = await Guru.findOne(getGuruQuery(req.params.slug));
     if (!guru) return res.status(404).json({ error: 'Guru not found' });
 

@@ -267,11 +267,16 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
       case 'images':
         return <MultiImageField value={val} onChange={set} onBusyChange={trackBusy} />;
       case 'select': {
-        const list = field.optionsEndpoint ? (options[field.key] || []) : (field.options || []);
+        const loaded = field.optionsEndpoint ? (options[field.key] || []) : (field.options || []);
         const stillLoading = field.optionsEndpoint && !options[field.key];
+        // Keep a saved value selectable even if it's not in the list (never show a raw ID as the only choice)
+        const missing = val && !stillLoading && !loaded.some((o) => String(o.value) === String(val));
+        const list = missing
+          ? [...loaded, { value: val, label: field.optionsEndpoint ? '(deleted — please choose another)' : String(val) }]
+          : loaded;
         return (
-          <select className="admin-form__input admin-form__select" value={val} onChange={(e) => set(e.target.value)}>
-            <option value="">{stillLoading ? 'Loading…' : '-- Select --'}</option>
+          <select className="admin-form__input admin-form__select" value={stillLoading ? '' : val} onChange={(e) => set(e.target.value)} disabled={stillLoading}>
+            <option value="">{stillLoading ? 'Loading…' : `-- Select ${field.label.toLowerCase()} --`}</option>
             {list.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         );
