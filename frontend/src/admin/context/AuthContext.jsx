@@ -6,16 +6,16 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Only show the loading state when there is a stored token to verify
+  const [loading, setLoading] = useState(() => Boolean(localStorage.getItem('admin_token')));
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
-    if (token) {
-      axios.get(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => setAdmin(r.data))
-        .catch(() => localStorage.removeItem('admin_token'))
-        .finally(() => setLoading(false));
-    } else { setLoading(false); }
+    if (!token) return;
+    axios.get(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => setAdmin(r.data))
+      .catch(() => localStorage.removeItem('admin_token'))
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {

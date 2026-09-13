@@ -3,14 +3,22 @@
    ═══════════════════════════════════════════════════════════════ */
 
 .site-header {
-  background: rgba(255, 252, 248, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-divider);
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 60;
   transition: box-shadow var(--transition);
+}
+/* The blur lives on a pseudo-element: backdrop-filter on the header itself would become the
+   containing block for the fixed mobile menu + overlay and trap them inside the header bar. */
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 252, 248, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .site-header--scrolled {
   box-shadow: 0 2px 20px rgba(44,24,16,0.06);
@@ -63,14 +71,16 @@
 .site-nav ul {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 .nav-link {
   font-family: var(--font-body);
   font-size: var(--text-body-sm);
   font-weight: 500;
   color: var(--color-on-surface-variant);
-  padding: 8px 14px;
+  white-space: nowrap;
+  display: inline-block;
+  padding: 8px 12px;
   border-radius: var(--radius-pill);
   transition: all var(--transition);
   text-decoration: none;
@@ -139,8 +149,8 @@
   background: var(--color-primary-light);
 }
 
-/* ── Mobile Nav ── */
-@media (max-width: 768px) {
+/* ── Mobile / tablet Nav (10 links don't fit in one row below ~1180px) ── */
+@media (max-width: 1180px) {
   .site-header__inner {
     padding-top: 8px;
     padding-bottom: 8px;
@@ -196,7 +206,7 @@
     justify-content: center;
   }
 }
-@media (min-width: 769px) {
+@media (min-width: 1181px) {
   .nav-mobile-actions { display: none; }
 }
 

@@ -21,11 +21,14 @@ const defaultNavLinks = [
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPath, setMenuPath] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const { settings } = useSiteSettings();
   const { t, tr, toggleLanguage, isGujarati } = useLanguage();
   const location = useLocation();
+  // The menu is "open for a path": navigating anywhere closes it without an extra effect/render
+  const menuOpen = menuPath === location.pathname;
+  const setMenuOpen = (open) => setMenuPath(open ? location.pathname : null);
 
   const apiLinks = settings?.navLinks?.filter(l => l.isActive)?.sort((a, b) => a.order - b.order);
   let navLinks = apiLinks?.length
@@ -74,8 +77,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
-
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -87,9 +88,12 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="logo-link" aria-label="Shri Vadwala Mandir Home">
           <img
-            src={getImageUrl(settings?.logo) || LOGO_URL}
+            src={getImageUrl(settings?.logo, 240) || LOGO_URL}
             alt="શ્રી વડવાળા મંદિર"
             className="logo-img"
+            width="73"
+            height="48"
+            fetchPriority="high"
           />
           <span className="logo-text hide-mobile">
             <span className="logo-gujarati">{tr(settings?.siteName || 'શ્રી વડવાળા મંદિર')}</span>
@@ -124,6 +128,7 @@ export default function Navbar() {
             {isGujarati ? 'EN' : 'ગુજરાતી'}
           </button>
           <button
+            type="button"
             className="menu-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}

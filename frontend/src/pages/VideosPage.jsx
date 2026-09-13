@@ -44,7 +44,7 @@ function YouTubePlayer({ embedUrl, title, thumbnail }) {
       aria-label={`Play: ${title}`}
     >
       {thumbSrc ? (
-        <img src={thumbSrc} alt={title} loading="lazy" />
+        <img src={thumbSrc} alt={title} loading="lazy" decoding="async" />
       ) : (
         <div className="video-card__placeholder">{title}</div>
       )}
@@ -59,8 +59,8 @@ function YouTubePlayer({ embedUrl, title, thumbnail }) {
 
 export default function VideosPage() {
   const { t, tr } = useLanguage();
-  const { data: videos, loading: vl } = useFetch(() => getVideos({ type: 'video' }), []);
-  const { data: reels, loading: rl } = useFetch(() => getVideos({ type: 'reel' }), []);
+  const { data: videos, loading: vl } = useFetch('videos:video', () => getVideos({ type: 'video' }));
+  const { data: reels, loading: rl } = useFetch('videos:reel', () => getVideos({ type: 'reel' }));
 
   if (vl || rl) return <LoadingSpinner />;
 

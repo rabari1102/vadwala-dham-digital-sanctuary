@@ -4,7 +4,7 @@ import { getImageUrl, downloadPhoto } from '../../utils/helpers';
 import { useLanguage } from '../../context/LanguageContext';
 import './HeroSlider.css';
 
-export default function HeroSlider({ banners = [] }) {
+export default function HeroSlider({ banners = [], loading = false }) {
   const [current, setCurrent] = useState(0);
   const { t, tr } = useLanguage();
 
@@ -14,8 +14,18 @@ export default function HeroSlider({ banners = [] }) {
     return () => clearInterval(interval);
   }, [banners.length]);
 
-  const banner = banners[current];
-  const heroImage = banner ? getImageUrl(banner.image) : null;
+  // Preload the next slide so the transition never shows a half-loaded image
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const next = banners[(current + 1) % banners.length];
+    if (next?.image) {
+      const img = new Image();
+      img.src = getImageUrl(next.image, 800);
+    }
+  }, [current, banners]);
+
+  const banner = banners[current % (banners.length || 1)];
+  const heroImage = banner ? getImageUrl(banner.image, 800) : null;
 
   return (
     <section className="hero" aria-labelledby="hero-heading" id="hero-section">
@@ -64,8 +74,9 @@ export default function HeroSlider({ banners = [] }) {
                   alt="Shri Vadwala Mandir, Dudhrej Dham"
                   width="640" height="800"
                   loading="eager" decoding="async"
+                  fetchPriority={current === 0 ? 'high' : 'auto'}
                   key={current}
-                  className="hero__image"
+                  className="hero__image hero__image--fade"
                 />
                 <button
                   type="button"
@@ -78,8 +89,8 @@ export default function HeroSlider({ banners = [] }) {
                 </button>
               </>
             ) : (
-              <div className="hero__image-placeholder" aria-hidden="true">
-                <span className="material-symbols-outlined" style={{ fontSize: 80, opacity: 0.3 }}>temple_hindu</span>
+              <div className={`hero__image-placeholder ${loading ? 'skeleton-shimmer' : ''}`} aria-hidden="true">
+                {!loading && <span className="material-symbols-outlined" style={{ fontSize: 80, opacity: 0.3 }}>temple_hindu</span>}
               </div>
             )}
             <div className="hero__heritage-detail hide-mobile">

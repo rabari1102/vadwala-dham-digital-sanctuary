@@ -4,11 +4,17 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
-const { seedPublicContent } = require('./utils/publicContentSeeder');
+const { connectDB } = require('./utils/db');
+const { publicCache, invalidateOnWrite } = require('./utils/cache');
 
 const app = express();
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+const isServerless = Boolean(process.env.VERCEL);
+const isProduction = process.env.NODE_ENV === 'production';
 
 // ── Security Middleware ──
 app.use(helmet({
@@ -31,28 +37,28 @@ app.use(cors({
     if (!origin) return callback(null, true);
     const normalizedOrigin = origin.replace(/\/$/, '');
     if (allowedOrigins.includes(normalizedOrigin)) return callback(null, true);
-    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+    if (!isProduction) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
+  maxAge: 86400, // let browsers cache preflight responses for a day
 }));
 
-// Request logger middleware
+// Request logger — in production only log slow or failed requests to keep logs useful
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+    if (!isProduction || duration > 800 || res.statusCode >= 500) {
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+    }
   });
   next();
 });
 
-// Body parsing
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// Serve uploaded/local images dynamically from MongoDB with disk fallback
+// Body parsing (file uploads use multipart via multer, so JSON bodies stay small)
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // Mongo injection sanitization
 function sanitizeMongoKeys(value) {
@@ -77,25 +83,37 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve media dynamically from MongoDB
-const Media = require('./models/Media');
-const fs = require('fs');
-app.get('/uploads/*splat', async (req, res) => {
+// Ensure a (reused) DB connection before any handler that touches MongoDB
+async function requireDB(req, res, next) {
   try {
-    const filePath = Array.isArray(req.params.splat) 
-      ? req.params.splat.join('/') 
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    res.status(503).json({ error: 'Database temporarily unavailable. Please retry.' });
+  }
+}
+
+// Serve media stored in MongoDB (legacy uploads) with disk fallback
+const Media = require('./models/Media');
+const MEDIA_CACHE_HEADER = 'public, max-age=604800, s-maxage=31536000, stale-while-revalidate=86400';
+
+app.get('/uploads/*splat', requireDB, async (req, res) => {
+  try {
+    const filePath = Array.isArray(req.params.splat)
+      ? req.params.splat.join('/')
       : req.params.splat;
-      
-    const media = await Media.findOne({ filename: filePath });
+
+    const media = await Media.findOne({ filename: filePath }).select('contentType data').lean();
     if (media) {
       res.set('Content-Type', media.contentType);
-      return res.send(media.data);
+      res.set('Cache-Control', MEDIA_CACHE_HEADER);
+      return res.send(Buffer.from(media.data.buffer || media.data));
     }
 
-    // Fallback: check local disk
-    const localPath = path.join(__dirname, 'uploads', filePath);
+    const localPath = path.join(__dirname, 'uploads', path.normalize(filePath).replace(/^(\.\.[/\\])+/, ''));
     if (fs.existsSync(localPath)) {
-      return res.sendFile(localPath);
+      return res.sendFile(localPath, { maxAge: '7d' });
     }
 
     res.status(404).send('Not Found');
@@ -106,28 +124,29 @@ app.get('/uploads/*splat', async (req, res) => {
 });
 
 // Download endpoint — forces Content-Disposition: attachment so browser saves with correct filename
-app.get('/api/download', async (req, res) => {
+app.get('/api/download', requireDB, async (req, res) => {
   const { file, name } = req.query;
   if (!file) return res.status(400).json({ error: 'Missing file parameter' });
 
   // Security: only allow filenames, no path traversal
-  const safeFile = path.basename(file);
-  const downloadName = name || safeFile;
+  const safeFile = path.basename(String(file));
+  const downloadName = String(name || safeFile);
 
   try {
-    // 1. Try to find in database (handles flat files and subfolders like gurus/)
     const escapedFile = safeFile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const media = await Media.findOne({ filename: { $regex: new RegExp('(^|/)' + escapedFile + '$') } });
-    
+    const media = await Media.findOne({ filename: { $regex: new RegExp('(^|/)' + escapedFile + '$') } })
+      .select('contentType data')
+      .lean();
+
     if (media) {
       res.set({
         'Content-Type': media.contentType,
-        'Content-Disposition': `attachment; filename="${encodeURIComponent(downloadName)}"`
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(downloadName)}`,
+        'Cache-Control': MEDIA_CACHE_HEADER,
       });
-      return res.send(media.data);
+      return res.send(Buffer.from(media.data.buffer || media.data));
     }
 
-    // 2. Fallback to local disk (useful for local dev)
     const filePath = path.join(__dirname, 'uploads', safeFile);
     if (fs.existsSync(filePath)) {
       return res.download(filePath, downloadName);
@@ -152,13 +171,24 @@ const authLimiter = rateLimit({
 // General API rate limit
 const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 100,
+  max: 300,
   message: { error: 'Too many requests. Please slow down.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use('/api', apiLimiter);
+// Health check (before DB middleware so it answers even when the DB is down)
+app.get('/api/health', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    region: process.env.VERCEL_REGION || 'local',
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  });
+});
+
+app.use('/api', apiLimiter, requireDB, invalidateOnWrite);
 
 // ── Import Models ──
 const Banner = require('./models/Banner');
@@ -173,10 +203,7 @@ const PaymentInfo = require('./models/PaymentInfo');
 const Activity = require('./models/Activity');
 const Announcement = require('./models/Announcement');
 const Seo = require('./models/Seo');
-const DhajaBooking = require('./models/DhajaBooking');
 const GaushalaContent = require('./models/GaushalaContent');
-const Guru = require('./models/Guru');
-const TithiDay = require('./models/TithiDay');
 
 // ── Import Routers ──
 const createCrudRouter = require('./utils/crudRouter');
@@ -187,95 +214,77 @@ const uploadRouter = require('./routes/upload');
 const dhajaBookingRouter = require('./routes/dhajaBooking');
 const guruRouter = require('./routes/gurus');
 const tithiDaysRouter = require('./routes/tithiDays');
+const bootstrapRouter = require('./routes/bootstrap');
 
 // ── Mount Routes ──
 app.use('/api/auth', authLimiter, authRouter);
-app.use('/api/settings', settingsRouter);
-app.use('/api/contact', contactRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/dhaja-bookings', dhajaBookingRouter);
-app.use('/api/gurus', guruRouter);
-app.use('/api/tithi-days', tithiDaysRouter);
+
+// Public read endpoints below are cached (CDN + in-memory); authenticated requests bypass the cache
+app.use('/api/bootstrap', publicCache, bootstrapRouter);
+app.use('/api/settings', publicCache, settingsRouter);
+app.use('/api/contact', publicCache, contactRouter);
+app.use('/api/gurus', publicCache, guruRouter);
+app.use('/api/tithi-days', publicCache, tithiDaysRouter);
 
 // CRUD routes — GET is public, POST/PUT/DELETE require auth
-app.use('/api/banners', createCrudRouter(Banner));
-app.use('/api/history-sections', createCrudRouter(HistorySection));
-app.use('/api/acharya-parampara', createCrudRouter(AcharyaParampara));
-app.use('/api/gallery-categories', createCrudRouter(GalleryCategory));
-app.use('/api/gallery-items', createCrudRouter(GalleryItem, { populate: 'categoryId' }));
-app.use('/api/videos', createCrudRouter(Video));
-app.use('/api/festivals', createCrudRouter(Festival));
-app.use('/api/donation-items', createCrudRouter(DonationItem));
-app.use('/api/payment-info', createCrudRouter(PaymentInfo));
-app.use('/api/activities', createCrudRouter(Activity));
-app.use('/api/announcements', createCrudRouter(Announcement));
-app.use('/api/seo', createCrudRouter(Seo));
-app.use('/api/gaushala-content', createCrudRouter(GaushalaContent));
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-  });
-});
+app.use('/api/banners', publicCache, createCrudRouter(Banner));
+app.use('/api/history-sections', publicCache, createCrudRouter(HistorySection));
+app.use('/api/acharya-parampara', publicCache, createCrudRouter(AcharyaParampara));
+app.use('/api/gallery-categories', publicCache, createCrudRouter(GalleryCategory));
+app.use('/api/gallery-items', publicCache, createCrudRouter(GalleryItem, { populate: 'categoryId' }));
+app.use('/api/videos', publicCache, createCrudRouter(Video));
+app.use('/api/festivals', publicCache, createCrudRouter(Festival));
+app.use('/api/donation-items', publicCache, createCrudRouter(DonationItem));
+app.use('/api/payment-info', publicCache, createCrudRouter(PaymentInfo));
+app.use('/api/activities', publicCache, createCrudRouter(Activity));
+app.use('/api/announcements', publicCache, createCrudRouter(Announcement));
+app.use('/api/seo', publicCache, createCrudRouter(Seo));
+app.use('/api/gaushala-content', publicCache, createCrudRouter(GaushalaContent));
 
 // Root check
 app.get('/', (req, res) => {
   res.send('Vadwala Dham Digital Sanctuary API is running.');
 });
 
-// ── Database Connection & Server Start ──
-const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI;
+// ── Server Start (local / non-serverless only) ──
+if (!isServerless) {
+  const PORT = process.env.PORT || 5000;
 
-if (!MONGODB_URI) {
-  console.error('WARNING: MONGODB_URI is not defined. Database features will not work.');
-} else {
-  // Connect to MongoDB asynchronously
-  mongoose.connect(MONGODB_URI)
-    .then(() => {
+  connectDB()
+    .then(async () => {
       console.log('MongoDB connected successfully');
+      try {
+        // Seed default admin if none exists
+        const Admin = require('./models/Admin');
+        const adminCount = await Admin.countDocuments();
+        if (adminCount === 0) {
+          const defaultEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@vadwala.com';
+          const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'VadwalaDham2024!';
+          await Admin.create({
+            name: 'Admin',
+            email: defaultEmail,
+            password: defaultPassword,
+            role: 'superadmin',
+            status: 'active',
+          });
+          console.log(`Default admin created: ${defaultEmail}`);
+        }
+
+        // Content seeding overwrites guru records, so it only runs when explicitly requested
+        if (process.env.SEED_ON_START === 'true') {
+          const { seedPublicContent } = require('./utils/publicContentSeeder');
+          await seedPublicContent({ log: console.log });
+          console.log('Public content seed complete');
+        }
+      } catch (seedErr) {
+        console.error('Seed error (non-fatal):', seedErr.message);
+      }
     })
     .catch((err) => {
       console.error('MongoDB connection error:', err.message);
-      // In serverless, do not call process.exit(1) on connection failure
-      // because it will crash the serverless container boot.
-      if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-        process.exit(1);
-      }
     });
-}
-
-// Start listener and seeding ONLY when not running on Vercel / Serverless
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  // Run seeding only once the connection is open
-  mongoose.connection.once('open', async () => {
-    try {
-      // Seed default admin if none exists
-      const Admin = require('./models/Admin');
-      const adminCount = await Admin.countDocuments();
-      if (adminCount === 0) {
-        const defaultEmail = process.env.DEFAULT_ADMIN_EMAIL || 'admin@vadwala.com';
-        const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || 'VadwalaDham2024!';
-        await Admin.create({
-          name: 'Admin',
-          email: defaultEmail,
-          password: defaultPassword,
-          role: 'superadmin',
-          status: 'active',
-        });
-        console.log(`Default admin created: ${defaultEmail}`);
-      }
-
-      // Seed public content (skip existing)
-      await seedPublicContent({ log: console.log });
-      console.log('Public content seed complete');
-    } catch (seedErr) {
-      console.error('Seed error (non-fatal):', seedErr.message);
-    }
-  });
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

@@ -8,4 +8,6 @@ const galleryCategorySchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+galleryCategorySchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('GalleryCategory', galleryCategorySchema);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../context/ToastContext';
 import adminApi from '../hooks/adminApi';
 import { Plus, Edit2, Trash2, X, ToggleLeft, ToggleRight } from 'lucide-react';
@@ -26,16 +26,23 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
   const [cropFile, setCropFile] = useState(null);
   const [cropField, setCropField] = useState(null);
 
-  const fetchData = async () => {
-    setLoading(true);
+  // Refreshes keep the current table visible instead of flashing a "Loading..." state
+  const fetchData = useCallback(async () => {
     try {
       const res = await adminApi.getAll(endpoint);
       setItems(Array.isArray(res.data) ? res.data : []);
     } catch { setItems([]); }
     setLoading(false);
-  };
+  }, [endpoint]);
 
-  useEffect(() => { fetchData(); }, [endpoint]);
+  useEffect(() => {
+    let cancelled = false;
+    adminApi.getAll(endpoint)
+      .then(res => { if (!cancelled) setItems(Array.isArray(res.data) ? res.data : []); })
+      .catch(() => { if (!cancelled) setItems([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [endpoint]);
 
   const openCreate = () => {
     setEditItem(null);
@@ -149,7 +156,7 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
   const renderFieldInput = (field) => {
     const val = formData[field.key] ?? '';
     switch (field.type) {
-      case 'textarea':
+      case 'textarea': {
         const isGallery = field.key.includes('images') || field.key.includes('gallery');
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -203,6 +210,7 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
             )}
           </div>
         );
+      }
       case 'select':
         return (
           <select className="admin-form__input admin-form__select" value={val} onChange={e => handleField(field.key, e.target.value)}>

@@ -17,7 +17,6 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
   // Read file as DataURL
   useEffect(() => {
     if (!file) return;
-    setLoading(true);
     const reader = new FileReader();
     reader.onload = (e) => {
       setImageSrc(e.target.result);
@@ -80,22 +79,19 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
     setIsDragging(false);
   };
 
-  // Keep offset constrained when zoom changes
-  useEffect(() => {
+  // Keep offset constrained when zoom changes (done in the handler, not an effect, to avoid an extra render)
+  const handleZoom = (nextZoom) => {
+    setZoom(nextZoom);
     if (imageSize.width === 0) return;
 
-    const currentWidth = imageSize.width * zoom;
-    const currentHeight = imageSize.height * zoom;
+    const minX = cropBoxWidth - imageSize.width * nextZoom;
+    const minY = cropBoxHeight - imageSize.height * nextZoom;
 
-    const minX = cropBoxWidth - currentWidth;
-    const minY = cropBoxHeight - currentHeight;
-
-    setOffset((prev) => {
-      const newX = Math.max(minX, Math.min(0, prev.x));
-      const newY = Math.max(minY, Math.min(0, prev.y));
-      return { x: newX, y: newY };
-    });
-  }, [zoom, imageSize]);
+    setOffset((prev) => ({
+      x: Math.max(minX, Math.min(0, prev.x)),
+      y: Math.max(minY, Math.min(0, prev.y)),
+    }));
+  };
 
   // Crop & save handler
   const handleCrop = () => {
@@ -109,7 +105,6 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
 
     // Calculate crop parameters relative to the original natural dimensions
     const currentWidth = imageSize.width * zoom;
-    const currentHeight = imageSize.height * zoom;
 
     const scale = imageSize.naturalWidth / currentWidth;
 
@@ -193,7 +188,7 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
               max="3"
               step="0.01"
               value={zoom}
-              onChange={(e) => setZoom(parseFloat(e.target.value))}
+              onChange={(e) => handleZoom(parseFloat(e.target.value))}
               className="cropper-modal__zoom-slider"
             />
             <span className="material-symbols-outlined">zoom_in</span>

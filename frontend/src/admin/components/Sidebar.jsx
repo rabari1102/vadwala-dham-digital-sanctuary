@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Image, Video, Calendar, Heart, CreditCard, Megaphone, Phone, Settings, Users, History, Sparkles, Sun, Menu, X, FileText, Globe } from 'lucide-react';
 
 const nav = [
@@ -36,8 +35,6 @@ const nav = [
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
-  const { admin } = useAuth();
-  const location = useLocation();
 
   return (
     <>

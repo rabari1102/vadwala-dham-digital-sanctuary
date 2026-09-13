@@ -25,7 +25,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="footer-col footer-brand-col">
           <Link to="/" className="footer-logo" aria-label="Home">
-            <img src={getImageUrl(settings?.logo) || LOGO_URL} alt="વડવાળા ધામ" style={{ height: 48 }} />
+            <img src={getImageUrl(settings?.logo, 240) || LOGO_URL} alt="વડવાળા ધામ" style={{ height: 48, width: 'auto' }} loading="lazy" decoding="async" />
             <span className="footer-brand-name">{tr('વડવાળા ધામ')}</span>
           </Link>
           <p className="footer-tagline">{t('footerTagline')}</p>

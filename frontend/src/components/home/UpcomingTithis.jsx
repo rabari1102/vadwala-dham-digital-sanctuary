@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import useFetch from '../../hooks/useFetch';
 import { useLanguage } from '../../context/LanguageContext';
 import { getUpcomingTithis } from '../../api/apiService';
 import { formatDate } from '../../utils/helpers';
@@ -7,26 +8,10 @@ import './UpcomingTithis.css';
 
 export default function UpcomingTithis() {
   const { language, t } = useLanguage();
-  const [tithis, setTithis] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Punam', 'Bij'
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    // Fetch a solid amount of upcoming tithis (e.g., next 12) so client-side filtering works perfectly
-    getUpcomingTithis({ limit: 12 })
-      .then((res) => {
-        setTithis(res.data || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching upcoming tithis:', err);
-        setError('Failed to load upcoming tithis.');
-        setLoading(false);
-      });
-  }, []);
+  // Fetch the next 12 upcoming tithis so client-side filtering works without extra requests
+  const { data, loading, error } = useFetch('tithis:upcoming:12', () => getUpcomingTithis({ limit: 12 }));
+  const tithis = data || [];
 
   // Filter tithis based on selected tab
   const filteredTithis = tithis.filter((tithi) => {

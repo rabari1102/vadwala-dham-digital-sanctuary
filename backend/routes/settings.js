@@ -5,9 +5,9 @@ const { requireAuth } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
   try {
-    var settings = await Settings.findOne();
+    var settings = await Settings.findOne().select('-__v').lean();
     if (!settings) {
-      settings = await Settings.create({});
+      settings = (await Settings.create({})).toObject();
     }
     res.json(settings);
   } catch (err) {

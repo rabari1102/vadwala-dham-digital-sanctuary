@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
 import { getGaushalaContent } from '../api/apiService';
 import { getImageUrl, downloadPhoto } from '../utils/helpers';
 import './GaushalaPage.css';
@@ -54,18 +56,8 @@ function LoadingSkeleton() {
 }
 
 export default function GaushalaPage() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getGaushalaContent()
-      .then((res) => {
-        const items = res.data;
-        setData(Array.isArray(items) ? items[0] : items);
-      })
-      .catch((err) => console.error('Failed to load gaushala content:', err))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: items, loading } = useFetch('gaushala', getGaushalaContent);
+  const data = Array.isArray(items) ? items[0] : items;
 
   if (loading) return <LoadingSkeleton />;
   if (!data) return <div className="container" style={{ padding: '80px 0', textAlign: 'center' }}>ગૌશાળાની માહિતી ટૂંક સમયમાં ઉપલબ્ધ થશે.</div>;
@@ -187,7 +179,7 @@ export default function GaushalaPage() {
             <div className="gaushala-cta-box">
               <h3>{data.ctaTitle}</h3>
               <p>{data.ctaText}</p>
-              <a href="/donate" className="btn">દાન કરો</a>
+              <Link to="/donate" className="btn">દાન કરો</Link>
             </div>
           </div>
         </div>
@@ -208,7 +200,7 @@ export default function GaushalaPage() {
                 <span>
                   {data.locationNote}
                   {' '}
-                  <a href="/contact">સંપર્ક</a>
+                  <Link to="/contact">સંપર્ક</Link>
                 </span>
               </div>
             )}
@@ -232,7 +224,7 @@ export default function GaushalaPage() {
                 {data.photos.map((photo, i) => (
                   <figure className="gaushala-gallery-figure" key={i}>
                     <div className="gaushala-gallery-figure__img-wrap">
-                      <img src={getImageUrl(photo.src)} alt={photo.alt} loading="lazy" />
+                      <img src={getImageUrl(photo.src, 600)} alt={photo.alt} loading="lazy" decoding="async" />
                       <button
                         type="button"
                         className="gaushala-gallery-download"

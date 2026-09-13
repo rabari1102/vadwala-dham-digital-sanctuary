@@ -18,8 +18,8 @@ const iconMap = {
 
 export default function ActivitiesPage() {
   const { language, t, tr } = useLanguage();
-  const { data: activities, loading: al } = useFetch(() => getActivities(), []);
-  const { data: festivals, loading: fl } = useFetch(() => getFestivals(), []);
+  const { data: activities, loading: al } = useFetch('activities:all', getActivities);
+  const { data: festivals, loading: fl } = useFetch('festivals:all', getFestivals);
 
   if (al || fl) return <LoadingSpinner />;
 

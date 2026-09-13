@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const TithiDay = require('../models/TithiDay');
 const { requireAuth } = require('../middleware/auth');
 
@@ -10,16 +11,18 @@ router.get('/upcoming', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // start of today
     
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 10, 100);
     const filter = { dateGregorian: { $gte: today } };
-    
+
     if (req.query.tithiName) {
-      filter.tithiName = req.query.tithiName;
+      filter.tithiName = String(req.query.tithiName);
     }
-    
+
     const tithis = await TithiDay.find(filter)
       .sort({ dateGregorian: 1 })
-      .limit(limit);
+      .limit(limit)
+      .select('-__v')
+      .lean();
       
     res.json(tithis);
   } catch (err) {
@@ -30,7 +33,7 @@ router.get('/upcoming', async (req, res) => {
 // ── GET /api/tithi-days — List all entries (for admin table) ──
 router.get('/', async (req, res) => {
   try {
-    const tithis = await TithiDay.find().sort({ dateGregorian: 1 });
+    const tithis = await TithiDay.find().sort({ dateGregorian: 1 }).select('-__v').lean();
     res.json(tithis);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -40,7 +43,8 @@ router.get('/', async (req, res) => {
 // ── GET /api/tithi-days/:id — Get details ──
 router.get('/:id', async (req, res) => {
   try {
-    const item = await TithiDay.findById(req.params.id);
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ error: 'Not found' });
+    const item = await TithiDay.findById(req.params.id).lean();
     if (!item) return res.status(404).json({ error: 'Not found' });
     res.json(item);
   } catch (err) {

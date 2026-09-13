@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { requireAuth } = require('../middleware/auth');
 const Guru = require('../models/Guru');
+const { findGuruSummaries } = require('../utils/guruSummary');
 
 const router = express.Router();
 
@@ -19,30 +20,7 @@ router.get('/', async (req, res) => {
     const filter = {};
     if (req.query.status) filter.status = req.query.status;
 
-    const gurus = await Guru.find(filter)
-      .sort('order')
-      .select('slug full_name short_title role_title community_role key_associated_temple biography_short images order status');
-
-    // Attach primary image to each guru
-    const result = gurus.map((g) => {
-      const doc = g.toObject();
-      const primary = doc.images?.find((img) => img.is_primary) || doc.images?.[0] || null;
-      return {
-        _id: doc._id,
-        slug: doc.slug,
-        full_name: doc.full_name,
-        short_title: doc.short_title,
-        role_title: doc.role_title,
-        community_role: doc.community_role,
-        key_associated_temple: doc.key_associated_temple,
-        biography_short: doc.biography_short,
-        primary_image: primary,
-        order: doc.order,
-        status: doc.status,
-      };
-    });
-
-    res.json(result);
+    res.json(await findGuruSummaries(filter));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -51,11 +29,10 @@ router.get('/', async (req, res) => {
 // ── GET /api/gurus/:slug — Full guru detail by slug or ID ──
 router.get('/:slug', async (req, res) => {
   try {
-    const guru = await Guru.findOne(getGuruQuery(req.params.slug));
-    if (!guru) return res.status(404).json({ error: 'Guru not found' });
+    const doc = await Guru.findOne(getGuruQuery(req.params.slug)).select('-__v').lean();
+    if (!doc) return res.status(404).json({ error: 'Guru not found' });
 
     // Sort events and images by sort_order
-    const doc = guru.toObject();
     if (doc.events) doc.events.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     if (doc.images) doc.images.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
@@ -75,7 +52,7 @@ router.get('/:slug', async (req, res) => {
 // ── GET /api/gurus/:slug/images — Images only (for lazy-loading gallery) ──
 router.get('/:slug/images', async (req, res) => {
   try {
-    const guru = await Guru.findOne(getGuruQuery(req.params.slug)).select('images');
+    const guru = await Guru.findOne(getGuruQuery(req.params.slug)).select('images').lean();
     if (!guru) return res.status(404).json({ error: 'Guru not found' });
 
     const images = (guru.images || []).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));

@@ -4,7 +4,7 @@ import './AnnouncementBar.css';
 
 export default function AnnouncementBar() {
   const { announcements } = useSiteSettings();
-  const { tr, t } = useLanguage();
+  const { tr } = useLanguage();
   const active = announcements?.filter(a => a.isActive);
   if (!active || active.length === 0) return null;
 
