@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import adminApi from '../hooks/adminApi';
-import { Image, Video, Calendar, Heart, Megaphone, Sparkles, History, CreditCard } from 'lucide-react';
+import { Image, Video, Calendar, Heart, Megaphone, Sparkles, History } from 'lucide-react';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({});

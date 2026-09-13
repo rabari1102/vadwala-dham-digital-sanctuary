@@ -40,19 +40,37 @@
 }
 
 .admin-sidebar__brand {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-sidebar__logo {
+  width: 64px;
+  height: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 
 .admin-sidebar__brand h2 {
   font-size: 1rem;
-  color: var(--admin-primary);
+  color: #f0a45c;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .admin-sidebar__brand span {
   font-size: 0.7rem;
-  opacity: 0.5;
+  opacity: 0.6;
+}
+
+.admin-login__logo {
+  display: block;
+  width: 150px;
+  height: auto;
+  margin: 0 auto 0.75rem;
 }
 
 .admin-sidebar__nav {

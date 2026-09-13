@@ -6,7 +6,7 @@ const { requireAuth } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
   try {
-    var contact = await Contact.findOne();
+    var contact = await Contact.findOne().select('-__v').lean();
     if (!contact) {
       contact = await Contact.create({
         address: 'શ્રી વડવાળા મંદિર દુધરેજધામ, દુધરેજ, સુરેન્દ્રનગર (ગુજરાત) - 363040',
@@ -57,7 +57,7 @@ router.get('/messages', requireAuth, async (req, res) => {
   try {
     var filter = {};
     if (req.query.isRead !== undefined) filter.isRead = req.query.isRead === 'true';
-    var messages = await ContactMessage.find(filter).sort('-createdAt');
+    var messages = await ContactMessage.find(filter).sort('-createdAt').lean();
     res.json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });

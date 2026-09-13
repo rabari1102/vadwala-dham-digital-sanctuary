@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { getImageUrl } from '../../utils/helpers';
@@ -6,28 +5,6 @@ import './GuruParampara.css';
 
 export default function GuruParampara({ gurus = [] }) {
   const { t, tr } = useLanguage();
-  const cardsRef = useRef([]);
-
-  // Intersection Observer for scroll-in animation
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('guru-card--visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    cardsRef.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [gurus]);
 
   if (!gurus || gurus.length === 0) return null;
 
@@ -43,7 +20,7 @@ export default function GuruParampara({ gurus = [] }) {
           {gurus.map((guru, index) => {
             const isReverse = index % 2 !== 0;
             const imgSrc = guru.primary_image?.storage_key
-              ? getImageUrl(guru.primary_image.storage_key)
+              ? getImageUrl(guru.primary_image.storage_key, 600)
               : '';
 
             return (
@@ -51,7 +28,6 @@ export default function GuruParampara({ gurus = [] }) {
                 key={guru._id || guru.slug}
                 to={`/gurus/${guru.slug}`}
                 className={`guru-card ${isReverse ? 'guru-card--reverse' : ''}`}
-                ref={(el) => (cardsRef.current[index] = el)}
                 aria-label={`${tr(guru.full_name)} – ${tr(guru.role_title)}`}
               >
                 <div className="guru-card__image-wrap">
@@ -61,6 +37,9 @@ export default function GuruParampara({ gurus = [] }) {
                       alt={guru.primary_image?.alt_text || tr(guru.full_name)}
                       className="guru-card__image"
                       loading="lazy"
+                      decoding="async"
+                      width="280"
+                      height="340"
                     />
                   ) : (
                     <div className="guru-card__image-placeholder" aria-hidden="true">

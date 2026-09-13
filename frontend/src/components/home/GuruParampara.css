@@ -196,20 +196,22 @@
   transform: translateX(4px);
 }
 
-/* ── Scroll-in Animation ── */
-.guru-card {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow var(--transition);
+/* ── Scroll-in Animation ──
+   Cards are always visible by default. Browsers with scroll-driven animations get a subtle
+   reveal; it animates `translate` (not `transform`) so the hover lift keeps working. */
+@keyframes guruCardReveal {
+  from { opacity: 0; translate: 0 32px; }
+  to { opacity: 1; translate: 0 0; }
 }
 
-.guru-card.guru-card--visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.guru-card:nth-child(2) {
-  transition-delay: 0.15s;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .guru-card {
+      animation: guruCardReveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -240,20 +242,6 @@
   /* Reverse layout for second card */
   .guru-card--reverse {
     flex-direction: row-reverse;
-  }
-
-  /* Animation tweaks for desktop */
-  .guru-card {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-
-  .guru-card--reverse {
-    transform: translateX(40px);
-  }
-
-  .guru-card.guru-card--visible {
-    transform: translateX(0);
   }
 }
 

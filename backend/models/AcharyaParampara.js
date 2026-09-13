@@ -10,4 +10,6 @@ const acharyaParamparaSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+acharyaParamparaSchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('AcharyaParampara', acharyaParamparaSchema);

@@ -13,7 +13,7 @@ export default function IntroSection({ title, content, image }) {
           <div className="intro-visual">
             <div className="intro-visual__corner hide-mobile" />
             {image ? (
-              <img src={getImageUrl(image)} alt={tr(title || 'Shri Vadwala Mandir')} className="intro-image" loading="lazy" />
+              <img src={getImageUrl(image, 800)} alt={tr(title || 'Shri Vadwala Mandir')} className="intro-image" loading="lazy" decoding="async" />
             ) : (
               <div className="intro-image-placeholder" aria-hidden="true">
                 <span className="material-symbols-outlined" style={{ fontSize: 64, opacity: 0.3 }}>menu_book</span>

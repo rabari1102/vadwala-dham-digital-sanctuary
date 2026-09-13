@@ -9,4 +9,6 @@ const historySectionSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+historySectionSchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('HistorySection', historySectionSchema);

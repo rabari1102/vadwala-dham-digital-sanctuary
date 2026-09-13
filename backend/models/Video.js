@@ -11,4 +11,6 @@ const videoSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+videoSchema.index({ status: 1, type: 1, publishDate: -1 });
+
 module.exports = mongoose.model('Video', videoSchema);

@@ -1,88 +1,131 @@
 const express = require('express');
-const router = express.Router();
+const crypto = require('crypto');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 const { requireAuth } = require('../middleware/auth');
-
-const isVercel = process.env.VERCEL || process.env.NOW_BUILDER;
-const uploadsDir = isVercel
-  ? path.join('/tmp', 'uploads')
-  : path.join(__dirname, '..', 'uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  try {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  } catch (err) {
-    console.error('Failed to create uploads directory:', err.message);
-  }
-}
-
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) { cb(null, uploadsDir); },
-  filename: function (req, file, cb) {
-    var unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + path.extname(file.originalname));
-  }
-});
-
-var upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: function (req, file, cb) {
-    var allowed = /jpeg|jpg|png|gif|webp|svg|mp4|webm/;
-    var ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    var mime = allowed.test(file.mimetype);
-    if (ext && mime) return cb(null, true);
-    cb(new Error('Only image and video files are allowed'));
-  }
-});
-
 const Media = require('../models/Media');
 
-router.post('/', requireAuth, upload.single('file'), async function (req, res) {
+const router = express.Router();
+
+const MAX_FILE_MB = 15;
+const MAX_FILES = 20;
+const EXT_BY_MIME = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/gif': '.gif',
+  'image/webp': '.webp',
+  'image/avif': '.avif',
+  'image/svg+xml': '.svg',
+  'video/mp4': '.mp4',
+  'video/webm': '.webm',
+};
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_FILE_MB * 1024 * 1024, files: MAX_FILES },
+  fileFilter(req, file, cb) {
+    if (EXT_BY_MIME[file.mimetype]) return cb(null, true);
+    const isHeic = /hei[cf]/i.test(file.mimetype) || /\.hei[cf]$/i.test(file.originalname);
+    const err = new Error(isHeic
+      ? `"${file.originalname}" is an iPhone HEIC photo. Please export it as JPG and upload again.`
+      : `"${file.originalname}" is not a supported file. Use JPG, PNG, WebP, GIF, SVG, MP4 or WebM.`);
+    err.status = 400;
+    cb(err);
+  },
+});
+
+function uniqueName(file) {
+  const base = path.basename(file.originalname, path.extname(file.originalname))
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40) || 'file';
+  return `${Date.now()}-${crypto.randomBytes(4).toString('hex')}-${base}${EXT_BY_MIME[file.mimetype]}`;
+}
+
+// Cloudinary is used when configured (CLOUDINARY_URL or the three CLOUDINARY_* vars);
+// otherwise files are stored in MongoDB and served from /uploads.
+function cloudinaryConfig() {
+  const url = process.env.CLOUDINARY_URL;
+  if (url) {
+    const match = url.match(/^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/);
+    if (match) return { apiKey: match[1], apiSecret: match[2], cloudName: match[3] };
+  }
+  const { CLOUDINARY_CLOUD_NAME: cloudName, CLOUDINARY_API_KEY: apiKey, CLOUDINARY_API_SECRET: apiSecret } = process.env;
+  return cloudName && apiKey && apiSecret ? { cloudName, apiKey, apiSecret } : null;
+}
+
+async function uploadToCloudinary(file, cfg) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const folder = process.env.CLOUDINARY_FOLDER || 'vadwala-dham';
+  const signature = crypto
+    .createHash('sha1')
+    .update(`folder=${folder}&timestamp=${timestamp}${cfg.apiSecret}`)
+    .digest('hex');
+
+  const form = new FormData();
+  form.append('file', new Blob([file.buffer], { type: file.mimetype }), file.originalname);
+  form.append('api_key', cfg.apiKey);
+  form.append('timestamp', String(timestamp));
+  form.append('folder', folder);
+  form.append('signature', signature);
+
+  const resourceType = file.mimetype.startsWith('video/') ? 'video' : 'image';
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cfg.cloudName}/${resourceType}/upload`, {
+    method: 'POST',
+    body: form,
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error?.message || `Cloudinary upload failed (${res.status})`);
+  return body.secure_url;
+}
+
+async function storeFile(file) {
+  const cfg = cloudinaryConfig();
+  if (cfg) {
+    const url = await uploadToCloudinary(file, cfg);
+    return { url, filename: url.split('/').pop(), storage: 'cloudinary' };
+  }
+  const filename = uniqueName(file);
+  await Media.create({ filename, contentType: file.mimetype, data: file.buffer });
+  return { url: '/uploads/' + filename, filename, storage: 'database' };
+}
+
+// Run multer but turn its errors (too large, wrong type, too many files) into clear JSON messages
+function acceptFiles(middleware) {
+  return (req, res, next) => middleware(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError) {
+      const messages = {
+        LIMIT_FILE_SIZE: `File is too large. Maximum size is ${MAX_FILE_MB} MB.`,
+        LIMIT_FILE_COUNT: `Too many files in one request (maximum ${MAX_FILES}).`,
+        LIMIT_UNEXPECTED_FILE: `Unexpected upload field or too many files (maximum ${MAX_FILES}).`,
+      };
+      return res.status(400).json({ error: messages[err.code] || err.message });
+    }
+    return res.status(err.status || 400).json({ error: err.message });
+  });
+}
+
+router.post('/', requireAuth, acceptFiles(upload.single('file')), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   try {
-    const data = fs.readFileSync(req.file.path);
-    await Media.findOneAndUpdate(
-      { filename: req.file.filename },
-      {
-        filename: req.file.filename,
-        contentType: req.file.mimetype,
-        data: data
-      },
-      { upsert: true, new: true }
-    );
-    var url = '/uploads/' + req.file.filename;
-    res.json({ url: url, filename: req.file.filename });
+    res.json(await storeFile(req.file));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Upload failed:', err.message);
+    res.status(502).json({ error: `Could not store "${req.file.originalname}": ${err.message}` });
   }
 });
 
-router.post('/multiple', requireAuth, upload.array('files', 20), async function (req, res) {
+router.post('/multiple', requireAuth, acceptFiles(upload.array('files', MAX_FILES)), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'No files uploaded' });
   }
-  try {
-    const files = [];
-    for (const f of req.files) {
-      const data = fs.readFileSync(f.path);
-      await Media.findOneAndUpdate(
-        { filename: f.filename },
-        {
-          filename: f.filename,
-          contentType: f.mimetype,
-          data: data
-        },
-        { upsert: true }
-      );
-      files.push({ url: '/uploads/' + f.filename, filename: f.filename });
-    }
-    res.json(files);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  // One failed file no longer fails the whole batch
+  const results = await Promise.allSettled(req.files.map(storeFile));
+  res.json(results.map((result, i) => (result.status === 'fulfilled'
+    ? result.value
+    : { error: result.reason.message, originalname: req.files[i].originalname })));
 });
 
 module.exports = router;

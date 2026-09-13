@@ -10,4 +10,6 @@ const bannerSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+bannerSchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('Banner', bannerSchema);

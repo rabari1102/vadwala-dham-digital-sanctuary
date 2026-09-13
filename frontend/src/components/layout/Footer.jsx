@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { getImageUrl } from '../../utils/helpers';
+import SocialLinks from '../shared/SocialLinks';
 import './Footer.css';
 
-const LOGO_URL = 'https://dudhrejvadwala.com/wp-content/uploads/2025/01/Vadwalal-Logo-1024x672.png';
+const LOGO_URL = '/logo.png';
 
 const footerNav = [
   { key: 'home', url: '/' },
@@ -17,7 +18,6 @@ const footerNav = [
 export default function Footer() {
   const { settings, contact } = useSiteSettings();
   const { t, tr } = useLanguage();
-  const socialLinks = settings?.socialLinks || contact?.socialLinks || [];
 
   return (
     <footer className="site-footer" role="contentinfo" id="main-footer">
@@ -25,38 +25,12 @@ export default function Footer() {
         {/* Brand */}
         <div className="footer-col footer-brand-col">
           <Link to="/" className="footer-logo" aria-label="Home">
-            <img src={getImageUrl(settings?.logo) || LOGO_URL} alt="વડવાળા ધામ" style={{ height: 48 }} />
+            <img src={getImageUrl(settings?.logo, 240) || LOGO_URL} alt="વડવાળા ધામ" style={{ height: 48, width: 'auto' }} loading="lazy" decoding="async" />
             <span className="footer-brand-name">{tr('વડવાળા ધામ')}</span>
           </Link>
           <p className="footer-tagline">{t('footerTagline')}</p>
           <p className="footer-desc">{t('footerDesc')}</p>
-          <div className="footer-social">
-            {socialLinks.length > 0 ? (
-              socialLinks.map((s, i) => (
-                s.url ? (
-                  <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label={s.platform || s.icon}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                      {s.icon === 'Youtube' || s.icon === 'youtube' ? 'play_circle' :
-                       s.icon === 'Instagram' || s.icon === 'instagram' ? 'photo_camera' :
-                       s.icon === 'Facebook' || s.icon === 'facebook' ? 'public' : 'link'}
-                    </span>
-                  </a>
-                ) : null
-              ))
-            ) : (
-              <>
-                <a href="https://youtube.com/@dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="YouTube">
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>play_circle</span>
-                </a>
-                <a href="https://instagram.com/dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Instagram">
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>photo_camera</span>
-                </a>
-                <a href="https://facebook.com/dudhrejvadwala" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Facebook">
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>public</span>
-                </a>
-              </>
-            )}
-          </div>
+          <SocialLinks settings={settings} contact={contact} variant="icons" className="footer-social" />
         </div>
 
         {/* Quick Links */}

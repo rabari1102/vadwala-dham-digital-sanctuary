@@ -1,7 +1,6 @@
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import useFetch from '../hooks/useFetch';
-import { getBanners, getActivities, getFestivals, getGurus } from '../api/apiService';
-import LoadingSpinner from '../components/shared/LoadingSpinner';
+import { getHomeBootstrap } from '../api/apiService';
 import FloatingDonateButton from '../components/shared/FloatingDonateButton';
 import HeroSlider from '../components/home/HeroSlider';
 import FestivalSection from '../components/home/FestivalSection';
@@ -10,22 +9,20 @@ import GuruParampara from '../components/home/GuruParampara';
 import GuruDarshan from '../components/home/GuruDarshan';
 import IntroSection from '../components/home/IntroSection';
 
+const EMPTY = [];
+
 export default function HomePage() {
   const { settings } = useSiteSettings();
-  const { data: banners, loading: bl } = useFetch(() => getBanners(), []);
-  const { data: activities, loading: al } = useFetch(() => getActivities(), []);
-  const { data: festivals, loading: fl } = useFetch(() => getFestivals(), []);
-  const { data: gurus, loading: gl } = useFetch(() => getGurus(), []);
-
-  if (bl && al && fl && gl) return <LoadingSpinner />;
+  // Banners, festivals and gurus arrive in a single request; the page shell renders immediately
+  const { data } = useFetch('home', getHomeBootstrap, { persist: true });
 
   return (
     <>
-      <HeroSlider banners={banners || []} />
-      <GuruParampara gurus={gurus || []} />
+      <HeroSlider banners={data?.banners || EMPTY} loading={!data} />
+      <GuruParampara gurus={data?.gurus || EMPTY} />
       <GuruDarshan />
-      <FestivalSection festivals={festivals || []} />
-      <ServiceCards activities={activities || []} />
+      <FestivalSection festivals={data?.festivals || EMPTY} />
+      <ServiceCards />
       <IntroSection
         title={settings?.introTitle}
         content={settings?.introContent}

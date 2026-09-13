@@ -9,4 +9,6 @@ const donationItemSchema = new mongoose.Schema({
   status: { type: String, enum: ['published', 'draft'], default: 'published' }
 }, { timestamps: true });
 
+donationItemSchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('DonationItem', donationItemSchema);

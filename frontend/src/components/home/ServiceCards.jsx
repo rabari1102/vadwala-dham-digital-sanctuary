@@ -31,8 +31,8 @@ const defaultRituals = {
   },
 };
 
-export default function ServiceCards({ activities = [] }) {
-  const { t, tr } = useLanguage();
+export default function ServiceCards() {
+  const { t } = useLanguage();
 
   return (
     <section className="rituals-section" id="rituals-section">

@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
 
 const API = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 15000,
 });
 
 // ── Settings ──
@@ -59,5 +59,32 @@ export const getGuruImages = (slug) => API.get(`/gurus/${slug}/images`);
 
 // ── Tithis ──
 export const getUpcomingTithis = (params) => API.get('/tithi-days/upcoming', { params });
+
+// ── Bootstrap (one request per page instead of several) ──
+// Falls back to the individual endpoints if the backend has not been redeployed yet.
+async function withFallback(primary, fallback) {
+  try {
+    return (await primary()).data;
+  } catch (err) {
+    if (err.response?.status === 404) return fallback();
+    throw err;
+  }
+}
+
+export const getSiteBootstrap = () => withFallback(
+  () => API.get('/bootstrap/site'),
+  async () => {
+    const [settings, contact, announcements] = await Promise.all([getSettings(), getContact(), getAnnouncements()]);
+    return { settings: settings.data, contact: contact.data, announcements: announcements.data };
+  },
+);
+
+export const getHomeBootstrap = () => withFallback(
+  () => API.get('/bootstrap/home'),
+  async () => {
+    const [banners, festivals, gurus] = await Promise.all([getBanners(), getFestivals(), getGurus()]);
+    return { banners: banners.data, festivals: festivals.data, gurus: gurus.data };
+  },
+);
 
 export default API;

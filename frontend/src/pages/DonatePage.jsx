@@ -15,8 +15,8 @@ const iconMap = {
 export default function DonatePage() {
   const { settings } = useSiteSettings();
   const { t, tr } = useLanguage();
-  const { data: items, loading: il } = useFetch(() => getDonationItems(), []);
-  const { data: paymentInfo, loading: pl } = useFetch(() => getPaymentInfo(), []);
+  const { data: items, loading: il } = useFetch('donation:items', getDonationItems);
+  const { data: paymentInfo, loading: pl } = useFetch('donation:payment', getPaymentInfo);
 
   if (il || pl) return <LoadingSpinner />;
 
@@ -70,7 +70,7 @@ export default function DonatePage() {
                     <h3 className="payment-card__label">{tr(p.label)}</h3>
                     <p className="payment-card__details">{tr(p.details)}</p>
                     {p.qrImage && (
-                      <img className="payment-card__qr" src={getImageUrl(p.qrImage)} alt={`${p.label} QR`} loading="lazy" />
+                      <img className="payment-card__qr" src={getImageUrl(p.qrImage, 600)} alt={`${p.label} QR`} loading="lazy" decoding="async" />
                     )}
                   </div>
                 ))}

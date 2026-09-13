@@ -36,4 +36,6 @@ const guruSchema = new mongoose.Schema({
   order: { type: Number, default: 0 },
 }, { timestamps: true });
 
+guruSchema.index({ status: 1, order: 1 });
+
 module.exports = mongoose.model('Guru', guruSchema);

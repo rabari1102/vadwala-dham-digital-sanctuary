@@ -29,7 +29,7 @@ export default function FestivalSection({ festivals = [] }) {
           <div className="festival-featured">
             {featured.image && (
               <div className="festival-featured__image">
-                <img src={getImageUrl(featured.image)} alt={tr(featured.title)} loading="lazy" />
+                <img src={getImageUrl(featured.image, 900)} alt={tr(featured.title)} loading="lazy" decoding="async" />
               </div>
             )}
             <div className="festival-featured__info">
@@ -50,7 +50,7 @@ export default function FestivalSection({ festivals = [] }) {
                 <div key={f._id || i} className="festival-card">
                   {f.image && (
                     <div className="festival-card__thumb">
-                      <img src={getImageUrl(f.image)} alt={tr(f.title)} loading="lazy" />
+                      <img src={getImageUrl(f.image, 320)} alt={tr(f.title)} loading="lazy" decoding="async" />
                     </div>
                   )}
                   <div className="festival-card__info">

@@ -9,14 +9,12 @@ import './HistoryPage.css';
 
 export default function HistoryPage() {
   const { t, tr } = useLanguage();
-  const { data: sections, loading: sl } = useFetch(() => getHistorySections(), []);
-  const { data: acharyas, loading: al } = useFetch(() => getAcharyaParampara(), []);
-
-  if (sl || al) return <LoadingSpinner />;
+  const { data: sections, loading: sectionsLoading } = useFetch('history:sections', getHistorySections);
+  const { data: acharyas } = useFetch('history:acharyas', getAcharyaParampara);
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero — renders immediately, content fills in below */}
       <section className="page-banner">
         <div className="container page-banner__content">
           <span className="page-banner__eyebrow">{t('history')}</span>
@@ -32,7 +30,9 @@ export default function HistoryPage() {
       {/* History Blocks */}
       <section className="section">
         <div className="container">
-          {(!sections || sections.length === 0) ? (
+          {sectionsLoading ? (
+            <LoadingSpinner />
+          ) : (!sections || sections.length === 0) ? (
             <EmptyState message={t('noHistory')} icon="📜" />
           ) : (
             <div className="history-blocks">
@@ -40,7 +40,7 @@ export default function HistoryPage() {
                 <div key={s._id || i} className={`history-block ${i % 2 !== 0 ? 'history-block--alt' : ''}`}>
                   {s.image && (
                     <div className="history-block__image">
-                      <img src={getImageUrl(s.image)} alt={tr(s.title)} loading="lazy" />
+                      <img src={getImageUrl(s.image, 900)} alt={tr(s.title)} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
                     </div>
                   )}
                   <div className="history-block__content">
@@ -65,14 +65,14 @@ export default function HistoryPage() {
                 <div key={a._id || i} className="parampara-card">
                   <div className="parampara-card__image">
                     {a.image ? (
-                      <img src={getImageUrl(a.image)} alt={a.name} loading="lazy" />
+                      <img src={getImageUrl(a.image, 300)} alt={a.name} loading="lazy" decoding="async" />
                     ) : (
                       <div className="parampara-card__placeholder">
                         <span className="material-symbols-outlined">person</span>
                       </div>
                     )}
                   </div>
-                  <h4 className="parampara-card__name">{a.name}</h4>
+                  <h4 className="parampara-card__name">{tr(a.name)}</h4>
                   <p className="parampara-card__period">
                     {a.periodStart}{a.periodEnd ? ` – ${a.periodEnd}` : ''}
                   </p>

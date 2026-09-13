@@ -1,20 +1,21 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import useFetch from '../hooks/useFetch';
-import { getSettings, getContact, getAnnouncements } from '../api/apiService';
+import { getSiteBootstrap } from '../api/apiService';
 
 const SiteContext = createContext(null);
+const EMPTY_OBJECT = {};
+const EMPTY_LIST = [];
 
 export function SiteProvider({ children }) {
-  const { data: settings, loading: settingsLoading } = useFetch(() => getSettings(), []);
-  const { data: contact, loading: contactLoading } = useFetch(() => getContact(), []);
-  const { data: announcements } = useFetch(() => getAnnouncements(), []);
+  // One request for settings + contact + announcements, persisted for instant repeat visits
+  const { data, loading } = useFetch('site', getSiteBootstrap, { persist: true });
 
-  const value = {
-    settings: settings || {},
-    contact: contact || {},
-    announcements: announcements || [],
-    loading: settingsLoading || contactLoading,
-  };
+  const value = useMemo(() => ({
+    settings: data?.settings || EMPTY_OBJECT,
+    contact: data?.contact || EMPTY_OBJECT,
+    announcements: data?.announcements || EMPTY_LIST,
+    loading,
+  }), [data, loading]);
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;
 }

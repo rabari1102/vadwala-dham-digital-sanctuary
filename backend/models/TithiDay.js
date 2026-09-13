@@ -13,4 +13,6 @@ const tithiDaySchema = new mongoose.Schema({
   isHighlighted: { type: Boolean, default: false },
 }, { timestamps: true });
 
+tithiDaySchema.index({ tithiName: 1, dateGregorian: 1 });
+
 module.exports = mongoose.model('TithiDay', tithiDaySchema);

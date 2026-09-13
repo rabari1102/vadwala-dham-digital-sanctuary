@@ -11,7 +11,7 @@ const INITIAL_FORM = {
 };
 
 export default function DhajaPage() {
-  const { t, isGujarati } = useLanguage();
+  const { isGujarati } = useLanguage();
   const [form, setForm] = useState(INITIAL_FORM);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -33,7 +33,7 @@ export default function DhajaPage() {
       await submitDhajaBooking(form);
       setSent(true);
       setForm(INITIAL_FORM);
-    } catch (err) {
+    } catch {
       setError(isGujarati ? 'કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.' : 'Something went wrong. Please try again.');
     }
     setSending(false);
