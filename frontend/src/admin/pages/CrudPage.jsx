@@ -254,6 +254,8 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
   });
 
   const imageColumns = new Set(columns.filter((c) => c.type === 'image' || c.key === 'image').map((c) => c.key));
+  // Image columns may read from nested data (e.g. a guru's primary_image object) via `value(item)`
+  const imageSrc = (item, column) => (column.value ? column.value(item) : item[column.key]);
 
   const renderFieldInput = (field) => {
     const val = formData[field.key] ?? '';
@@ -388,9 +390,9 @@ export default function CrudPage({ title, endpoint, columns, fields, defaultValu
                     {columns.map((c) => (
                       <td key={c.key}>
                         {imageColumns.has(c.key) ? (
-                          item[c.key] ? (
+                          imageSrc(item, c) ? (
                             <img
-                              src={getImageUrl(item[c.key], 120)}
+                              src={getImageUrl(imageSrc(item, c), 120)}
                               alt=""
                               className="admin-table__img"
                               loading="lazy"
