@@ -11,10 +11,12 @@
  */
 
 const store = new Map();
-const MEMORY_TTL_MS = 30 * 1000;
+const MEMORY_TTL_MS = 15 * 1000;
 const MAX_ENTRIES = 500;
 
-const PUBLIC_CACHE_HEADER = 'public, max-age=30, s-maxage=60, stale-while-revalidate=600';
+// Short CDN cache so admin edits appear on the public site within ~30 seconds;
+// browsers always revalidate (max-age=0) so nobody keeps an old copy locally.
+const PUBLIC_CACHE_HEADER = 'public, max-age=0, s-maxage=30, stale-while-revalidate=60';
 
 function clear() {
   store.clear();

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 
 export default function LoginPage() {
   const { admin, login } = useAuth();
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get('expired') === '1';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,7 +30,9 @@ export default function LoginPage() {
       <div className="admin-login__card">
         <h1>Vadwala Admin</h1>
         <p>Content Management System</p>
-        {error && <div className="admin-login__error" role="alert">{error}</div>}
+        {error
+          ? <div className="admin-login__error" role="alert">{error}</div>
+          : sessionExpired && <div className="admin-login__error" role="status">Your session expired. Please log in again.</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="login-email">Email</label>

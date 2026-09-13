@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import './ImageCropperModal.css';
 
-export default function ImageCropperModal({ file, onCancel, onSave }) {
-  const [imageSrc, setImageSrc] = useState('');
+const MAX_BOX = 320;       // longest side of the on-screen crop box
+const OUTPUT_LONG = 1400;  // longest side of the saved image
+
+export default function ImageCropperModal({ file, aspect = 3 / 4, onCancel, onSave, onSkip }) {
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -11,18 +13,19 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
   const [loading, setLoading] = useState(true);
 
   const imgRef = useRef(null);
-  const cropBoxWidth = 240; // 3:4 Aspect Ratio Width
-  const cropBoxHeight = 320; // 3:4 Aspect Ratio Height
+  const cropBoxWidth = aspect >= 1 ? MAX_BOX : Math.round(MAX_BOX * aspect);
+  const cropBoxHeight = aspect >= 1 ? Math.round(MAX_BOX / aspect) : MAX_BOX;
 
-  // Read file as DataURL
+  // Object URLs are instant even for large photos (a data URL has to base64-encode the whole file)
+  const imageSrc = useMemo(() => (file ? URL.createObjectURL(file) : ''), [file]);
+  useEffect(() => () => { if (imageSrc) URL.revokeObjectURL(imageSrc); }, [imageSrc]);
+
+  // Close on Escape
   useEffect(() => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImageSrc(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }, [file]);
+    const onKey = (e) => { if (e.key === 'Escape') onCancel(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onCancel]);
 
   const handleImageLoad = (e) => {
     const img = e.target;
@@ -34,20 +37,17 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
     const baseWidth = naturalWidth * scaleToCover;
     const baseHeight = naturalHeight * scaleToCover;
 
+    setImageSize({ width: baseWidth, height: baseHeight, naturalWidth, naturalHeight });
     // Center the image initially relative to the crop box
-    const initialX = (cropBoxWidth - baseWidth) / 2;
-    const initialY = (cropBoxHeight - baseHeight) / 2;
-
-    setImageSize({
-      width: baseWidth,
-      height: baseHeight,
-      naturalWidth,
-      naturalHeight
-    });
-    setOffset({ x: initialX, y: initialY });
+    setOffset({ x: (cropBoxWidth - baseWidth) / 2, y: (cropBoxHeight - baseHeight) / 2 });
     setZoom(1);
     setLoading(false);
   };
+
+  const clampOffset = (x, y, currentZoom) => ({
+    x: Math.max(cropBoxWidth - imageSize.width * currentZoom, Math.min(0, x)),
+    y: Math.max(cropBoxHeight - imageSize.height * currentZoom, Math.min(0, y)),
+  });
 
   // Dragging logic (mouse & touch support)
   const startDrag = (clientX, clientY) => {
@@ -57,86 +57,57 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
 
   const moveDrag = (clientX, clientY) => {
     if (!isDragging) return;
-
-    // Calculate tentative new offset
-    let newX = clientX - dragStart.x;
-    let newY = clientY - dragStart.y;
-
-    // Constrain offset so image always covers crop box
-    const currentWidth = imageSize.width * zoom;
-    const currentHeight = imageSize.height * zoom;
-
-    const minX = cropBoxWidth - currentWidth;
-    const minY = cropBoxHeight - currentHeight;
-
-    newX = Math.max(minX, Math.min(0, newX));
-    newY = Math.max(minY, Math.min(0, newY));
-
-    setOffset({ x: newX, y: newY });
+    setOffset(clampOffset(clientX - dragStart.x, clientY - dragStart.y, zoom));
   };
 
-  const endDrag = () => {
-    setIsDragging(false);
-  };
+  const endDrag = () => setIsDragging(false);
 
   // Keep offset constrained when zoom changes (done in the handler, not an effect, to avoid an extra render)
   const handleZoom = (nextZoom) => {
     setZoom(nextZoom);
     if (imageSize.width === 0) return;
-
-    const minX = cropBoxWidth - imageSize.width * nextZoom;
-    const minY = cropBoxHeight - imageSize.height * nextZoom;
-
-    setOffset((prev) => ({
-      x: Math.max(minX, Math.min(0, prev.x)),
-      y: Math.max(minY, Math.min(0, prev.y)),
-    }));
+    setOffset((prev) => clampOffset(prev.x, prev.y, nextZoom));
   };
 
-  // Crop & save handler
   const handleCrop = () => {
     if (!imgRef.current) return;
 
-    const img = imgRef.current;
+    const outputWidth = aspect >= 1 ? OUTPUT_LONG : Math.round(OUTPUT_LONG * aspect);
+    const outputHeight = aspect >= 1 ? Math.round(OUTPUT_LONG / aspect) : OUTPUT_LONG;
     const canvas = document.createElement('canvas');
-    canvas.width = 600; // Output high-quality resolution (600x800px)
-    canvas.height = 800;
+    canvas.width = outputWidth;
+    canvas.height = outputHeight;
     const ctx = canvas.getContext('2d');
 
-    // Calculate crop parameters relative to the original natural dimensions
-    const currentWidth = imageSize.width * zoom;
-
-    const scale = imageSize.naturalWidth / currentWidth;
-
-    const sx = -offset.x * scale;
-    const sy = -offset.y * scale;
-    const sw = cropBoxWidth * scale;
-    const sh = cropBoxHeight * scale;
-
-    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    // Crop parameters relative to the original natural dimensions
+    const scale = imageSize.naturalWidth / (imageSize.width * zoom);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, outputWidth, outputHeight);
+    ctx.drawImage(
+      imgRef.current,
+      -offset.x * scale, -offset.y * scale, cropBoxWidth * scale, cropBoxHeight * scale,
+      0, 0, outputWidth, outputHeight,
+    );
 
     canvas.toBlob((blob) => {
       if (!blob) return;
-      const croppedFile = new File([blob], file.name || 'cropped.jpg', {
-        type: 'image/jpeg',
-        lastModified: Date.now(),
-      });
-      onSave(croppedFile);
-    }, 'image/jpeg', 0.95);
+      const baseName = (file.name || 'cropped').replace(/\.[^.]+$/, '');
+      onSave(new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: Date.now() }));
+    }, 'image/jpeg', 0.9);
   };
 
   return (
     <div className="cropper-modal-overlay">
       <div className="cropper-modal">
         <div className="cropper-modal__header">
-          <h3>Crop Main Profile Image</h3>
-          <p>Drag the image to position and use the slider to zoom.</p>
+          <h3>Crop Image</h3>
+          <p>Drag the image to position it and use the slider to zoom.</p>
         </div>
 
         <div className="cropper-modal__body">
           {loading && <div className="cropper-modal__loader">Loading image editor...</div>}
-          
-          <div 
+
+          <div
             className="cropper-modal__viewer"
             style={{ width: cropBoxWidth, height: cropBoxHeight }}
             onMouseDown={(e) => startDrag(e.clientX, e.clientY)}
@@ -159,6 +130,7 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
                 src={imageSrc}
                 alt="To Crop"
                 onLoad={handleImageLoad}
+                draggable={false}
                 style={{
                   position: 'absolute',
                   left: offset.x,
@@ -172,7 +144,7 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
                 }}
               />
             )}
-            
+
             {/* Grid helper lines for composition */}
             <div className="cropper-modal__grid-line cropper-modal__grid-h1"></div>
             <div className="cropper-modal__grid-line cropper-modal__grid-h2"></div>
@@ -199,8 +171,13 @@ export default function ImageCropperModal({ file, onCancel, onSave }) {
           <button type="button" className="btn-admin btn-admin--outline" onClick={onCancel}>
             Cancel
           </button>
+          {onSkip && (
+            <button type="button" className="btn-admin btn-admin--outline" onClick={onSkip} disabled={loading}>
+              Use without cropping
+            </button>
+          )}
           <button type="button" className="btn-admin btn-admin--primary" onClick={handleCrop} disabled={loading}>
-            Crop & Save
+            Crop & Upload
           </button>
         </div>
       </div>

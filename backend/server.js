@@ -159,10 +159,11 @@ app.get('/api/download', requireDB, async (req, res) => {
   }
 });
 
-// Rate limiting on auth routes
+// Rate limiting on login attempts only (failed attempts count; successful logins don't)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  skipSuccessfulRequests: true,
   message: { error: 'Too many login attempts. Please try again after 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -217,7 +218,8 @@ const tithiDaysRouter = require('./routes/tithiDays');
 const bootstrapRouter = require('./routes/bootstrap');
 
 // ── Mount Routes ──
-app.use('/api/auth', authLimiter, authRouter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth', authRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/dhaja-bookings', dhajaBookingRouter);
 
@@ -246,6 +248,23 @@ app.use('/api/gaushala-content', publicCache, createCrudRouter(GaushalaContent))
 // Root check
 app.get('/', (req, res) => {
   res.send('Vadwala Dham Digital Sanctuary API is running.');
+});
+
+// Unknown API routes return JSON instead of Express's HTML page
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `API route not found: ${req.method} ${req.originalUrl}` });
+});
+
+// Central error handler — always JSON with a readable message
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(`[error] ${req.method} ${req.originalUrl}:`, err.message);
+  if (res.headersSent) return;
+  const status = err.status || err.statusCode || 500;
+  const message = err.type === 'entity.too.large'
+    ? 'Request is too large.'
+    : (err.message || 'Internal Server Error');
+  res.status(status).json({ error: message });
 });
 
 // ── Server Start (local / non-serverless only) ──
