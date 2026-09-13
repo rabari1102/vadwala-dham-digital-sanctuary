@@ -5,7 +5,7 @@ import { getImageUrl } from '../../utils/helpers';
 import SocialLinks from '../shared/SocialLinks';
 import './Footer.css';
 
-const LOGO_URL = 'https://dudhrejvadwala.com/wp-content/uploads/2025/01/Vadwalal-Logo-1024x672.png';
+const LOGO_URL = '/logo.png';
 
 const footerNav = [
   { key: 'home', url: '/' },

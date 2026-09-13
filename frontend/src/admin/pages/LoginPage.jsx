@@ -28,6 +28,7 @@ export default function LoginPage() {
   return (
     <div className="admin-login">
       <div className="admin-login__card">
+        <img src="/logo.png" alt="Shri Vadwala Mandir" className="admin-login__logo" width="150" height="98" />
         <h1>Vadwala Admin</h1>
         <p>Content Management System</p>
         {error

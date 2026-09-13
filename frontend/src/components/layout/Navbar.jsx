@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { getImageUrl } from '../../utils/helpers';
 import './Navbar.css';
 
-const LOGO_URL = 'https://dudhrejvadwala.com/wp-content/uploads/2025/01/Vadwalal-Logo-1024x672.png';
+const LOGO_URL = '/logo.png';
 
 const defaultNavLinks = [
   { key: 'home', url: '/' },

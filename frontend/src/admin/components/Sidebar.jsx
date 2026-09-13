@@ -43,8 +43,11 @@ export default function Sidebar() {
       </button>
       <aside className={`admin-sidebar ${open ? 'admin-sidebar--open' : ''}`}>
         <div className="admin-sidebar__brand">
-          <h2>🛕 Vadwala Admin</h2>
-          <span>Content Management</span>
+          <img src="/logo.png" alt="Shri Vadwala Mandir" className="admin-sidebar__logo" width="96" height="63" />
+          <div>
+            <h2>Vadwala Admin</h2>
+            <span>Content Management</span>
+          </div>
         </div>
         <nav className="admin-sidebar__nav">
           {nav.map(group => (
