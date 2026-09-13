@@ -361,6 +361,9 @@ const SETTINGS_FIELDS = [
   { key: 'donateCtaText', label: 'Donate CTA Text', type: 'textarea' },
   { key: 'trustNote', label: 'Donation Trust Note', type: 'textarea', fullWidth: true },
   { key: 'liveDarshanUrl', label: 'Live Darshan URL', type: 'text', fullWidth: true },
+  { key: 'youtubeUrl', label: 'YouTube channel link', type: 'text', fullWidth: true },
+  { key: 'instagramUrl', label: 'Instagram page link', type: 'text', fullWidth: true },
+  { key: 'facebookUrl', label: 'Facebook page link', type: 'text', fullWidth: true },
 ];
 
 const CONTACT_FIELDS = [

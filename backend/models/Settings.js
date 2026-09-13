@@ -13,6 +13,9 @@ const settingsSchema = new mongoose.Schema({
   trustNote: { type: String, default: '' },
   verificationContact: { type: String, default: '' },
   liveDarshanUrl: { type: String, default: '' },
+  youtubeUrl: { type: String, default: '' },
+  instagramUrl: { type: String, default: '' },
+  facebookUrl: { type: String, default: '' },
   navLinks: [{
     label: String,
     url: String,
