@@ -304,6 +304,7 @@ const GURUS = {
   endpoint: 'gurus',
   allowBulkDelete: false,
   columns: [
+    { key: 'primary_image', label: 'Photo', type: 'image', value: (item) => item.primary_image?.storage_key || item.primary_image?.image_url || '' },
     { key: 'short_title', label: 'Title/Name' },
     { key: 'role_title', label: 'Role' },
     { key: 'order', label: 'Order' },
