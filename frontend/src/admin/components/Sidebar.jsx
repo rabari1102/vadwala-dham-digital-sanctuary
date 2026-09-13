@@ -13,7 +13,6 @@ const nav = [
     { label: 'Gurus', to: '/admin/gurus', icon: Users },
     { label: 'Activities', to: '/admin/activities', icon: Sparkles },
     { label: 'Festivals', to: '/admin/festivals', icon: Calendar },
-    { label: 'Tithi Calendar', to: '/admin/tithi-days', icon: Calendar },
     { label: 'Announcements', to: '/admin/announcements', icon: Megaphone },
   ]},
   { section: 'Media', items: [

@@ -32,17 +32,27 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
 ].filter(Boolean).map(url => url.replace(/\/$/, ''));
 
-app.use(cors({
-  origin: function (origin, callback) {
+// Public, token-less reads (site content) are readable from any origin. Their CORS header is
+// the same for everyone ("*"), so CDN-cached responses are correct for every website. Before,
+// the cached response carried the first requester's origin and browsers blocked everyone else.
+// The API uses bearer tokens (not cookies), so "*" does not expose anything private.
+const publicCors = cors({ origin: '*', maxAge: 86400 });
+
+// Admin requests (with a token) and all writes are limited to the known frontends.
+const strictCors = cors({
+  origin(origin, callback) {
     if (!origin) return callback(null, true);
     const normalizedOrigin = origin.replace(/\/$/, '');
-    if (allowedOrigins.includes(normalizedOrigin)) return callback(null, true);
-    if (!isProduction) return callback(null, true);
-    callback(new Error('Not allowed by CORS'));
+    if (allowedOrigins.includes(normalizedOrigin) || !isProduction) return callback(null, true);
+    callback(null, false); // no CORS headers → the browser blocks it; no 500 error
   },
-  credentials: true,
   maxAge: 86400, // let browsers cache preflight responses for a day
-}));
+});
+
+app.use((req, res, next) => {
+  const isPublicRead = (req.method === 'GET' || req.method === 'HEAD') && !req.headers.authorization;
+  return isPublicRead ? publicCors(req, res, next) : strictCors(req, res, next);
+});
 
 // Request logger — in production only log slow or failed requests to keep logs useful
 app.use((req, res, next) => {

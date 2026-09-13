@@ -240,7 +240,6 @@ const SEO_PAGES = [
   { value: 'activities', label: 'Seva & Activities' },
   { value: 'gaushala', label: 'Gaushala' },
   { value: 'dhaja', label: 'Dhaja' },
-  { value: 'tithis', label: 'Upcoming Tithis' },
   { value: 'donate', label: 'Donate' },
   { value: 'contact', label: 'Contact' },
   { value: 'guru-kaniram-bapu', label: 'Guru page – Kaniram Bapu' },
@@ -262,41 +261,6 @@ const SEO = {
     { key: 'description', label: 'Meta Description', type: 'textarea', fullWidth: true },
     { key: 'ogImage', label: 'Social Share Image', type: 'image' },
   ],
-};
-
-const TITHI_DAYS = {
-  title: 'Tithi Calendar',
-  endpoint: 'tithi-days',
-  allowToggle: false,
-  allowBulkDelete: false,
-  columns: [
-    { key: 'dateGregorian', label: 'Gregorian Date', render: (item) => item.dateGregorian ? new Date(item.dateGregorian).toLocaleDateString() : '' },
-    { key: 'tithiName', label: 'Tithi (EN)' },
-    { key: 'tithiNameGu', label: 'Tithi (GU)' },
-    { key: 'monthNameGu', label: 'Month (GU)' },
-    { key: 'isHighlighted', label: 'Highlighted', render: (item) => item.isHighlighted ? '⭐ Yes' : 'No' }
-  ],
-  fields: [
-    { key: 'dateGregorian', label: 'Gregorian Date', type: 'date', required: true },
-    { key: 'tithiName', label: 'Tithi Name (English)', type: 'select', required: true, options: [
-      { value: 'Punam', label: 'Punam (Purnima)' },
-      { value: 'Bij', label: 'Bij (Dwitiya)' },
-      { value: 'Ekadashi', label: 'Ekadashi' },
-      { value: 'Amavasya', label: 'Amavasya' },
-      { value: 'Other', label: 'Other' }
-    ] },
-    { key: 'tithiNameGu', label: 'Tithi Name (Gujarati)', type: 'text', required: true },
-    { key: 'paksha', label: 'Paksha (English)', type: 'select', required: true, options: [
-      { value: 'Sud', label: 'Sud (Shukla)' },
-      { value: 'Vad', label: 'Vad (Krishna)' }
-    ] },
-    { key: 'pakshaGu', label: 'Paksha (Gujarati)', type: 'text' },
-    { key: 'monthName', label: 'Month (English)', type: 'text' },
-    { key: 'monthNameGu', label: 'Month (Gujarati)', type: 'text' },
-    { key: 'notes', label: 'Notes (English)', type: 'text' },
-    { key: 'notesGu', label: 'Notes (Gujarati)', type: 'text' },
-    { key: 'isHighlighted', label: 'Highlight this day', type: 'checkbox' }
-  ]
 };
 
 const GURUS = {
@@ -396,7 +360,6 @@ export default function AdminApp() {
             <Route path="donation-items" element={crud(DONATIONS)} />
             <Route path="payment-info" element={crud(PAYMENT)} />
             <Route path="announcements" element={crud(ANNOUNCEMENTS)} />
-            <Route path="tithi-days" element={crud(TITHI_DAYS)} />
             <Route path="seo" element={crud(SEO)} />
             <Route path="settings" element={<SingletonPage key="settings" title="⚙️ Site Settings" endpoint="settings" fields={SETTINGS_FIELDS} />} />
             <Route path="contact" element={<SingletonPage key="contact" title="📞 Contact Info" endpoint="contact" fields={CONTACT_FIELDS} />} />
