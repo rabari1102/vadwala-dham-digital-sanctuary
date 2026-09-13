@@ -30,7 +30,7 @@ function publicCache(req, res, next) {
 
   const key = req.originalUrl;
   const hit = store.get(key);
-  res.set('Vary', 'Authorization');
+  res.vary('Authorization'); // append — never overwrite Vary headers set by other middleware
 
   if (hit && hit.expires > Date.now()) {
     res.set('Cache-Control', PUBLIC_CACHE_HEADER);

@@ -1,5 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
-const ASSET_BASE = API_URL.replace(/\/api\/?$/, '');
+import { API_BASE_URL as API_URL, ASSET_BASE_URL as ASSET_BASE } from '../config/api';
 
 const CLOUDINARY_UPLOAD = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(.*)$/;
 const CLOUDINARY_TRANSFORM = /^([a-z]{1,3}_[^/]*\/)+/;
