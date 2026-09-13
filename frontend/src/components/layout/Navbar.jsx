@@ -10,7 +10,6 @@ const LOGO_URL = '/logo.png';
 const defaultNavLinks = [
   { key: 'home', url: '/' },
   { key: 'history', url: '/history' },
-  { key: 'upcomingTithis', url: '/tithis' },
   { key: 'seva', url: '/activities' },
   { key: 'gallery', url: '/gallery' },
   { key: 'videos', url: '/videos' },
@@ -30,7 +29,9 @@ export default function Navbar() {
   const menuOpen = menuPath === location.pathname;
   const setMenuOpen = (open) => setMenuPath(open ? location.pathname : null);
 
-  const apiLinks = settings?.navLinks?.filter(l => l.isActive)?.sort((a, b) => a.order - b.order);
+  const apiLinks = settings?.navLinks
+    ?.filter(l => l.isActive && l.url !== '/tithis') // the Tithis page no longer exists
+    ?.sort((a, b) => a.order - b.order);
   let navLinks = apiLinks?.length
     ? apiLinks.map(l => {
         const def = defaultNavLinks.find(d => d.url === l.url) || {};
@@ -57,17 +58,6 @@ export default function Navbar() {
       navLinks = [...navLinks.slice(0, donateIdx), gaushalaItem, ...navLinks.slice(donateIdx)];
     } else {
       navLinks = [...navLinks, gaushalaItem];
-    }
-  }
-
-  // Always ensure Tithis link is present (insert before Donate)
-  if (!navLinks.find(l => l.url === '/tithis')) {
-    const donateIdx = navLinks.findIndex(l => l.url === '/donate');
-    const tithisItem = { label: t('upcomingTithis'), url: '/tithis' };
-    if (donateIdx >= 0) {
-      navLinks = [...navLinks.slice(0, donateIdx), tithisItem, ...navLinks.slice(donateIdx)];
-    } else {
-      navLinks = [...navLinks, tithisItem];
     }
   }
 

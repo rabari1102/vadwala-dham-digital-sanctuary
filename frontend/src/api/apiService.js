@@ -57,9 +57,6 @@ export const getGurus = () => API.get('/gurus', { params: { status: 'published' 
 export const getGuruBySlug = (slug) => API.get(`/gurus/${slug}`);
 export const getGuruImages = (slug) => API.get(`/gurus/${slug}/images`);
 
-// ── Tithis ──
-export const getUpcomingTithis = (params) => API.get('/tithi-days/upcoming', { params });
-
 // ── Bootstrap (one request per page instead of several) ──
 // Falls back to the individual endpoints if the backend has not been redeployed yet.
 async function withFallback(primary, fallback) {

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SiteProvider } from './context/SiteSettingsContext';
 import { LanguageProvider } from './context/LanguageContext';
 import ScrollToTop from './components/shared/ScrollToTop';
@@ -19,7 +19,6 @@ const pageLoaders = {
   activities: () => import('./pages/ActivitiesPage'),
   dhaja: () => import('./pages/DhajaPage'),
   gaushala: () => import('./pages/GaushalaPage'),
-  tithis: () => import('./pages/TithisPage'),
   guru: () => import('./pages/GuruDetailPage'),
 };
 
@@ -31,7 +30,6 @@ const ContactPage = lazy(pageLoaders.contact);
 const ActivitiesPage = lazy(pageLoaders.activities);
 const DhajaPage = lazy(pageLoaders.dhaja);
 const GaushalaPage = lazy(pageLoaders.gaushala);
-const TithisPage = lazy(pageLoaders.tithis);
 const GuruDetailPage = lazy(pageLoaders.guru);
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const AdminApp = lazy(() => import('./admin/AdminApp'));
@@ -80,7 +78,8 @@ function PublicLayout() {
               <Route path="/activities" element={<ActivitiesPage />} />
               <Route path="/dhaja" element={<DhajaPage />} />
               <Route path="/gaushala" element={<GaushalaPage />} />
-              <Route path="/tithis" element={<TithisPage />} />
+              {/* The Upcoming Tithis page was removed; send old links to the home page */}
+              <Route path="/tithis" element={<Navigate to="/" replace />} />
               <Route path="/gurus/:slug" element={<GuruDetailPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
